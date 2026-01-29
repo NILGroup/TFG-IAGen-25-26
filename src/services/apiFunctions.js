@@ -1,4 +1,4 @@
-// apiFunctions.jsx
+// apiFunctions.js
 /**
  * Este módulo contiene funciones de conexión con diferentes APIs de lenguaje,
  * como Groq, OpenAI, u otras que se quieran añadir.
@@ -43,10 +43,10 @@ const fetchIA = async ({
 };
 
 // === FETCH DE GROQ ===
-export const fetchFromGroq = (messages) => {
+export const fetchFromGroq = (messages, model = "llama-3.3-70b-versatile") => {
     return fetchIA({
         url: "https://api.groq.com/openai/v1/chat/completions",
-        model: "meta-llama/llama-4-scout-17b-16e-instruct",
+        model: model,
         apiKey: import.meta.env.VITE_GROQ_LLAMA_API_KEY1,
         messages
     });
