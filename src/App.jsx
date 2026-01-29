@@ -11,8 +11,8 @@
  */
 
 import { useState } from "react";
-import Questionario from "./components/Questionario";
-import InterfazPrincipal from "./components/InterfazPrincipal";
+import Questionario from "./pages/Questionario";
+import InterfazPrincipal from "./pages/InterfazPrincipal";
 import "./App.css";
 
 export default function App() {

@@ -16,12 +16,12 @@
 import { useState } from "react";
 import robotLogo from "../assets/AventurIA_robot_sinfondo.png";
 
-import usePromptFunctions from "./Prompts";
-import ConfigPanel from "./ConfigPanel";
-import ChatHistory from "./ChatHistory";
+import usePromptFunctions from "../hooks/usePrompts";
+import ConfigPanel from "../components/ConfigPanel";
+import ChatHistory from "../components/ChatHistory";
 
-import Chat from "./Chat";
-import BotonesInteraccion from "./BotonesInteraccion";
+import Chat from "../components/Chat";
+import BotonesInteraccion from "../components/BotonesInteraccion";
 
 export default function InterfazPrincipal({ summary }) {
 

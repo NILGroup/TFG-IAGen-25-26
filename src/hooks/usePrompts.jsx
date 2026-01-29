@@ -7,7 +7,7 @@
  * un título que englobe toda la conversación.
  */
 
-import { fetchFromGroq } from './apiFunctions';
+import { fetchFromGroq } from '../services/apiFunctions';
 import { useCallback } from "react";
 
 const usePromptFunctions = ({
@@ -31,18 +31,44 @@ const usePromptFunctions = ({
 
     // PERSONALIZACIÓN DE RESPUESTA DE LA IA
     const buildPrompt = useCallback((promptText) => {
-        if (!summary) return promptText;
+        if (!summary) {
+            return {
+                displayPrompt: promptText,
+                apiPrompt: promptText
+            };
+        }
 
-        const personalInfo = `
-        Pero ten en cuenta estas instrucciones al responder:
-        - Mi Discapacidad: ${summary.discapacidad.join(", ") || "Ninguna"}
-        - NO uses: ${summary.retos.join(", ") || "Ninguna"}
-        - Quiero que me generes la respuesta usando: ${summary.herramientas.join(", ") || "Ninguna"}
-        `;
+        // Estructura CO-STAR
+        const context = `Soy un usuario con las siguientes características: ${summary.discapacidad?.join(", ") || "Sin discapacidad específica"}.`;
+        const objective = `Tu tarea principal es responder a la siguiente consulta: "${promptText}"`;
+        const style = `Utiliza el siguiente estilo o herramientas de apoyo: ${summary.herramientas?.join(", ") || "Lenguaje claro y sencillo"}.`;
+        const tone = `Mantén un tono empático, paciente y respetuoso.`;
+        const audience = `La respuesta es para mí. Debes evitar estrictamente: ${summary.retos?.join(", ") || "Ninguna limitación adicional"}.`;
+        const response = `Asegúrate de que la respuesta cumpla con todas las restricciones anteriores.`;
+
+        const coStarPrompt = `
+# CONTEXT (Contexto)
+${context}
+
+# OBJECTIVE (Objetivo)
+${objective}
+
+# STYLE (Estilo)
+${style}
+
+# TONE (Tono)
+${tone}
+
+# AUDIENCE (Audiencia)
+${audience}
+
+# RESPONSE (Respuesta)
+${response}
+`;
 
         return {
-            displayPrompt: promptText,
-            apiPrompt: `Hola, respondeme a esta pregunta: ${promptText}\n${personalInfo}`,
+            displayPrompt: coStarPrompt.trim(),
+            apiPrompt: coStarPrompt.trim(),
         };
     }, [summary]);
 
