@@ -13,6 +13,7 @@ export default function FormularioPrompt({ onComplete, onBack, summary }) {
   const [pregunta1, setPregunta1] = useState(""); // Qué quieres que haga
   const [pregunta2, setPregunta2] = useState(""); // Tema
   const [pregunta3, setPregunta3] = useState(""); // Estilo de habla (rol)
+  const [pregunta3Personalizado, setPregunta3Personalizado] = useState(""); // Rol personalizado
   const [pregunta4, setPregunta4] = useState(""); // Tipo de respuesta
   const [pregunta5, setPregunta5] = useState(""); // Restricciones (opcional)
 
@@ -24,13 +25,19 @@ export default function FormularioPrompt({ onComplete, onBack, summary }) {
   const generarPrompt = () => {
     let promptGenerado = "";
 
-    // Añadir el rol/estilo
     if (pregunta3 === "profesor") {
-      promptGenerado += "Actúa como un profesor paciente y educativo. ";
+        promptGenerado += "Actúa como un profesor paciente y educativo que usa palabras sencillas. ";
     } else if (pregunta3 === "amigo") {
-      promptGenerado += "Habla de forma amigable y cercana. ";
-    } else if (pregunta3 === "creativo") {
-      promptGenerado += "Sé creativo y usa ejemplos e historias para explicar. ";
+        promptGenerado += "Habla de forma amigable, cercana y conversacional. ";
+    } else if (pregunta3 === "narrador") {
+        promptGenerado += "Explica como si contaras una historia interesante con ejemplos reales. ";
+    } else if (pregunta3 === "guia") {
+        promptGenerado += "Actúa como una guía que explica paso a paso con instrucciones claras. ";
+    } else if (pregunta3 === "asistente") {
+        promptGenerado += "Ayúdame como un asistente personal que facilita las cosas. ";
+    } else if (pregunta3Personalizado) {
+        // ROL PERSONALIZADO ESCRITO POR EL USUARIO
+        promptGenerado += `Actúa como ${pregunta3Personalizado}. `;
     }
 
     // Añadir el objetivo principal
@@ -65,7 +72,7 @@ export default function FormularioPrompt({ onComplete, onBack, summary }) {
   };
 
   // Validar que al menos las preguntas obligatorias estén respondidas
-  const esFormularioValido = pregunta1 && pregunta3 && pregunta4;
+  const esFormularioValido = pregunta1 && (pregunta3 || pregunta3Personalizado) && pregunta4;
 
   return (
     <>
@@ -158,32 +165,57 @@ export default function FormularioPrompt({ onComplete, onBack, summary }) {
           <label className="form-label label-green">
             3. ¿Cómo te gustaría que OlivIA te hablara? *
           </label>
-          <p className="form-helper">Elige un estilo</p>
+          <p className="form-helper">Elige un estilo o escribe el tuyo</p>
           <div className="button-group">
             <button
               type="button"
-              className={`style-button ${pregunta3 === "profesor" ? "selected-green" : ""}`}
-              onClick={() => setPregunta3("profesor")}
+              className={`style-button btn-yellow ${pregunta3 === "profesor" ? "selected" : ""}`}
+              onClick={() => { setPregunta3("profesor"); setPregunta3Personalizado(""); }}
             >
-              <span className="button-icon">👨‍🏫</span>
               Como un profesor
             </button>
             <button
               type="button"
-              className={`style-button ${pregunta3 === "amigo" ? "selected-green" : ""}`}
-              onClick={() => setPregunta3("amigo")}
+              className={`style-button btn-blue ${pregunta3 === "amigo" ? "selected" : ""}`}
+              onClick={() => { setPregunta3("amigo"); setPregunta3Personalizado(""); }}
             >
-              <span className="button-icon">🥳</span>
               Como un amigo
             </button>
             <button
               type="button"
-              className={`style-button ${pregunta3 === "creativo" ? "selected-green" : ""}`}
-              onClick={() => setPregunta3("creativo")}
+              className={`style-button btn-green ${pregunta3 === "narrador" ? "selected" : ""}`}
+              onClick={() => { setPregunta3("narrador"); setPregunta3Personalizado(""); }}
             >
-              <span className="button-icon">🎨</span>
-              De forma creativa
+              Como un narrador
             </button>
+            <button
+              type="button"
+              className={`style-button btn-red ${pregunta3 === "guia" ? "selected" : ""}`}
+              onClick={() => { setPregunta3("guia"); setPregunta3Personalizado(""); }}
+            >
+              Como una guía
+            </button>
+            <button
+              type="button"
+              className={`style-button btn-purple ${pregunta3 === "asistente" ? "selected" : ""}`}
+              onClick={() => { setPregunta3("asistente"); setPregunta3Personalizado(""); }}
+            >
+              Como un asistente
+            </button>
+          </div>
+          {/* Input para rol personalizado */}
+          <div className="custom-role-container">
+            <p className="form-helper">O escribe tu propio estilo:</p>
+            <input
+              type="text"
+              className="form-input"
+              value={pregunta3Personalizado}
+              onChange={(e) => {
+                setPregunta3Personalizado(e.target.value);
+                setPregunta3(""); // Limpiar selección de botones
+              }}
+              placeholder="Ej: Como un chef, como un detective..."
+            />
           </div>
         </div>
 
@@ -196,26 +228,23 @@ export default function FormularioPrompt({ onComplete, onBack, summary }) {
           <div className="button-group">
             <button
               type="button"
-              className={`style-button ${pregunta4 === "corta" ? "selected-orange" : ""}`}
+              className={`style-button btn-yellow ${pregunta4 === "corta" ? "selected" : ""}`}
               onClick={() => setPregunta4("corta")}
             >
-              <span className="button-icon">📝</span>
               Cortas y simples
             </button>
             <button
               type="button"
-              className={`style-button ${pregunta4 === "detallada" ? "selected-orange" : ""}`}
+              className={`style-button btn-blue ${pregunta4 === "detallada" ? "selected" : ""}`}
               onClick={() => setPregunta4("detallada")}
             >
-              <span className="button-icon">📚</span>
               Con más detalles
             </button>
             <button
               type="button"
-              className={`style-button ${pregunta4 === "listas" ? "selected-orange" : ""}`}
+              className={`style-button btn-orange ${pregunta4 === "listas" ? "selected" : ""}`}
               onClick={() => setPregunta4("listas")}
             >
-              <span className="button-icon">📋</span>
               Con listas y pasos
             </button>
           </div>
