@@ -1,0 +1,227 @@
+/* FormularioPrompt.css */
+
+.formulario-container {
+  min-height: calc(100vh - 80px);
+  background-color: #f9fafb;
+  padding: 1rem;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+.formulario-content {
+  max-width: 800px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Back button */
+.back-button {
+  align-self: flex-start;
+  padding: 0.5rem 1rem;
+  font-size: clamp(0.9rem, 2vw, 1rem);
+  font-weight: 600;
+  color: #6b7280;
+  background-color: #f3f4f6;
+  border: 2px solid #d1d5db;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.back-button:hover {
+  background-color: #e5e7eb;
+  color: #374151;
+}
+
+.formulario-title {
+  font-size: clamp(1.3rem, 3.5vw, 2rem);
+  font-weight: bold;
+  text-align: center;
+  color: #7c3aed;
+  margin: 0;
+}
+
+.formulario-subtitle {
+  font-size: clamp(0.9rem, 2vw, 1.1rem);
+  text-align: center;
+  color: #4b5563;
+  margin: 0;
+}
+
+/* Form cards */
+.form-card {
+  background: white;
+  padding: 1rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border: 2px solid;
+}
+
+@media (max-width: 600px) {
+  .form-card {
+    padding: 0.75rem;
+  }
+}
+
+.card-purple { border-color: #c4b5fd; }
+.card-blue { border-color: #93c5fd; }
+.card-green { border-color: #86efac; }
+.card-orange { border-color: #fed7aa; }
+.card-red { border-color: #fecaca; }
+
+/* Labels */
+.form-label {
+  display: block;
+  font-size: clamp(1rem, 2.5vw, 1.25rem);
+  font-weight: bold;
+  margin-bottom: 0.3rem;
+}
+
+.label-purple { color: #6d28d9; }
+.label-blue { color: #1d4ed8; }
+.label-green { color: #15803d; }
+.label-orange { color: #c2410c; }
+.label-red { color: #b91c1c; }
+
+/* Helper text */
+.form-helper {
+  font-size: clamp(0.85rem, 2vw, 1rem);
+  color: #6b7280;
+  margin: 0 0 0.5rem 0;
+}
+
+/* Inputs */
+.form-input,
+.form-textarea {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  font-size: 1.1rem;
+  border: 2px solid #d1d5db;
+  border-radius: 0.5rem;
+  background-color: #fafafa;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-sizing: border-box;
+}
+
+.form-input:focus,
+.form-textarea:focus {
+  outline: none;
+  border-color: #7c3aed;
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+@media (max-width: 600px) {
+  .form-textarea {
+    min-height: 60px;
+  }
+}
+
+/* Button groups */
+.button-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.style-button {
+  flex: 1;
+  min-width: 150px;
+  padding: 0.75rem;
+  font-size: clamp(0.9rem, 2vw, 1.1rem);
+  font-weight: 500;
+  border: 2px solid #d1d5db;
+  border-radius: 0.75rem;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.style-button:hover {
+  border-color: #9ca3af;
+  background-color: #f9fafb;
+}
+
+.button-icon {
+  font-size: 1.5rem;
+}
+
+/* Selected states */
+.selected-green {
+  background-color: #22c55e;
+  color: white;
+  border-color: #22c55e;
+}
+
+.selected-green:hover {
+  background-color: #16a34a;
+  border-color: #16a34a;
+}
+
+.selected-orange {
+  background-color: #f97316;
+  color: white;
+  border-color: #f97316;
+}
+
+.selected-orange:hover {
+  background-color: #ea580c;
+  border-color: #ea580c;
+}
+
+/* Submit button */
+.submit-button {
+  width: 100%;
+  padding: 1rem;
+  font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+  font-weight: bold;
+  background-color: #7c3aed;
+  color: white;
+  border: none;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  margin-top: 0.5rem;
+}
+
+.submit-button:hover:not(.disabled) {
+  background-color: #6d28d9;
+}
+
+.submit-button.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Validation message */
+.validation-message {
+  color: #dc2626;
+  font-size: 0.9rem;
+  text-align: center;
+  margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .button-group {
+    flex-direction: column;
+  }
+
+  .style-button {
+    min-width: 100%;
+  }
+
+  .formulario-title {
+    font-size: 1.5rem;
+  }
+}
