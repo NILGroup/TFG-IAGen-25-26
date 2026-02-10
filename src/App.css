@@ -72,10 +72,10 @@ body {
   background-color: #0d0b3f;
   color: rgb(255, 255, 255);
   text-align: center;
-  font-size: 50px;
+  font-size: clamp(30px, 5vw, 50px);
   font-style: italic;
   font-weight: bold;
-  padding: 10px 0;
+  padding: 8px 0;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   /*esto es lo que hace que se solape encima de todo*/
   z-index: 1000;
@@ -88,10 +88,17 @@ body {
   align-items: center;
   /* Espacio para el header, evita solapamiento */
   min-height: 100vh;
-  padding-top: 100px;
+  padding-top: 70px;
   /* Deja espacio para el header */
-  padding-bottom: 70px;
+  padding-bottom: 20px;
+  box-sizing: border-box;
+}
 
+@media (max-width: 768px) {
+  .app-wrapper {
+    padding-top: 60px;
+    padding-bottom: 15px;
+  }
 }
 
 /* Título de la interfaz principal */
@@ -109,12 +116,18 @@ body {
 
 
 .robot-logo {
-  width: 100px;
+  width: clamp(60px, 10vw, 100px);
   /* Ajusta según sea necesario */
   height: auto;
   display: block;
-  margin: 0 auto 20px;
+  margin: 0 auto 10px;
   /* Centrada y con margen inferior */
+}
+
+@media (max-width: 768px) {
+  .robot-logo {
+    margin-bottom: 5px;
+  }
 }
 
 /*==================================
@@ -127,8 +140,15 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 20px;
-  /* Mayor separación entre opciones */
+  gap: 10px;
+  /* Separación entre opciones */
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .toggle-options-container {
+    gap: 8px;
+  }
 }
 
 /* Ajustar los bullets */
@@ -146,21 +166,22 @@ body {
   align-items: center;
   justify-content: space-between;
   background: white;
-  padding: 15px 20px;
-  /* Más grande */
-  border-radius: 15px;
-  /* Bordes más redondeados */
+  padding: 10px 15px;
+  border-radius: 12px;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
   width: 100%;
-  max-width: 600px;
-  /* Mayor ancho */
+  max-width: 500px;
   color: black;
-  margin-bottom: 15px;
-  /* Mayor separación */
-  font-size: 20px;
-  /* Texto más grande */
+  margin-bottom: 0;
+  font-size: clamp(16px, 2vw, 20px);
   border: 3px solid transparent;
-  /* Borde por defecto */
+}
+
+@media (max-width: 768px) {
+  .toggle-option {
+    padding: 8px 12px;
+    max-width: 100%;
+  }
 }
 
 /* Subrayado verde cuando está activo */
@@ -272,15 +293,28 @@ body {
 
 .container {
   text-align: center;
-  padding: 30px;
+  padding: 20px;
   background: rgb(241, 243, 244);
   border-radius: 12px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
-  margin-top: 90px;
+  margin-top: 10px;
+  max-height: calc(100vh - 100px);
+  overflow-y: auto;
+  width: 95%;
+  max-width: 900px;
+  box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 15px;
+    margin-top: 5px;
+    max-height: calc(100vh - 80px);
+  }
 }
 
 /* Contenedor de preguntas que ayudan a generar preguntas*/
@@ -386,34 +420,49 @@ body {
 }
 
 .question-page {
-  margin-top: 20px;
+  margin-top: 10px;
 }
 
 .question-page h2 {
-  font-size: 40px;
+  font-size: clamp(24px, 4vw, 40px);
   font-weight: bold;
   color: black;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 
 /*      Estilos para el texto explicativo      */
 .question-page p {
-  font-size: 25px;
+  font-size: clamp(16px, 2.5vw, 25px);
   color: black;
-  margin-bottom: 40px;
+  margin-bottom: 15px;
 }
 
 .question-page h3 {
-  font-size: 30px;
+  font-size: clamp(20px, 3vw, 30px);
   color: black;
   font-weight: bold;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
 }
 
 .nav-buttons {
   display: flex;
   justify-content: space-between;
-  margin-top: 80px;
+  margin-top: 20px;
+  padding: 10px 0;
+  position: sticky;
+  bottom: 0;
+  background: rgb(241, 243, 244);
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .question-page {
+    margin-top: 5px;
+  }
+
+  .question-page p {
+    margin-bottom: 10px;
+  }
 }
 
 /*centra los botones de siguiente dependiendo de que pág estemos*/
@@ -773,11 +822,11 @@ body {
 
 /* Estilos para el mapa del tesoro */
 .treasure-map {
-  font-size: 18px;
+  font-size: clamp(14px, 2vw, 18px);
   font-weight: bold;
   color: black;
-  margin-top: 60px;
-  margin-bottom: 10px;
+  margin-top: 10px;
+  margin-bottom: 5px;
   text-align: center;
 }
 
@@ -1047,6 +1096,26 @@ body {
 /*==================================
 *    INTERFAZ PRINCIPAL
 * ==================================*/
+
+/* Botón volver a elegir modo */
+.back-to-choice-btn {
+  align-self: flex-start;
+  margin-left: 20px;
+  padding: 0.5rem 1rem;
+  font-size: clamp(0.85rem, 2vw, 1rem);
+  font-weight: 600;
+  color: #6b7280;
+  background-color: #f3f4f6;
+  border: 2px solid #d1d5db;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.back-to-choice-btn:hover {
+  background-color: #e5e7eb;
+  color: #374151;
+}
 
 /* Estilo del título de la pregunta (mismo que los botones) */
 .question-title {

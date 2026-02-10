@@ -13,7 +13,7 @@
  * - Gestionar historial de conversaciones y configuración del perfil del usuario
  */
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import robotLogo from "../assets/AventurIA_robot_sinfondo.png";
 
 import usePromptFunctions from "../hooks/usePrompts";
@@ -23,7 +23,7 @@ import ChatHistory from "../components/ChatHistory";
 import Chat from "../components/Chat";
 import BotonesInteraccion from "../components/BotonesInteraccion";
 
-export default function InterfazPrincipal({ summary }) {
+export default function InterfazPrincipal({ summary, promptInicial, onBack }) {
 
 
     /** ===============================
@@ -59,11 +59,17 @@ export default function InterfazPrincipal({ summary }) {
     const handleOptionClick = (option) => {
         setSelectedOption(option);
         setPrompt(""); // Vacía el input al cambiar de opción
+        setGuidedTopic("");
+        setGuidedNeed("");
+        setGuidedFormat("");
     };
 
     const handleResetQuestion = () => {
         setSelectedOption(null);
         setPrompt("");
+        setGuidedTopic("");
+        setGuidedNeed("");
+        setGuidedFormat("");
     };
 
 
@@ -194,6 +200,23 @@ export default function InterfazPrincipal({ summary }) {
         }));
     };
 
+    /** =====================================
+    *   ESTADOS PARA GUIAR LA PREGUNTA
+    *  ======================================
+    */
+    const [guidedTopic, setGuidedTopic] = useState("");
+    const [guidedNeed, setGuidedNeed] = useState("");
+    const [guidedFormat, setGuidedFormat] = useState("");
+
+    const buildGuidedPrompt = () => {
+        const parts = [
+            guidedTopic?.trim(),
+            guidedNeed?.trim(),
+            guidedFormat?.trim()
+        ].filter(Boolean);
+        return parts.join(". ");
+    };
+
 
     /** ================================
     *  ESTADOS PARA CARGAR A LOS PROMPTS
@@ -301,8 +324,25 @@ export default function InterfazPrincipal({ summary }) {
         retos: { activa: false, valor: "", guardado: false }
     });
 
+    /** =============================================
+     *  EFECTO PARA CARGAR PROMPT INICIAL
+     *  =============================================
+     */
+    const promptInicialEnviado = useRef(false);
+
+    useEffect(() => {
+        // Si hay un promptInicial y no se ha enviado todavía
+        if (promptInicial && !promptInicialEnviado.current) {
+            promptInicialEnviado.current = true;
+            setPrompt(promptInicial);
+            setShowChat(true);
+            // Enviar el prompt automáticamente como pregunta personalizada
+            sendCustomPrompt(promptInicial);
+        }
+    }, [promptInicial]); // Solo se ejecuta cuando cambia promptInicial
+
     /** ================================
-     *     RETORNO DE LA INTERFAZ 
+     *     RETORNO DE LA INTERFAZ
      *  ================================
      */
 
@@ -369,6 +409,13 @@ export default function InterfazPrincipal({ summary }) {
             {/*GENERADOR/SELECCIONADOR DE PREGUNTA*/}
             {!showChat ? (
                 <>
+                    {/* Botón volver a elegir modo */}
+                    {onBack && (
+                        <button className="back-to-choice-btn" onClick={onBack}>
+                            ← Volver a elegir modo
+                        </button>
+                    )}
+
                     {/* Logo y saludo inicial personalizado */}
                     <img src={robotLogo} alt="AventurIA Logo" className="robot-logo" />
                     <h1 className="title">
@@ -393,7 +440,7 @@ export default function InterfazPrincipal({ summary }) {
 
                         {/* Botón para escribir una pregunta personalizada */}
                         <button className="custom-btn" onClick={handleResetQuestion}>
-                            Formular una pregunta desde cero
+                            Quiero ayuda para escribir mi pregunta
                         </button>
                     </div>
 
@@ -413,7 +460,10 @@ export default function InterfazPrincipal({ summary }) {
 
                         <button
                             className="discover-btn"
-                            onClick={() => sendPrompt(prompt, selectedOption)}
+                            onClick={() => {
+                                sendPrompt(prompt, selectedOption);
+                                setPrompt("");
+                            }}
                         >
                             🔍 ¡Descubrir Respuesta!
                         </button>
