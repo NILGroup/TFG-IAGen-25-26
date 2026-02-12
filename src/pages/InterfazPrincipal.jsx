@@ -23,7 +23,7 @@ import ChatHistory from "../components/ChatHistory";
 import Chat from "../components/Chat";
 import BotonesInteraccion from "../components/BotonesInteraccion";
 
-export default function InterfazPrincipal({ summary, promptInicial, onBack }) {
+export default function InterfazPrincipal({ summary, modoSeleccionado, promptInicial, onBack }) {
 
 
     /** ===============================
@@ -479,6 +479,7 @@ export default function InterfazPrincipal({ summary, promptInicial, onBack }) {
                         toggleSpeech={toggleSpeech}
                         activeSpeechId={activeSpeechId}
                         speechState={speechState}
+                        avatarMode={modoSeleccionado}
                     />
 
                     {/*LÓGICA BOTONES INTERACCIÓN CON RESPUESTA*/}

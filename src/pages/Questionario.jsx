@@ -299,8 +299,7 @@ export default function Questionario({ onComplete }) {
             case 2:
                 return (
                     <div className="question-page">
-                        <h2>⭐ Paso 1: Cada persona es única</h2>
-                        <p>Para que OlivIA pueda ayudarte mejor, quiere conocerte un poquito más.</p>
+                        <h2>⭐ Paso 1: Para que OlivIA pueda ayudarte mejor.</h2>
                         <h3>¿Con qué te sientes más identificado?</h3>
 
                         <div className="toggle-options-container">
@@ -386,8 +385,7 @@ export default function Questionario({ onComplete }) {
             case 3:
                 return (
                     <div className="question-page">
-                        <h2>🌟 Paso 2: ¡Haz que tu compañera digital sea tu mejor guía!</h2>
-                        <h3>¿Qué te cuesta más entender?</h3>
+                        <h2>🌟 Paso 2: ¿Qué te cuesta más entender?</h2>
                         <p>Elige todas las que veas necesarias:</p>
 
                         <div className="toggle-options-container">
@@ -476,11 +474,8 @@ export default function Questionario({ onComplete }) {
             case 4:
                 return (
                     <div className="question-page">
-                        <h2>🎭 Paso 3: Dale una personalidad a tu compañera virtual </h2>
-                        <p>Teniendo en cuenta lo elegido antes</p>
-                        <h3>¿Cómo quieres que te ayude tu compañero digital? </h3>
+                        <h2>🌟 Paso 3: ¿Cómo quieres que te ayude tu compañero digital? </h2>
                         <p>Elige todas las opciones que veas necesarias:</p>
-
 
                         <div className="options-container">
                             {tools.map((tool) => (
@@ -560,7 +555,6 @@ export default function Questionario({ onComplete }) {
                                 <button className="final-btn green" onClick={() => onComplete(summary)}>
                                     ✔️ Sí, estoy listo
                                 </button>
-
                             </div>
                         </div>
                     </div>

@@ -12,6 +12,7 @@
 
 import { useState } from "react";
 import Questionario from "./pages/Questionario";
+import PantallaModo from "./components/PantallaModo";
 import PantallaEleccion from "./components/PantallaEleccion";
 import FormularioPrompt from "./components/FormularioPrompt";
 import InterfazPrincipal from "./pages/InterfazPrincipal";
@@ -19,17 +20,24 @@ import "./App.css";
 
 export default function App() {
   // Estados para controlar la navegación
-  const [paso, setPaso] = useState("cuestionario"); // cuestionario, eleccion, formulario, chat
+  const [paso, setPaso] = useState("cuestionario"); // cuestionario, modo, eleccion, formulario, chat
   const [summary, setSummary] = useState(null); // Resumen del cuestionario inicial
+  const [modoSeleccionado, setModoSeleccionado] = useState(null); // "profesor" | "familiar"
   const [promptGenerado, setPromptGenerado] = useState(null); // Prompt del formulario
 
   // 1. Cuando termina el cuestionario inicial
   const handleQuestionnaireComplete = (data) => {
     setSummary(data);
+    setPaso("modo"); // Ir a la pantalla de selección de modo
+  };
+
+  // 2. Cuando el usuario elige modo (Profesor / Familia)
+  const handleModoComplete = (modo) => {
+    setModoSeleccionado(modo);
     setPaso("eleccion"); // Ir a la pantalla de elección
   };
 
-  // 2. Cuando el usuario elige en la pantalla de elección
+  // 3. Cuando el usuario elige en la pantalla de elección
   const handleSelectOption = (opcion) => {
     if (opcion === "formulario") {
       setPaso("formulario"); // Ir al formulario guiado
@@ -38,13 +46,13 @@ export default function App() {
     }
   };
 
-  // 3. Cuando completa el formulario guiado
+  // 4. Cuando completa el formulario guiado
   const handleFormularioComplete = (prompt) => {
     setPromptGenerado(prompt); // Guardar el prompt generado
     setPaso("chat"); // Ir al chat con el prompt listo
   };
 
-  // 4. Para volver a la pantalla de elección
+  // 5. Para volver a la pantalla de elección
   const handleVolverAEleccion = () => {
     setPromptGenerado(null); // Limpiar el prompt generado
     setPaso("eleccion");
@@ -58,6 +66,10 @@ export default function App() {
       {/* Renderizado condicional según el paso */}
       {paso === "cuestionario" && (
         <Questionario onComplete={handleQuestionnaireComplete} />
+      )}
+
+      {paso === "modo" && (
+        <PantallaModo onSelectMode={handleModoComplete} />
       )}
 
       {paso === "eleccion" && (
@@ -75,6 +87,7 @@ export default function App() {
       {paso === "chat" && (
         <InterfazPrincipal
           summary={summary}
+          modoSeleccionado={modoSeleccionado}
           promptInicial={promptGenerado}
           onBack={handleVolverAEleccion}
         />
