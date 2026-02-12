@@ -576,17 +576,18 @@ export default function Questionario({ onComplete }) {
      */
 
     return (
-        <div className="container">
-            {renderPage()}
+        <div className="container questionnaire-layout">
+            <ProgressStepper currentStep={page} />
+
+            <div className="questionnaire-content">
+                {renderPage()}
+            </div>
+
             <div className={`nav-buttons ${page === 1 ? "center-nav" : "right-nav"}`}>
                 {page > 1 && page < 5 && <button className="back-btn" onClick={prevPage}>Anterior</button>}
                 {page < 5 && <button className="next-btn" onClick={nextPage}>Siguiente →</button>}
             </div>
-
-            <ProgressStepper currentStep={page} />
-
         </div>
-
     );
 }
 
