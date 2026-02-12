@@ -768,17 +768,139 @@ body {
 }
 
 /*==================================
-*    MAPA DE TRACK PROGRESO
+*    BARRA DE PROGRESO (STEPPER)
 * ==================================*/
 
-/* Estilos para el mapa del tesoro */
-.treasure-map {
-  font-size: 18px;
-  font-weight: bold;
-  color: black;
-  margin-top: 60px;
+.progress-stepper {
+  margin-top: 40px;
   margin-bottom: 10px;
   text-align: center;
+  width: 100%;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0 12px;
+  box-sizing: border-box;
+}
+
+.progress-text {
+  font-size: 16px;
+  font-weight: 600;
+  color: #555;
+  margin-bottom: 12px;
+}
+
+.stepper-bar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.stepper-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+/* Circulo numerado */
+.stepper-circle {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: bold;
+  z-index: 1;
+  transition: all 0.3s ease;
+}
+
+.stepper-circle.completed {
+  background-color: #4caf50;
+  color: white;
+  border: 3px solid #388e3c;
+}
+
+.stepper-circle.current {
+  background-color: #2196f3;
+  color: white;
+  border: 3px solid #1565c0;
+  box-shadow: 0 0 0 4px rgba(33, 150, 243, 0.3);
+}
+
+.stepper-circle.pending {
+  background-color: #e0e0e0;
+  color: #888;
+  border: 3px solid #bdbdbd;
+}
+
+/* Etiqueta debajo del circulo */
+.stepper-label {
+  font-size: 12px;
+  margin-top: 6px;
+  color: #555;
+  font-weight: 500;
+  text-align: center;
+  word-break: keep-all;
+  white-space: nowrap;
+}
+
+.stepper-step.completed .stepper-label {
+  color: #388e3c;
+  font-weight: 600;
+}
+
+.stepper-step.current .stepper-label {
+  color: #1565c0;
+  font-weight: 700;
+}
+
+/* Linea conectora entre pasos */
+.stepper-line {
+  position: absolute;
+  top: 20px;
+  left: calc(50% + 23px);
+  right: calc(-50% + 23px);
+  height: 3px;
+  background-color: #e0e0e0;
+  transition: background-color 0.3s ease;
+}
+
+.stepper-line.completed {
+  background-color: #4caf50;
+}
+
+/* ---- Responsive stepper ---- */
+@media (max-width: 480px) {
+  .progress-stepper {
+    padding: 0 4px;
+  }
+
+  .stepper-circle {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    font-size: 14px;
+  }
+
+  .stepper-label {
+    font-size: 10px;
+  }
+
+  .stepper-line {
+    top: 16px;
+    left: calc(50% + 19px);
+    right: calc(-50% + 19px);
+  }
+
+  .progress-text {
+    font-size: 14px;
+  }
 }
 
 /*==================================
