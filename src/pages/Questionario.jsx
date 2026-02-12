@@ -23,18 +23,51 @@ import robotLogo from "../assets/AventurIA_robot_sinfondo.png";
 import robotLogoCuerpo from "../assets/AventurIA_robotCuerposinfondo.png";
 
 /** =================================
- *  MAPA DE PROGRESO DE QUESTIONARIO
+ *  BARRA DE PROGRESO DEL CUESTIONARIO
  *  =================================
  */
 
-const treasureMap = [
-
-    "📍- - - 🏆",
-    "- 📍 - - 🏆",
-    "- - 📍 - 🏆",
-    "- - - 📍 🏆",
-    "- - - - 🏆!"
+const stepLabels = [
+    { number: 1, label: "Tu nombre" },
+    { number: 2, label: "Identidad" },
+    { number: 3, label: "Retos" },
+    { number: 4, label: "Herramientas" },
+    { number: 5, label: "Resumen" }
 ];
+
+function ProgressStepper({ currentStep }) {
+    const totalSteps = stepLabels.length;
+
+    return (
+        <div className="progress-stepper" role="navigation" aria-label="Progreso del cuestionario">
+            <p className="progress-text" aria-live="polite">
+                Paso {currentStep} de {totalSteps}
+            </p>
+            <div className="stepper-bar">
+                {stepLabels.map((step) => {
+                    const isCompleted = currentStep > step.number;
+                    const isCurrent = currentStep === step.number;
+                    const status = isCompleted ? "completed" : isCurrent ? "current" : "pending";
+
+                    return (
+                        <div key={step.number} className={`stepper-step ${status}`}>
+                            <div
+                                className={`stepper-circle ${status}`}
+                                aria-current={isCurrent ? "step" : undefined}
+                            >
+                                {isCompleted ? "✓" : step.number}
+                            </div>
+                            <span className="stepper-label">{step.label}</span>
+                            {step.number < totalSteps && (
+                                <div className={`stepper-line ${isCompleted ? "completed" : ""}`} />
+                            )}
+                        </div>
+                    );
+                })}
+            </div>
+        </div>
+    );
+}
 
 
 export default function Questionario({ onComplete }) {
@@ -104,7 +137,7 @@ export default function Questionario({ onComplete }) {
 
     // PÁGINA 2
     const togglediscapacidad = (id) => {
-        if (id === "Otra") {
+        if (id == "Otra") {
             setOtraSeleccionada(!otraSeleccionada);
 
             if (!otraSeleccionada && otraRespuesta.trim()) {
@@ -550,7 +583,7 @@ export default function Questionario({ onComplete }) {
                 {page < 5 && <button className="next-btn" onClick={nextPage}>Siguiente →</button>}
             </div>
 
-            <div className="treasure-map">{treasureMap[page - 1]}</div>
+            <ProgressStepper currentStep={page} />
 
         </div>
 
