@@ -202,18 +202,18 @@ export default function Questionario({ onComplete }) {
 
     // PÁGINA 5
     const generateSummary = () => (
-        <div className="summary-box-horizontal">
-            <h3>Resumen de tu nueva compañera virtual:</h3>
+        <div className="summary-box-horizontal" role="region" aria-label="Resumen de tu configuración">
+            <h3>Tu resumen:</h3>
 
             {/* Nombre (PÁGINA 1)*/}
             <div className="summary-row">
-                <span className="summary-title">🧑 Tu nombre:</span>
+                <span className="summary-title"><span aria-hidden="true">🧑 </span>Tu nombre:</span>
                 <span className="summary-data">{summary.nombre || "No indicado"}</span>
             </div>
 
             {/* Identificación (PÁGINA 2)*/}
             <div className="summary-row">
-                <span className="summary-title">⭐ Te identificas con:</span>
+                <span className="summary-title"><span aria-hidden="true">⭐ </span>Te identificas con:</span>
                 <ul className="summary-bubbles">
                     {summary.discapacidad.length > 0 ? (
                         summary.discapacidad.map((item) => <li key={item}>{item}</li>)
@@ -225,7 +225,7 @@ export default function Questionario({ onComplete }) {
 
             {/* Retos (PÁGINA 3)*/}
             <div className="summary-row">
-                <span className="summary-title">📌 Te cuesta:</span>
+                <span className="summary-title"><span aria-hidden="true">📌 </span>Te cuesta:</span>
                 <ul className="summary-bubbles">
                     {summary.retos.length > 0 ? (
                         summary.retos.map((item) => <li key={item}>{item}</li>)
@@ -237,18 +237,18 @@ export default function Questionario({ onComplete }) {
 
             {/* Herramientas (PÁGINA 4)*/}
             <div className="summary-row">
-                <span className="summary-title">🧠 Te ayudará usando:</span>
+                <span className="summary-title"><span aria-hidden="true">🧠 </span>Te ayudará usando:</span>
                 <ul className="summary-bubbles">
                     {summary.herramientas.length > 0 ? (
                         summary.herramientas.map((toolId) => {
                             if (toolId === "mostrarPorPartes") {
-                                return <li key={toolId}>📚 Mostrar por partes</li>;
+                                return <li key={toolId}><span aria-hidden="true">📚 </span>Mostrar por partes</li>;
                             }
                             const tool = tools.find((t) => t.id === toolId);
                             return <li key={toolId}>{tool?.label || toolId}</li>;
                         })
                     ) : (
-                        <li>No se seleccionó ninguna herramienta</li>
+                        <li>Ninguna seleccionada</li>
                     )}
                 </ul>
             </div>
@@ -281,16 +281,18 @@ export default function Questionario({ onComplete }) {
             case 1:
                 return (
                     <div className="question-page">
-                        <img src={robotLogo} alt="AventurIA Logo" className="robot-logo" />
-                        <h2> ¡Vamos a crear a tu Compañero Digital de Inteligencia Artifical!</h2>
-                        <p>¡Bienvenido! Hoy vas a diseñar a OlivIA, tu compañera digital única, hecho a tu medida.
-                            <br />                            Ella te ayudará a aprender, resolver dudas y acompañarte en tu día a día.
+                        <img src={robotLogo} alt="Robot OlivIA" className="robot-logo" />
+                        <h2><span aria-hidden="true">🤖 </span>Vamos a preparar a OlivIA para ti</h2>
+                        <p>OlivIA es tu ayudante digital.
+                            <br />Te ayudará a aprender y a resolver dudas.
                         </p>
-                        <h3>¿Cómo te llamas?</h3>
+                        <label htmlFor="user-name" className="question-label">¿Cómo te llamas?</label>
                         <input
+                            id="user-name"
                             type="text"
                             placeholder="Escribe tu nombre aquí..."
                             className="custom-input"
+                            autoComplete="name"
                             value={summary.nombre}
                             onChange={handleNameChange}
                         />
@@ -299,28 +301,31 @@ export default function Questionario({ onComplete }) {
             case 2:
                 return (
                     <div className="question-page">
-                        <h2>⭐ Paso 1: Para que OlivIA pueda ayudarte mejor.</h2>
-                        <h3>¿Con qué te sientes más identificado?</h3>
+                        <h2><span aria-hidden="true">⭐ </span>¿Con qué te identificas?</h2>
+                        <p>Elige lo que mejor te describa:</p>
 
-                        <div className="toggle-options-container">
+                        <fieldset className="toggle-options-container">
+                            <legend className="sr-only">Selecciona con qué te identificas</legend>
                             {[
-                                { id: "TEA", label: "🧩 TEA" },
-                                { id: "Dislexia", label: "🔠 Dislexia" },
-                                { id: "TDAH", label: "⚡ TDAH" },
-                                { id: "Memoria", label: "🧠 Memoria" },
-                                { id: "Prefiero no responder", label: "❌ No responder" }
+                                { id: "TEA", label: "TEA", icon: "🧩" },
+                                { id: "Dislexia", label: "Dislexia", icon: "🔠" },
+                                { id: "TDAH", label: "TDAH", icon: "⚡" },
+                                { id: "Memoria", label: "Memoria", icon: "🧠" },
+                                { id: "Prefiero no responder", label: "No responder", icon: "❌" }
                             ].map((option) => (
                                 <div
                                     key={option.id}
-                                    className={`toggle-option ${userSelections.includes(option.id) ? "active" : ""}`}
-
+                                    className={`toggle-option ${summary.discapacidad.includes(option.id) ? "active" : ""}`}
                                 >
-                                    <span className="toggle-label">{option.label}</span>
-                                    <label className="switch">
+                                    <span className="toggle-label"><span aria-hidden="true">{option.icon} </span>{option.label}</span>
+                                    <label className="switch" htmlFor={`disc-${option.id}`}>
                                         <input
+                                            id={`disc-${option.id}`}
                                             type="checkbox"
                                             checked={summary.discapacidad.includes(option.id)}
-                                            onChange={() => togglediscapacidad(option.id)} />
+                                            onChange={() => togglediscapacidad(option.id)}
+                                            aria-label={option.label}
+                                        />
                                         <span className="slider"></span>
                                     </label>
                                 </div>
@@ -328,11 +333,13 @@ export default function Questionario({ onComplete }) {
 
                             {/* Botón "Otra opción" en Caso 2 */}
                             <div className={`toggle-option ${otraData.caso2.guardada ? "active" : ""}`}>
-                                <span className="toggle-label">➕ Otra opción</span>
-                                <label className="switch">
+                                <span className="toggle-label"><span aria-hidden="true">➕ </span>Otra opción</span>
+                                <label className="switch" htmlFor="otra-caso2">
                                     <input
+                                        id="otra-caso2"
                                         type="checkbox"
                                         checked={otraData.caso2.seleccionada}
+                                        aria-label="Otra opción"
                                         onChange={() =>
                                             setOtraData(prev => ({
                                                 ...prev,
@@ -347,7 +354,9 @@ export default function Questionario({ onComplete }) {
                             {/* Campo de texto y botón de guardar */}
                             {otraData.caso2.seleccionada && (
                                 <div className="other-input-container">
+                                    <label htmlFor="otra-texto-caso2" className="sr-only">Escribe tu opción</label>
                                     <textarea
+                                        id="otra-texto-caso2"
                                         className="custom-textarea"
                                         placeholder="Escribe aquí..."
                                         value={otraData.caso2.respuesta}
@@ -378,35 +387,37 @@ export default function Questionario({ onComplete }) {
                                     )}
                                 </div>
                             )}
-                        </div>
+                        </fieldset>
                     </div>
                 );
 
             case 3:
                 return (
                     <div className="question-page">
-                        <h2>🌟 Paso 2: ¿Qué te cuesta más entender?</h2>
-                        <p>Elige todas las que veas necesarias:</p>
+                        <h2><span aria-hidden="true">🌟 </span>¿Qué te cuesta más?</h2>
+                        <p>Elige todo lo que quieras:</p>
 
-                        <div className="toggle-options-container">
+                        <fieldset className="toggle-options-container">
+                            <legend className="sr-only">Selecciona qué te cuesta más</legend>
                             {[
-                                { id: "Textos Largos", label: "Textos largos", color: "yellow", icon: "📖 " },
-                                { id: "Palabras Dificiles", label: "Palabras difíciles", color: "green", icon: "🧩 " },
-                                { id: "Organizar Ideas", label: "Organizar ideas", color: "blue", icon: "📝 " },
-                                { id: "Mantener Atencion", label: "Mantener la atención", color: "orange", icon: "🎯 " },
-                                { id: "Memoria", label: "Recordar", color: "purple", icon: "🧠 " },
+                                { id: "Textos Largos", label: "Textos largos", icon: "📖" },
+                                { id: "Palabras Dificiles", label: "Palabras difíciles", icon: "🧩" },
+                                { id: "Organizar Ideas", label: "Organizar ideas", icon: "📝" },
+                                { id: "Mantener Atencion", label: "Mantener la atención", icon: "🎯" },
+                                { id: "Memoria", label: "Recordar", icon: "🧠" },
                             ].map((option) => (
                                 <div
                                     key={option.id}
-                                    className={`toggle-option ${userSelections.includes(option.id) ? "active" : ""}`}
-
+                                    className={`toggle-option ${summary.retos.includes(option.id) ? "active" : ""}`}
                                 >
-                                    <span className="toggle-label"> {option.icon}{option.label}</span>
-                                    <label className="switch">
+                                    <span className="toggle-label"><span aria-hidden="true">{option.icon} </span>{option.label}</span>
+                                    <label className="switch" htmlFor={`reto-${option.id}`}>
                                         <input
+                                            id={`reto-${option.id}`}
                                             type="checkbox"
                                             checked={summary.retos.includes(option.id)}
                                             onChange={() => toggleReto(option.id)}
+                                            aria-label={option.label}
                                         />
                                         <span className="slider"></span>
                                     </label>
@@ -415,11 +426,13 @@ export default function Questionario({ onComplete }) {
 
                             {/* Botón "Otra opción" en Caso 3 */}
                             <div className={`toggle-option ${otraData.caso3.guardada ? "active" : ""}`}>
-                                <span className="toggle-label">➕ Otra opción</span>
-                                <label className="switch">
+                                <span className="toggle-label"><span aria-hidden="true">➕ </span>Otra opción</span>
+                                <label className="switch" htmlFor="otra-caso3">
                                     <input
+                                        id="otra-caso3"
                                         type="checkbox"
                                         checked={otraData.caso3.seleccionada}
+                                        aria-label="Otra opción"
                                         onChange={() =>
                                             setOtraData(prev => ({
                                                 ...prev,
@@ -434,7 +447,9 @@ export default function Questionario({ onComplete }) {
                             {/* Campo de texto y botón de guardar */}
                             {otraData.caso3.seleccionada && (
                                 <div className="other-input-container">
+                                    <label htmlFor="otra-texto-caso3" className="sr-only">Escribe tu opción</label>
                                     <textarea
+                                        id="otra-texto-caso3"
                                         className="custom-textarea"
                                         placeholder="Escribe aquí..."
                                         value={otraData.caso3.respuesta}
@@ -467,26 +482,29 @@ export default function Questionario({ onComplete }) {
                             )}
 
 
-                        </div>
+                        </fieldset>
                     </div>
                 );
 
             case 4:
                 return (
                     <div className="question-page">
-                        <h2>🌟 Paso 3: ¿Cómo quieres que te ayude tu compañero digital? </h2>
-                        <p>Elige todas las opciones que veas necesarias:</p>
+                        <h2><span aria-hidden="true">🌟 </span>¿Cómo quieres que te ayude OlivIA?</h2>
+                        <p>Elige todo lo que quieras:</p>
 
-                        <div className="options-container">
+                        <fieldset className="options-container">
+                            <legend className="sr-only">Selecciona las herramientas que quieres usar</legend>
                             {tools.map((tool) => (
                                 <div key={tool.id} className={`option-box ${summary.herramientas.includes(tool.id) ? "active" : ""}`}>
                                     <div className="option-header">
                                         <span className="option-title">{tool.label}</span>
-                                        <label className="switch">
+                                        <label className="switch" htmlFor={`tool-${tool.id}`}>
                                             <input
+                                                id={`tool-${tool.id}`}
                                                 type="checkbox"
                                                 checked={summary.herramientas.includes(tool.id)}
                                                 onChange={() => toggleTool(tool.id)}
+                                                aria-label={tool.label}
                                             />
                                             <span className="slider"></span>
                                         </label>
@@ -494,7 +512,7 @@ export default function Questionario({ onComplete }) {
 
                                     {/* Ejemplo visual según la herramienta seleccionada */}
                                     <div className="example-container">
-                                        <label className="example-title">Ejemplo:</label>
+                                        <span className="example-title">Ejemplo:</span>
                                         {tool.id === "ejemplo" && (
                                             <ul>
                                                 <li>Un planeta es como una pelota gigante que da vueltas alrededor de una luz muy fuerte, como el Sol. Por ejemplo, la Tierra es un planeta que gira alrededor del Sol.</li>
@@ -524,7 +542,7 @@ export default function Questionario({ onComplete }) {
                                     </div>
                                 </div>
                             ))}
-                        </div>
+                        </fieldset>
 
                     </div>
                 );
@@ -534,11 +552,11 @@ export default function Questionario({ onComplete }) {
                     <div className="question-page">
                         <div className="final-content">
                             <h2 className="final-title">
-                                ¡OlivIA está lista para ayudarte! 🚀
+                                <span aria-hidden="true">🚀 </span>OlivIA está lista para ayudarte
                             </h2>
                             <p className="final-text">
-                                Gracias por contarme cómo puedo ayudarte mejor.
-                                OlivIA ya está preparada para explicarte lo que necesites, cuando lo necesites.</p>
+                                Gracias por contarnos cómo podemos ayudarte.
+                                OlivIA ya está preparada.</p>
 
                             {generateSummary()} {/* RESUMEN COMPLETO */}
 
@@ -546,14 +564,14 @@ export default function Questionario({ onComplete }) {
                                 <img src={robotLogoCuerpo} alt="Compañero Virtual" className="robot-img" />
                             </div>
 
-                            <h3 className="final-question">¿Quieres conocer a tu nueva compañera?</h3>
+                            <h3 className="final-question">¿Todo está bien?</h3>
 
                             <div className="button-group">
                                 <button className="final-btn gray" onClick={() => setPage(1)}>
-                                    🔄 No, quiero cambiar algo
+                                    <span aria-hidden="true">🔄 </span>Quiero cambiar algo
                                 </button>
                                 <button className="final-btn green" onClick={() => onComplete(summary)}>
-                                    ✔️ Sí, estoy listo
+                                    <span aria-hidden="true">✔️ </span>Sí, estoy listo
                                 </button>
                             </div>
                         </div>

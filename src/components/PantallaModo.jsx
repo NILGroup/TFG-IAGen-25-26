@@ -18,38 +18,32 @@ export default function PantallaModo({ onSelectMode }) {
 
                 <div className="modo-options">
                     {/* Tarjeta Profesor */}
-                    <div
+                    <button
                         className="modo-card"
-                        role="button"
-                        tabIndex={0}
                         aria-label="Elegir modo Profesor"
                         onClick={() => onSelectMode("profesor")}
-                        onKeyDown={(e) => e.key === "Enter" && onSelectMode("profesor")}
                     >
                         <img
                             src={`${import.meta.env.BASE_URL}Profesor_eleccion.png`}
-                            alt="Profesor"
+                            alt=""
                             className="modo-img"
                         />
-                        <h2 className="modo-card-title">Profesor</h2>
-                    </div>
+                        <span className="modo-card-title">Profesor</span>
+                    </button>
 
                     {/* Tarjeta Familia */}
-                    <div
+                    <button
                         className="modo-card"
-                        role="button"
-                        tabIndex={0}
                         aria-label="Elegir modo Familia"
                         onClick={() => onSelectMode("familiar")}
-                        onKeyDown={(e) => e.key === "Enter" && onSelectMode("familiar")}
                     >
                         <img
                             src={`${import.meta.env.BASE_URL}Familiar_eleccion.png`}
-                            alt="Familia"
+                            alt=""
                             className="modo-img"
                         />
-                        <h2 className="modo-card-title">Familia</h2>
-                    </div>
+                        <span className="modo-card-title">Familia</span>
+                    </button>
                 </div>
             </div>
         </div>

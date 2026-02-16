@@ -28,7 +28,7 @@ export default function Chat({
     const avatarSrc = avatarMode ? AVATAR_IMAGES[avatarMode] : null;
 
     return (
-        <div className="chat-wrapper">
+        <div className="chat-wrapper" aria-live="polite" aria-relevant="additions">
             {chatFlow.map((entry, index) => (
                 <div
                     key={index}
@@ -68,19 +68,28 @@ export default function Chat({
                                 <button
                                     className="audio-btn"
                                     onClick={() => toggleSpeech(entry.content, index)}
+                                    aria-label={
+                                        activeSpeechId !== index || speechState === "idle"
+                                            ? "Reproducir en voz alta"
+                                            : speechState === "playing"
+                                                ? "Pausar lectura"
+                                                : "Reanudar lectura"
+                                    }
                                     title={
                                         activeSpeechId !== index || speechState === "idle"
-                                            ? "🔊 Reproducir"
+                                            ? "Reproducir"
                                             : speechState === "playing"
-                                                ? "⏸️ Pausar"
-                                                : "▶️ Reanudar"
+                                                ? "Pausar"
+                                                : "Reanudar"
                                     }
                                 >
+                                    <span aria-hidden="true">
                                     {activeSpeechId !== index || speechState === "idle"
                                         ? "🔊"
                                         : speechState === "playing"
                                             ? "⏸️"
                                             : "▶️"}
+                                    </span>
                                 </button>
                             </div>
                         )}

@@ -23,18 +23,19 @@ export default function PantallaEleccion({ onSelectOption }) {
           className={`history-btn ${showHistory ? "open" : "closed"}`}
           onClick={() => setShowHistory(!showHistory)}
         >
-          {showHistory ? "📁 Cerrar Historial" : "📂 Abrir Historial"}
+          {showHistory ? <><span aria-hidden="true">📁 </span>Cerrar Historial</> : <><span aria-hidden="true">📂 </span>Abrir Historial</>}
         </button>
         <button
-          className={`config-btn ${showConfig ? "open" : "closed"}`}
+         
+         className={`config-btn ${showConfig ? "open" : "closed"}`}
           onClick={() => setShowConfig(!showConfig)}
         >
-          {showConfig ? "⚙️ Cerrar Configuración" : "⚙️ Configuración"}
+          {showConfig ? <><span aria-hidden="true">⚙️ </span>Cerrar Configuración</> : <><span aria-hidden="true">⚙️ </span>Configuración</>}
         </button>
 
         {/* Panel de historial */}
         <div className={`chat-history-sidebar ${showHistory ? "show" : "hide"}`}>
-          <h3>📚 Historial de chats</h3>
+          <h3><span aria-hidden="true">📚 </span>Historial de chats</h3>
           <p className="no-chats-message">Aún no hay conversaciones guardadas</p>
         </div>
       </div>
@@ -42,7 +43,7 @@ export default function PantallaEleccion({ onSelectOption }) {
       {/* Panel de configuración */}
       {showConfig && (
         <div className="config-panel">
-          <h2>⚙️ Configuración</h2>
+          <h2><span aria-hidden="true">⚙️ </span>Configuración</h2>
           <p>La configuración completa estará disponible en el chat.</p>
           <button
             className="back-btn"
@@ -65,39 +66,41 @@ export default function PantallaEleccion({ onSelectOption }) {
         {/* Contenedor de las dos opciones */}
         <div className="eleccion-options">
           {/* OPCIÓN 1: Con ayuda (Formulario) */}
-          <div
+          <button
             className="eleccion-card card-blue"
             onClick={() => onSelectOption("formulario")}
+            aria-label="Empezar con ayuda"
           >
-            <div className="card-icon">🧩</div>
-            <h2 className="card-title card-title-blue">Con ayuda</h2>
-            <p className="card-description">
+            <span className="card-icon" aria-hidden="true">🧩</span>
+            <span className="card-title card-title-blue">Con ayuda</span>
+            <span className="card-description">
               Te haré unas preguntas sencillas para ayudarte a preparar tu mensaje
-            </p>
-            <button className="card-button button-blue">
+            </span>
+            <span className="card-button button-blue">
               Empezar con ayuda →
-            </button>
-          </div>
+            </span>
+          </button>
 
           {/* OPCIÓN 2: Directa (Texto libre) */}
-          <div
+          <button
             className="eleccion-card card-green"
             onClick={() => onSelectOption("directa")}
+            aria-label="Empezar directamente"
           >
-            <div className="card-icon">✏️</div>
-            <h2 className="card-title card-title-green">Directa</h2>
-            <p className="card-description">
+            <span className="card-icon" aria-hidden="true">✏️</span>
+            <span className="card-title card-title-green">Directa</span>
+            <span className="card-description">
               Escribe directamente lo que quieras preguntarle a OlivIA
-            </p>
-            <button className="card-button button-green">
+            </span>
+            <span className="card-button button-green">
               Empezar directamente →
-            </button>
-          </div>
+            </span>
+          </button>
         </div>
 
         {/* Texto de ayuda adicional */}
         <p className="eleccion-hint">
-          💡 Puedes cambiar de opción cuando quieras más adelante
+          <span aria-hidden="true">💡 </span>Puedes cambiar de opción cuando quieras
         </p>
       </div>
     </div>
