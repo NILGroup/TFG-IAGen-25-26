@@ -294,146 +294,145 @@ export default function Questionario({ onComplete }) {
                         />
                     </div>
                 );
-  case 2:
-    return (
-      <div className="question-page">
-        <h2>Cuéntanos sobre ti</h2>
-        <p>Esto nos ayuda a entenderte mejor.</p>
-        <p className="instruction">
-          <strong>Marca todo lo que sea verdad para ti.</strong>
-          <br />
-          <span className="hint">Puedes marcar varias opciones.</span>
-        </p>
+            case 2:
+                return (
+                    <div className="question-page">
+                        <h2>Cuéntanos sobre ti</h2>
+                        <p>Esto nos ayuda a entenderte mejor.</p>
+                        <p className="instruction">
+                            <strong>Marca todo lo que sea verdad para ti.</strong>
+                            <br />
+                            <span className="hint">Puedes marcar varias opciones.</span>
+                        </p>
 
-        <fieldset className="checkbox-grid">
-          <legend className="sr-only">
-            Selecciona las características que te describen
-          </legend>
+                        <fieldset className="checkbox-grid">
+                            <legend className="sr-only">
+                                Selecciona las características que te describen
+                            </legend>
 
-          {[
-            {
-              id: "TEA",
-              label: "Tengo autismo (TEA)",
-              description: "Me cuesta entender lo que piensan otras personas",
-              icon: "🧩"
-            },
-            {
-              id: "TDAH",
-              label: "Me cuesta concentrarme (TDAH)",
-              description: "Me distraigo fácil o me muevo mucho",
-              icon: "⚡"
-            },
-            {
-              id: "Dislexia",
-              label: "Me cuesta leer (Dislexia)",
-              description: "Las letras se mezclan o leo muy despacio",
-              icon: "🔠"
-            },
-            {
-              id: "Memoria",
-              label: "Se me olvidan las cosas (Memoria)",
-              description: "Me cuesta recordar lo que acabo de leer",
-              icon: "🧠"
-            },
-            {
-              id: "Prefiero no responder",
-              label: "Prefiero no decirlo",
-              description: "",
-              icon: "🚫"
-            }
-          ].map((option) => (
-            <label
-              key={option.id}
-              className={`checkbox-card
-  ${summary.discapacidad.includes(option.id) ? 'checked' : ''}`}
-              htmlFor={`disc-${option.id}`}
-            >
-              <div className="checkbox-content">
-                <span className="checkbox-icon" aria-hidden="true">
-                  {option.icon}
-                </span>
-                <div className="checkbox-text">
-                  <span className="checkbox-label">{option.label}</span>
-                  {option.description && (
-                    <span className="checkbox-description">
-                      {option.description}
-                    </span>
-                  )}
-                </div>
-              </div>
-              <input
-                type="checkbox"
-                id={`disc-${option.id}`}
-                checked={summary.discapacidad.includes(option.id)}
-                onChange={() => togglediscapacidad(option.id)}
-                aria-describedby={option.description ?
-  `desc-${option.id}` : undefined}
-              />
-              <span className="checkbox-indicator" aria-hidden="true">
-                {summary.discapacidad.includes(option.id) ? '✓' : ''}
-              </span>
-            </label>
-          ))}
-        </fieldset>
+                            {[
+                                {
+                                    id: "TEA",
+                                    label: "Tengo autismo (TEA)",
+                                    description: "Me cuesta entender lo que piensan otras personas",
+                                    icon: "🧩"
+                                },
+                                {
+                                    id: "TDAH",
+                                    label: "Me cuesta concentrarme (TDAH)",
+                                    description: "Me distraigo fácil o me muevo mucho",
+                                    icon: "⚡"
+                                },
+                                {
+                                    id: "Dislexia",
+                                    label: "Me cuesta leer (Dislexia)",
+                                    description: "Las letras se mezclan o leo muy despacio",
+                                    icon: "🔠"
+                                },
+                                {
+                                    id: "Memoria",
+                                    label: "Se me olvidan las cosas (Memoria)",
+                                    description: "Me cuesta recordar lo que acabo de leer",
+                                    icon: "🧠"
+                                },
+                                {
+                                    id: "Prefiero no responder",
+                                    label: "Prefiero no decirlo",
+                                    description: "",
+                                    icon: "🚫"
+                                }
+                            ].map((option) => (
+                                <label
+                                    key={option.id}
+                                    className={`checkbox-card ${summary.discapacidad.includes(option.id) ? 'checked' : ''}`}
+                                    htmlFor={`disc-${option.id}`}
+                                >
+                                    <div className="checkbox-content">
+                                        <span className="checkbox-icon" aria-hidden="true">
+                                            {option.icon}
+                                        </span>
+                                        <div className="checkbox-text">
+                                            <span className="checkbox-label">{option.label}</span>
+                                            {option.description && (
+                                                <span className="checkbox-description">
+                                                    {option.description}
+                                                </span>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <input
+                                        type="checkbox"
+                                        id={`disc-${option.id}`}
+                                        checked={summary.discapacidad.includes(option.id)}
+                                        onChange={() => togglediscapacidad(option.id)}
+                                        aria-describedby={option.description ?
+                                            `desc-${option.id}` : undefined}
+                                    />
+                                    <span className="checkbox-indicator" aria-hidden="true">
+                                        {summary.discapacidad.includes(option.id) ? '✓' : ''}
+                                    </span>
+                                </label>
+                            ))}
+                        </fieldset>
 
-        {/* Opción personalizada */}
-        <div className="otra-seccion">
-          <button
-            type="button"
-            className={`otra-btn ${otraData.caso2.seleccionada ? 'activa'
-   : ''}`}
-            onClick={() => setOtraData(prev => ({
-              ...prev,
-              caso2: { ...prev.caso2, seleccionada:
-  !prev.caso2.seleccionada }
-            }))}
-            aria-expanded={otraData.caso2.seleccionada}
-          >
-            <span aria-hidden="true">➕</span>
-            Quiero escribir otra cosa
-          </button>
+                        {/* Opción personalizada */}
+                        <div className="otra-seccion">
+                            <button
+                                type="button"
+                                className={`otra-btn ${otraData.caso2.seleccionada ? 'activa'
+                                    : ''}`}
+                                onClick={() => setOtraData(prev => ({
+                                    ...prev,
+                                    caso2: {
+                                        ...prev.caso2, seleccionada:
+                                            !prev.caso2.seleccionada
+                                    }
+                                }))}
+                                aria-expanded={otraData.caso2.seleccionada}
+                            >
+                                <span aria-hidden="true">➕</span>
+                                Quiero escribir otra cosa
+                            </button>
 
-          {otraData.caso2.seleccionada && (
-            <div className="otra-contenido">
-              <label htmlFor="otra-texto-caso2">
-                Escribe aquí lo que quieras contarnos:
-              </label>
-              <textarea
-                id="otra-texto-caso2"
-                value={otraData.caso2.respuesta}
-                onChange={(e) => setOtraData(prev => ({
-                  ...prev,
-                  caso2: { ...prev.caso2, respuesta: e.target.value }
-                }))}
-                placeholder="Por ejemplo: me mareo cuando leo mucho..."
-                rows={3}
-              />
-              {otraData.caso2.respuesta.trim() && (
-                <button
-                  type="button"
-                  className={`guardar-otra-btn ${otraData.caso2.guardada
-  ? 'guardado' : ''}`}
-                  onClick={() => {
-                    setSummary(prev => ({
-                      ...prev,
-                      discapacidad: [...prev.discapacidad, `Otra:
-  ${otraData.caso2.respuesta}`]
-                    }));
-                    setOtraData(prev => ({
-                      ...prev,
-                      caso2: { ...prev.caso2, guardada: true }
-                    }));
-                  }}
-                  disabled={otraData.caso2.guardada}
-                >
-                  {otraData.caso2.guardada ? '✓ Guardado' : 'Guardar'}
-                </button>
-              )}
-            </div>
-          )}
-        </div>
-      </div>
-    );
+                            {otraData.caso2.seleccionada && (
+                                <div className="otra-contenido">
+                                    <label htmlFor="otra-texto-caso2">
+                                        Escribe aquí lo que quieras contarnos:
+                                    </label>
+                                    <textarea
+                                        id="otra-texto-caso2"
+                                        value={otraData.caso2.respuesta}
+                                        onChange={(e) => setOtraData(prev => ({
+                                            ...prev,
+                                            caso2: { ...prev.caso2, respuesta: e.target.value }
+                                        }))}
+                                        placeholder="Por ejemplo: me mareo cuando leo mucho..."
+                                        rows={3}
+                                    />
+                                    {otraData.caso2.respuesta.trim() && (
+                                        <button
+                                            type="button"
+                                            className={`guardar-otra-btn ${otraData.caso2.guardada ? 'guardado' : ''}`}
+                                            onClick={() => {
+                                                setSummary(prev => ({
+                                                    ...prev,
+                                                    discapacidad: [...prev.discapacidad, `Otra: ${otraData.caso2.respuesta}`]
+                                                }));
+                                                setOtraData(prev => ({
+                                                    ...prev,
+                                                    caso2: { ...prev.caso2, guardada: true }
+                                                }));
+                                            }}
+                                            disabled={otraData.caso2.guardada}
+                                        >
+                                            {otraData.caso2.guardada ? '✓ Guardado' : 'Guardar'}
+                                        </button>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                );
 
             case 3:
                 return (

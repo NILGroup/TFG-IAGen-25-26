@@ -237,14 +237,17 @@ body {
 
 /*==================================
 *    CHECKBOX ACCESIBLE (Cuestionario)
+*    COGA: Targets grandes, espaciado generoso, jerarquía visual clara
 * ==================================*/
 
 .checkbox-grid {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
+  /* COGA: Mayor separación entre opciones */
   width: 100%;
-  max-width: 550px;
+  max-width: 600px;
+  /* Ligeramente más ancho */
   margin: 0 auto;
   border: none;
   padding: 0;
@@ -254,32 +257,40 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 20px;
-  min-height: 70px;
+  padding: 20px 24px;
+  /* COGA: Más padding interno */
+  min-height: 85px;
+  /* COGA: Target mínimo mayor (WCAG 2.5.5: 44px, recomendado >60px) */
   background: white;
-  border: 3px solid #d0d0d0;
-  border-radius: 16px;
+  border: 3px solid #c5c5c5;
+  border-radius: 20px;
+  /* Más redondeado, más amigable */
   cursor: pointer;
   transition: all 0.2s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
 }
 
 .checkbox-card:hover {
   border-color: #2196f3;
-  background: #f8fbff;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(33, 150, 243, 0.15);
+  background: #f5faff;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(33, 150, 243, 0.18);
 }
 
 .checkbox-card:focus-within {
-  outline: 3px solid #2196f3;
-  outline-offset: 2px;
+  outline: 4px solid #2196f3;
+  /* COGA: Outline más visible */
+  outline-offset: 3px;
 }
 
 .checkbox-card.checked {
-  border-color: #4caf50;
-  background: #e8f5e9;
-  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.2);
+  border-color: #43a047;
+  /* Verde más saturado */
+  border-width: 4px;
+  /* Borde más grueso cuando seleccionado */
+  background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+  /* Gradiente sutil */
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.25);
 }
 
 .checkbox-card input[type="checkbox"] {
@@ -292,74 +303,92 @@ body {
 .checkbox-content {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 18px;
+  /* COGA: Mayor separación entre icono y texto */
   flex: 1;
 }
 
 .checkbox-icon {
-  font-size: 28px;
+  font-size: 34px;
+  /* COGA: Iconos más grandes */
   flex-shrink: 0;
+  line-height: 1;
 }
 
 .checkbox-text {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
+  /* COGA: Mayor separación entre título y descripción */
 }
 
 .checkbox-label {
-  font-size: 17px;
-  font-weight: 600;
+  font-size: 18px;
+  /* COGA: Texto principal más grande */
+  font-weight: 700;
+  /* Más bold */
   color: #1a1a2e;
-}
-
-.checkbox-description {
-  font-size: 14px;
-  color: #555;
   line-height: 1.3;
 }
 
+.checkbox-description {
+  font-size: 15px;
+  /* COGA: Descripción ligeramente más grande */
+  color: #444;
+  /* Mejor contraste */
+  line-height: 1.4;
+}
+
 .checkbox-indicator {
-  width: 36px;
-  height: 36px;
-  min-width: 36px;
-  border: 3px solid #bbb;
-  border-radius: 8px;
+  width: 42px;
+  /* COGA: Indicador más grande */
+  height: 42px;
+  min-width: 42px;
+  border: 3px solid #aaa;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 22px;
+  font-size: 26px;
+  /* Checkmark más grande */
   font-weight: bold;
   color: white;
-  background: white;
+  background: #f5f5f5;
   flex-shrink: 0;
   transition: all 0.2s ease;
+  margin-left: 12px;
+  /* Separación del contenido */
 }
 
 .checkbox-card.checked .checkbox-indicator {
-  border-color: #4caf50;
-  background: #4caf50;
+  border-color: #43a047;
+  background: #43a047;
+  box-shadow: 0 2px 8px rgba(67, 160, 71, 0.4);
 }
 
-/* Instrucciones del cuestionario */
+/* Instrucciones del cuestionario - COGA: Claras y visibles */
 .instruction {
-  font-size: 16px;
-  color: #333;
-  margin-bottom: 16px;
+  font-size: 17px;
+  color: #2c2c2c;
+  margin-bottom: 20px;
   text-align: center;
+  line-height: 1.5;
+  font-weight: 500;
 }
 
 .instruction .hint {
-  font-size: 14px;
-  color: #666;
+  display: block;
+  font-size: 15px;
+  color: #555;
   font-weight: normal;
+  margin-top: 6px;
 }
 
-/* Sección "Otra opción" mejorada */
+/* Sección "Otra opción" mejorada - COGA */
 .otra-seccion {
-  margin-top: 20px;
+  margin-top: 24px;
   width: 100%;
-  max-width: 550px;
+  max-width: 600px;
   margin-left: auto;
   margin-right: auto;
 }
@@ -368,13 +397,15 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 10px;
   width: 100%;
-  padding: 14px 20px;
-  background: #f5f5f5;
-  border: 2px dashed #999;
-  border-radius: 12px;
-  font-size: 16px;
+  padding: 18px 24px;
+  min-height: 70px;
+  /* COGA: Target accesible */
+  background: #fafafa;
+  border: 3px dashed #aaa;
+  border-radius: 16px;
+  font-size: 17px;
   font-weight: 600;
   color: #555;
   cursor: pointer;
@@ -382,68 +413,85 @@ body {
 }
 
 .otra-btn:hover {
-  background: #e8e8e8;
-  border-color: #666;
+  background: #f0f0f0;
+  border-color: #777;
   color: #333;
+  transform: translateY(-2px);
+}
+
+.otra-btn:focus {
+  outline: 4px solid #ff9800;
+  outline-offset: 2px;
 }
 
 .otra-btn.activa {
-  background: #fff3e0;
-  border: 2px solid #ff9800;
+  background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+  border: 3px solid #ff9800;
   color: #e65100;
 }
 
 .otra-contenido {
-  margin-top: 12px;
-  padding: 16px;
-  background: #fffbf5;
-  border: 2px solid #ffcc80;
-  border-radius: 12px;
+  margin-top: 16px;
+  padding: 20px;
+  background: linear-gradient(135deg, #fffbf5 0%, #fff8e1 100%);
+  border: 3px solid #ffcc80;
+  border-radius: 16px;
 }
 
 .otra-contenido label {
   display: block;
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 600;
   color: #333;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
 }
 
 .otra-contenido textarea {
   width: 100%;
-  padding: 12px;
-  font-size: 16px;
-  border: 2px solid #ddd;
-  border-radius: 8px;
+  padding: 14px;
+  font-size: 17px;
+  /* COGA: Texto más legible */
+  border: 3px solid #ddd;
+  border-radius: 12px;
   resize: none;
   font-family: inherit;
   color: #333;
+  min-height: 80px;
 }
 
 .otra-contenido textarea:focus {
   outline: none;
   border-color: #ff9800;
+  box-shadow: 0 0 0 3px rgba(255, 152, 0, 0.2);
 }
 
 .guardar-otra-btn {
-  margin-top: 12px;
-  padding: 10px 24px;
+  margin-top: 16px;
+  padding: 14px 28px;
+  min-height: 50px;
+  /* COGA: Botón accesible */
   background: #ff9800;
   color: white;
   border: none;
-  border-radius: 8px;
-  font-size: 15px;
-  font-weight: 600;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 700;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .guardar-otra-btn:hover {
   background: #f57c00;
+  transform: translateY(-2px);
+}
+
+.guardar-otra-btn:focus {
+  outline: 4px solid #ffcc80;
+  outline-offset: 2px;
 }
 
 .guardar-otra-btn.guardado {
-  background: #4caf50;
+  background: #43a047;
   cursor: default;
 }
 
@@ -461,11 +509,55 @@ body {
   margin-top: 4px;
 }
 
-/* Responsive checkbox */
-@media (max-width: 480px) {
+/* Responsive checkbox - COGA: mantener targets grandes en móvil */
+@media (max-width: 600px) {
+  .checkbox-grid {
+    gap: 14px;
+    max-width: 100%;
+    padding: 0 8px;
+  }
+
   .checkbox-card {
-    padding: 14px 16px;
-    min-height: 65px;
+    padding: 18px 16px;
+    min-height: 80px;
+    /* COGA: Mantener altura mínima accesible */
+    border-radius: 16px;
+  }
+
+  .checkbox-content {
+    gap: 14px;
+  }
+
+  .checkbox-icon {
+    font-size: 28px;
+  }
+
+  .checkbox-label {
+    font-size: 16px;
+  }
+
+  .checkbox-description {
+    font-size: 14px;
+  }
+
+  .checkbox-indicator {
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+    font-size: 22px;
+    margin-left: 8px;
+  }
+}
+
+/* Pantallas muy pequeñas */
+@media (max-width: 380px) {
+  .checkbox-card {
+    padding: 16px 14px;
+    min-height: 75px;
+  }
+
+  .checkbox-content {
+    gap: 12px;
   }
 
   .checkbox-icon {
@@ -481,10 +573,10 @@ body {
   }
 
   .checkbox-indicator {
-    width: 32px;
-    height: 32px;
-    min-width: 32px;
-    font-size: 18px;
+    width: 34px;
+    height: 34px;
+    min-width: 34px;
+    font-size: 20px;
   }
 }
 
