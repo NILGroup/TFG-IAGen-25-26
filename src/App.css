@@ -852,6 +852,149 @@ body {
 }
 
 /*==================================
+*    GRID 2x2 CON EJEMPLOS (Página 4)
+* ==================================*/
+
+.checkbox-grid-2x2-examples {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  width: 100%;
+  max-width: 700px;
+  margin: 0 auto;
+  border: none;
+  padding: 0;
+}
+
+.checkbox-card-example {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 14px;
+  background: white;
+  border: 2px solid #d0d0d0;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.checkbox-card-example:hover {
+  border-color: #2196f3;
+  background: #f8fbff;
+}
+
+.checkbox-card-example:focus-within {
+  outline: 3px solid #2196f3;
+  outline-offset: 2px;
+}
+
+.checkbox-card-example.checked {
+  border-color: #43a047;
+  border-width: 3px;
+  background: #f1f8f2;
+}
+
+.checkbox-card-example input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.card-example-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.card-example-label {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1a1a2e;
+}
+
+.card-example-indicator {
+  width: 26px;
+  height: 26px;
+  min-width: 26px;
+  border: 2px solid #bbb;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  font-weight: bold;
+  color: white;
+  background: white;
+  transition: all 0.2s ease;
+}
+
+.checkbox-card-example.checked .card-example-indicator {
+  border-color: #43a047;
+  background: #43a047;
+}
+
+.card-example-desc {
+  font-size: 13px;
+  color: #555;
+  margin-bottom: 10px;
+  line-height: 1.4;
+}
+
+.card-example-box {
+  background: #e3f2fd;
+  border: 1px solid #90caf9;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.card-example-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #1565c0;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.card-example-text {
+  font-size: 12px;
+  color: #333;
+  margin: 0;
+  line-height: 1.4;
+  white-space: pre-line;
+}
+
+/* Responsive para grid con ejemplos */
+@media (max-width: 550px) {
+  .checkbox-grid-2x2-examples {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .checkbox-card-example {
+    padding: 12px;
+  }
+
+  .card-example-label {
+    font-size: 15px;
+  }
+
+  .card-example-desc {
+    font-size: 12px;
+  }
+
+  .card-example-box {
+    padding: 8px;
+  }
+
+  .card-example-text {
+    font-size: 11px;
+  }
+}
+
+/*==================================
 *    CHECKBOX ACCESIBLE (Cuestionario - columna)
 *    COGA: Targets grandes, espaciado generoso, jerarquía visual clara
 * ==================================*/

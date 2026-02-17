@@ -243,22 +243,26 @@ export default function Questionario({ onComplete }) {
         {
             id: "ejemplo",
             label: "Con ejemplos",
-            description: "Te explico con casos de la vida real"
+            description: "Te explico con casos de la vida real",
+            ejemplo: "Un planeta es como una pelota grande que da vueltas al Sol."
         },
         {
             id: "bullet",
             label: "Con listas",
-            description: "Te lo cuento punto por punto"
+            description: "Te lo cuento punto por punto",
+            ejemplo: "• Es muy grande\n• Da vueltas al Sol\n• Tiene forma de bola"
         },
         {
             id: "textocorto",
-            label: "Respuestas cortas",
-            description: "Te lo cuento en pocas palabras"
+            label: "Textos cortos",
+            description: "Te lo cuento en pocas palabras",
+            ejemplo: "Un planeta es una bola grande que gira alrededor del Sol."
         },
         {
             id: "frasescortas",
-            label: "Frases fáciles",
-            description: "Uso palabras sencillas"
+            label: "Frases sencillas",
+            description: "Uso palabras fáciles de entender",
+            ejemplo: "Es una bola. Es muy grande. Da vueltas al Sol."
         }
     ];
 
@@ -517,18 +521,18 @@ export default function Questionario({ onComplete }) {
 
             case 4:
                 return (
-                    <div className="question-page page-no-scroll">
+                    <div className="question-page">
                         <h2 id="titulo-como-ayudar">¿Cómo quieres que te ayude?</h2>
                         <p className="instruction">
                             <strong>Marca lo que prefieras. Puedes elegir varias.</strong>
                         </p>
 
-                        {/* Grid 2x2 sin emojis */}
-                        <fieldset className="checkbox-grid-2x2" aria-labelledby="titulo-como-ayudar">
+                        {/* Grid 2x2 con ejemplos visibles */}
+                        <fieldset className="checkbox-grid-2x2-examples" aria-labelledby="titulo-como-ayudar">
                             {tools.map((tool) => (
                                 <label
                                     key={tool.id}
-                                    className={`checkbox-card-compact no-icon ${summary.herramientas.includes(tool.id) ? 'checked' : ''}`}
+                                    className={`checkbox-card-example ${summary.herramientas.includes(tool.id) ? 'checked' : ''}`}
                                     htmlFor={`tool-${tool.id}`}
                                 >
                                     <input
@@ -537,11 +541,17 @@ export default function Questionario({ onComplete }) {
                                         checked={summary.herramientas.includes(tool.id)}
                                         onChange={() => toggleTool(tool.id)}
                                     />
-                                    <span className="checkbox-label-compact">{tool.label}</span>
-                                    <span className="checkbox-description-compact">{tool.description}</span>
-                                    <span className="checkbox-indicator-compact" aria-hidden="true">
-                                        {summary.herramientas.includes(tool.id) ? '✓' : ''}
-                                    </span>
+                                    <div className="card-example-header">
+                                        <span className="card-example-label">{tool.label}</span>
+                                        <span className="card-example-indicator" aria-hidden="true">
+                                            {summary.herramientas.includes(tool.id) ? '✓' : ''}
+                                        </span>
+                                    </div>
+                                    <span className="card-example-desc">{tool.description}</span>
+                                    <div className="card-example-box">
+                                        <span className="card-example-title">Ejemplo:</span>
+                                        <p className="card-example-text">{tool.ejemplo}</p>
+                                    </div>
                                 </label>
                             ))}
                         </fieldset>
