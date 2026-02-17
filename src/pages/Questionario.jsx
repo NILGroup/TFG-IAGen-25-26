@@ -238,31 +238,27 @@ export default function Questionario({ onComplete }) {
      *  ==============
      */
 
-    // Lista de herramientas disponibles (Lectura Fácil: sin anglicismos)
+    // Lista de herramientas disponibles (Lectura Fácil: sin anglicismos, sin emojis)
     const tools = [
         {
             id: "ejemplo",
-            label: "💡 Con ejemplos",
-            description: "Te explico con casos de la vida real",
-            ejemplo: "Un planeta es como una pelota muy grande que da vueltas alrededor del Sol. Por ejemplo, la Tierra es un planeta."
+            label: "Con ejemplos",
+            description: "Te explico con casos de la vida real"
         },
         {
             id: "bullet",
-            label: "📋 Con listas",
-            description: "Te lo cuento punto por punto",
-            ejemplo: "• Es muy grande\n• Da vueltas al Sol\n• Tiene forma de bola"
+            label: "Con listas",
+            description: "Te lo cuento punto por punto"
         },
         {
             id: "textocorto",
-            label: "📝 Respuestas cortas",
-            description: "Te lo cuento en pocas palabras",
-            ejemplo: "Un planeta es una bola grande que da vueltas al Sol."
+            label: "Respuestas cortas",
+            description: "Te lo cuento en pocas palabras"
         },
         {
             id: "frasescortas",
-            label: "✂️ Frases fáciles",
-            description: "Uso palabras sencillas",
-            ejemplo: "Es una bola. Es muy grande. Da vueltas al Sol."
+            label: "Frases fáciles",
+            description: "Uso palabras sencillas"
         }
     ];
 
@@ -302,37 +298,17 @@ export default function Questionario({ onComplete }) {
                             <strong>Marca lo que se aplica a ti. Puedes elegir varias.</strong>
                         </p>
 
-                        {/* Grid 2x2 con las 4 opciones principales */}
+                        {/* Grid 2x2 sin emojis */}
                         <fieldset className="checkbox-grid-2x2" aria-labelledby="titulo-sobre-ti">
                             {[
-                                {
-                                    id: "TEA",
-                                    label: "Autismo (TEA)",
-                                    description: "Me cuesta entender cómo piensan otras personas",
-                                    icon: "🧩"
-                                },
-                                {
-                                    id: "TDAH",
-                                    label: "Atención (TDAH)",
-                                    description: "Me distraigo rápido o me muevo mucho",
-                                    icon: "⚡"
-                                },
-                                {
-                                    id: "Dislexia",
-                                    label: "Lectura (Dislexia)",
-                                    description: "Las letras se mezclan o leo lento",
-                                    icon: "🔠"
-                                },
-                                {
-                                    id: "Memoria",
-                                    label: "Memoria",
-                                    description: "Olvido lo que acabo de leer o hacer",
-                                    icon: "🧠"
-                                }
+                                { id: "TEA", label: "Autismo (TEA)", description: "Me cuesta entender cómo piensan otros" },
+                                { id: "TDAH", label: "Atención (TDAH)", description: "Me distraigo rápido o me muevo mucho" },
+                                { id: "Dislexia", label: "Lectura (Dislexia)", description: "Las letras se mezclan o leo lento" },
+                                { id: "Memoria", label: "Memoria", description: "Olvido lo que acabo de leer o hacer" }
                             ].map((option) => (
                                 <label
                                     key={option.id}
-                                    className={`checkbox-card-compact ${summary.discapacidad.includes(option.id) ? 'checked' : ''}`}
+                                    className={`checkbox-card-compact no-icon ${summary.discapacidad.includes(option.id) ? 'checked' : ''}`}
                                     htmlFor={`disc-${option.id}`}
                                 >
                                     <input
@@ -341,13 +317,8 @@ export default function Questionario({ onComplete }) {
                                         checked={summary.discapacidad.includes(option.id)}
                                         onChange={() => togglediscapacidad(option.id)}
                                     />
-                                    <span className="checkbox-icon-compact" aria-hidden="true">
-                                        {option.icon}
-                                    </span>
                                     <span className="checkbox-label-compact">{option.label}</span>
-                                    <span className="checkbox-description-compact">
-                                        {option.description}
-                                    </span>
+                                    <span className="checkbox-description-compact">{option.description}</span>
                                     <span className="checkbox-indicator-compact" aria-hidden="true">
                                         {summary.discapacidad.includes(option.id) ? '✓' : ''}
                                     </span>
@@ -438,17 +409,17 @@ export default function Questionario({ onComplete }) {
                             <strong>Marca lo que te cueste. Puedes elegir varias.</strong>
                         </p>
 
-                        {/* Grid 2x2 con las 4 opciones principales */}
+                        {/* Grid 2x2 sin emojis */}
                         <fieldset className="checkbox-grid-2x2" aria-labelledby="titulo-que-cuesta">
                             {[
-                                { id: "Textos Largos", label: "Leer mucho", description: "Me canso o me pierdo con textos largos", icon: "📖" },
-                                { id: "Palabras Dificiles", label: "Palabras nuevas", description: "Hay palabras que no entiendo", icon: "❓" },
-                                { id: "Organizar Ideas", label: "Ordenar ideas", description: "No sé por dónde empezar", icon: "🧩" },
-                                { id: "Mantener Atencion", label: "Concentrarme", description: "Me distraigo fácil", icon: "🎯" }
+                                { id: "Textos Largos", label: "Leer mucho", description: "Me canso con textos largos" },
+                                { id: "Palabras Dificiles", label: "Palabras nuevas", description: "Hay palabras que no entiendo" },
+                                { id: "Organizar Ideas", label: "Ordenar ideas", description: "No sé por dónde empezar" },
+                                { id: "Mantener Atencion", label: "Concentrarme", description: "Me distraigo fácil" }
                             ].map((option) => (
                                 <label
                                     key={option.id}
-                                    className={`checkbox-card-compact ${summary.retos.includes(option.id) ? 'checked' : ''}`}
+                                    className={`checkbox-card-compact no-icon ${summary.retos.includes(option.id) ? 'checked' : ''}`}
                                     htmlFor={`reto-${option.id}`}
                                 >
                                     <input
@@ -457,7 +428,6 @@ export default function Questionario({ onComplete }) {
                                         checked={summary.retos.includes(option.id)}
                                         onChange={() => toggleReto(option.id)}
                                     />
-                                    <span className="checkbox-icon-compact" aria-hidden="true">{option.icon}</span>
                                     <span className="checkbox-label-compact">{option.label}</span>
                                     <span className="checkbox-description-compact">{option.description}</span>
                                     <span className="checkbox-indicator-compact" aria-hidden="true">
@@ -478,7 +448,6 @@ export default function Questionario({ onComplete }) {
                                 checked={summary.retos.includes("Memoria")}
                                 onChange={() => toggleReto("Memoria")}
                             />
-                            <span className="checkbox-icon-standalone" aria-hidden="true">🧠</span>
                             <div className="checkbox-standalone-text">
                                 <span className="checkbox-label-standalone">Recordar cosas</span>
                                 <span className="checkbox-description-standalone">Se me olvida lo que acabo de leer</span>
@@ -548,39 +517,32 @@ export default function Questionario({ onComplete }) {
 
             case 4:
                 return (
-                    <div className="question-page">
+                    <div className="question-page page-no-scroll">
                         <h2 id="titulo-como-ayudar">¿Cómo quieres que te ayude?</h2>
                         <p className="instruction">
-                            <strong>Marca lo que prefieras.</strong>
-                            <span className="hint">Mira los ejemplos.</span>
+                            <strong>Marca lo que prefieras. Puedes elegir varias.</strong>
                         </p>
 
-                        <fieldset className="options-container" aria-labelledby="titulo-como-ayudar">
+                        {/* Grid 2x2 sin emojis */}
+                        <fieldset className="checkbox-grid-2x2" aria-labelledby="titulo-como-ayudar">
                             {tools.map((tool) => (
-                                <div key={tool.id} className={`option-box ${summary.herramientas.includes(tool.id) ? "active" : ""}`}>
-                                    <div className="option-header">
-                                        <span className="option-title">{tool.label}</span>
-                                        <label className="switch" htmlFor={`tool-${tool.id}`}>
-                                            <input
-                                                id={`tool-${tool.id}`}
-                                                type="checkbox"
-                                                checked={summary.herramientas.includes(tool.id)}
-                                                onChange={() => toggleTool(tool.id)}
-                                                aria-label={tool.label}
-                                            />
-                                            <span className="slider"></span>
-                                        </label>
-                                    </div>
-                                    <p style={{ fontSize: '14px', color: '#555', margin: '4px 0 8px 0' }}>
-                                        {tool.description}
-                                    </p>
-                                    <div className="example-container">
-                                        <span className="example-title">Ejemplo:</span>
-                                        <p style={{ whiteSpace: 'pre-line', margin: '4px 0 0 0', fontSize: '13px' }}>
-                                            {tool.ejemplo}
-                                        </p>
-                                    </div>
-                                </div>
+                                <label
+                                    key={tool.id}
+                                    className={`checkbox-card-compact no-icon ${summary.herramientas.includes(tool.id) ? 'checked' : ''}`}
+                                    htmlFor={`tool-${tool.id}`}
+                                >
+                                    <input
+                                        type="checkbox"
+                                        id={`tool-${tool.id}`}
+                                        checked={summary.herramientas.includes(tool.id)}
+                                        onChange={() => toggleTool(tool.id)}
+                                    />
+                                    <span className="checkbox-label-compact">{tool.label}</span>
+                                    <span className="checkbox-description-compact">{tool.description}</span>
+                                    <span className="checkbox-indicator-compact" aria-hidden="true">
+                                        {summary.herramientas.includes(tool.id) ? '✓' : ''}
+                                    </span>
+                                </label>
                             ))}
                         </fieldset>
                     </div>
