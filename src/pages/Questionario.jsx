@@ -469,7 +469,7 @@ export default function Questionario({ onComplete }) {
 
                         {/* Opción "Memoria" separada */}
                         <label
-                            className={`checkbox-standalone ${summary.retos.includes("Memoria") ? 'checked' : ''}`}
+                            className={`checkbox-standalone-with-desc ${summary.retos.includes("Memoria") ? 'checked' : ''}`}
                             htmlFor="reto-memoria"
                         >
                             <input
@@ -479,7 +479,10 @@ export default function Questionario({ onComplete }) {
                                 onChange={() => toggleReto("Memoria")}
                             />
                             <span className="checkbox-icon-standalone" aria-hidden="true">🧠</span>
-                            <span className="checkbox-label-standalone">Recordar cosas</span>
+                            <div className="checkbox-standalone-text">
+                                <span className="checkbox-label-standalone">Recordar cosas</span>
+                                <span className="checkbox-description-standalone">Se me olvida lo que acabo de leer</span>
+                            </div>
                             <span className="checkbox-indicator-standalone" aria-hidden="true">
                                 {summary.retos.includes("Memoria") ? '✓' : ''}
                             </span>
