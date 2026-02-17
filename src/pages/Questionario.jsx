@@ -29,9 +29,9 @@ import robotLogoCuerpo from "../assets/AventurIA_robotCuerposinfondo.png";
 
 const stepLabels = [
     { number: 1, label: "Tu nombre" },
-    { number: 2, label: "Identidad" },
-    { number: 3, label: "Retos" },
-    { number: 4, label: "Herramientas" },
+    { number: 2, label: "Sobre ti" },
+    { number: 3, label: "Qué te cuesta" },
+    { number: 4, label: "Cómo ayudarte" },
     { number: 5, label: "Resumen" }
 ];
 
@@ -73,21 +73,12 @@ function ProgressStepper({ currentStep }) {
 export default function Questionario({ onComplete }) {
 
     /** ===================================
-     *  ESTADOS DEL CUESTIONARIO (useState)
+     *  ESTADOS DEL CUESTIONARIO
      *  ===================================
      */
 
-    // Control de la página actual del cuestionario
     const [page, setPage] = useState(1);
 
-    // Selección del usuario en la pregunta 2 ( solo una opcion )
-    // const [userSelection, setUserSelection] = useState("");
-
-    // Múltiples selecciones del usuario en preguntas tipo checkbox
-    const [userSelections, setUserSelections] = useState([]);
-
-    // Estado para el campo "Otra opción"
-    const [otraSeleccionada, setOtraSeleccionada] = useState(false);
     const [otraData, setOtraData] = useState({
         caso2: { seleccionada: false, respuesta: "", guardada: false },
         caso3: { seleccionada: false, respuesta: "", guardada: false }
@@ -135,57 +126,24 @@ export default function Questionario({ onComplete }) {
         }));
     };
 
-    // PÁGINA 2
+    // PÁGINA 2 - Toggle discapacidad
     const togglediscapacidad = (id) => {
-        if (id == "Otra") {
-            setOtraSeleccionada(!otraSeleccionada);
-
-            if (!otraSeleccionada && otraRespuesta.trim()) {
-                setSummary(prevSummary => ({
-                    ...prevSummary,
-                    discapacidad: [...prevSummary.discapacidad, `Otra - ${otraRespuesta}`]
-                }));
-            } else {
-                setSummary(prevSummary => ({
-                    ...prevSummary,
-                    discapacidad: prevSummary.discapacidad.filter(item => !item.startsWith("Otra - "))
-                }));
-            }
-        } else {
-            setSummary(prevSummary => ({
-                ...prevSummary,
-                discapacidad: prevSummary.discapacidad.includes(id)
-                    ? prevSummary.discapacidad.filter((item) => item !== id)
-                    : [...prevSummary.discapacidad, id]
-            }));
-        }
+        setSummary(prev => ({
+            ...prev,
+            discapacidad: prev.discapacidad.includes(id)
+                ? prev.discapacidad.filter(item => item !== id)
+                : [...prev.discapacidad, id]
+        }));
     };
 
-
-    // PÁGINA 3
+    // PÁGINA 3 - Toggle retos
     const toggleReto = (id) => {
-        if (id === "Otra") {
-            setOtraSeleccionada(!otraSeleccionada);
-
-            if (!otraSeleccionada && otraRespuesta.trim()) {
-                setSummary(prevSummary => ({
-                    ...prevSummary,
-                    retos: [...prevSummary.retos, `Otra - ${otraRespuesta}`]
-                }));
-            } else {
-                setSummary(prevSummary => ({
-                    ...prevSummary,
-                    retos: prevSummary.retos.filter(item => !item.startsWith("Otra - "))
-                }));
-            }
-        } else {
-            setSummary(prevSummary => ({
-                ...prevSummary,
-                retos: prevSummary.retos.includes(id)
-                    ? prevSummary.retos.filter((item) => item !== id)
-                    : [...prevSummary.retos, id]
-            }));
-        }
+        setSummary(prev => ({
+            ...prev,
+            retos: prev.retos.includes(id)
+                ? prev.retos.filter(item => item !== id)
+                : [...prev.retos, id]
+        }));
     };
 
 
@@ -200,53 +158,69 @@ export default function Questionario({ onComplete }) {
 
     };
 
-    // PÁGINA 5
+    // Mapeo de IDs a etiquetas legibles (Lectura Fácil)
+    const labelMap = {
+        // Identificación
+        "TEA": "Tengo autismo",
+        "TDAH": "Me cuesta concentrarme",
+        "Dislexia": "Me cuesta leer",
+        "Memoria": "Se me olvidan las cosas",
+        "Prefiero no responder": "Prefiero no decirlo",
+        // Retos
+        "Textos Largos": "Leer textos largos",
+        "Palabras Dificiles": "Entender palabras nuevas",
+        "Organizar Ideas": "Ordenar mis ideas",
+        "Mantener Atencion": "Estar concentrado",
+        // Herramientas
+        "ejemplo": "Con ejemplos",
+        "bullet": "Con listas",
+        "textocorto": "Respuestas cortas",
+        "frasescortas": "Frases fáciles"
+    };
+
+    // PÁGINA 5 - Resumen con etiquetas claras
     const generateSummary = () => (
         <div className="summary-box-horizontal" role="region" aria-label="Resumen de tu configuración">
             <h3>Tu resumen:</h3>
 
-            {/* Nombre (PÁGINA 1)*/}
             <div className="summary-row">
                 <span className="summary-title"><span aria-hidden="true">🧑 </span>Tu nombre:</span>
                 <span className="summary-data">{summary.nombre || "No indicado"}</span>
             </div>
 
-            {/* Identificación (PÁGINA 2)*/}
             <div className="summary-row">
-                <span className="summary-title"><span aria-hidden="true">⭐ </span>Te identificas con:</span>
+                <span className="summary-title"><span aria-hidden="true">⭐ </span>Sobre ti:</span>
                 <ul className="summary-bubbles">
                     {summary.discapacidad.length > 0 ? (
-                        summary.discapacidad.map((item) => <li key={item}>{item}</li>)
+                        summary.discapacidad.map((item) => (
+                            <li key={item}>{labelMap[item] || item}</li>
+                        ))
                     ) : (
                         <li>No seleccionado</li>
                     )}
                 </ul>
             </div>
 
-            {/* Retos (PÁGINA 3)*/}
             <div className="summary-row">
                 <span className="summary-title"><span aria-hidden="true">📌 </span>Te cuesta:</span>
                 <ul className="summary-bubbles">
                     {summary.retos.length > 0 ? (
-                        summary.retos.map((item) => <li key={item}>{item}</li>)
+                        summary.retos.map((item) => (
+                            <li key={item}>{labelMap[item] || item}</li>
+                        ))
                     ) : (
                         <li>No seleccionado</li>
                     )}
                 </ul>
             </div>
 
-            {/* Herramientas (PÁGINA 4)*/}
             <div className="summary-row">
-                <span className="summary-title"><span aria-hidden="true">🧠 </span>Te ayudará usando:</span>
+                <span className="summary-title"><span aria-hidden="true">🛠️ </span>Te ayudaré:</span>
                 <ul className="summary-bubbles">
                     {summary.herramientas.length > 0 ? (
-                        summary.herramientas.map((toolId) => {
-                            if (toolId === "mostrarPorPartes") {
-                                return <li key={toolId}><span aria-hidden="true">📚 </span>Mostrar por partes</li>;
-                            }
-                            const tool = tools.find((t) => t.id === toolId);
-                            return <li key={toolId}>{tool?.label || toolId}</li>;
-                        })
+                        summary.herramientas.map((toolId) => (
+                            <li key={toolId}>{labelMap[toolId] || toolId}</li>
+                        ))
                     ) : (
                         <li>Ninguna seleccionada</li>
                     )}
@@ -262,12 +236,32 @@ export default function Questionario({ onComplete }) {
      *  ==============
      */
 
-    // Lista de herramientas disponibles
+    // Lista de herramientas disponibles (Lectura Fácil: sin anglicismos)
     const tools = [
-        { id: "ejemplo", label: "🖋️ Usar ejemplos", color: "green" },
-        { id: "bullet", label: "📒 Respuestas en bullets", color: "purple" },
-        { id: "textocorto", label: "📃 Texto Corto", color: "blue" },
-        { id: "frasescortas", label: "✂️ Frases cortas", color: "yellow" }
+        {
+            id: "ejemplo",
+            label: "💡 Con ejemplos",
+            description: "Te explico con casos de la vida real",
+            ejemplo: "Un planeta es como una pelota muy grande que da vueltas alrededor del Sol. Por ejemplo, la Tierra es un planeta."
+        },
+        {
+            id: "bullet",
+            label: "📋 Con listas",
+            description: "Te lo cuento punto por punto",
+            ejemplo: "• Es muy grande\n• Da vueltas al Sol\n• Tiene forma de bola"
+        },
+        {
+            id: "textocorto",
+            label: "📝 Respuestas cortas",
+            description: "Te lo cuento en pocas palabras",
+            ejemplo: "Un planeta es una bola grande que da vueltas al Sol."
+        },
+        {
+            id: "frasescortas",
+            label: "✂️ Frases fáciles",
+            description: "Uso palabras sencillas",
+            ejemplo: "Es una bola. Es muy grande. Da vueltas al Sol."
+        }
     ];
 
 
@@ -282,15 +276,17 @@ export default function Questionario({ onComplete }) {
                 return (
                     <div className="question-page">
                         <img src={robotLogo} alt="Robot OlivIA" className="robot-logo" />
-                        <h2><span aria-hidden="true">🤖 </span>Vamos a preparar a OlivIA para ti</h2>
-                        <p>OlivIA es tu ayudante digital.
-                            <br />Te ayudará a aprender y a resolver dudas.
-                        </p>
-                        <label htmlFor="user-name" className="question-label">¿Cómo te llamas?</label>
+                        <h2>Vamos a conocernos</h2>
+                        <p>Soy OlivIA.</p>
+                        <p>Te voy a ayudar a aprender cosas nuevas.</p>
+                        <p>También te ayudaré cuando tengas dudas.</p>
+                        <label htmlFor="user-name" className="question-label">
+                            <strong>Escribe tu nombre:</strong>
+                        </label>
                         <input
                             id="user-name"
                             type="text"
-                            placeholder="Escribe tu nombre aquí..."
+                            placeholder="Tu nombre aquí..."
                             className="custom-input"
                             autoComplete="name"
                             value={summary.nombre}
@@ -298,199 +294,259 @@ export default function Questionario({ onComplete }) {
                         />
                     </div>
                 );
-            case 2:
-                return (
-                    <div className="question-page">
-                        <h2><span aria-hidden="true">⭐ </span>¿Con qué te identificas?</h2>
-                        <p>Elige lo que mejor te describa:</p>
+  case 2:
+    return (
+      <div className="question-page">
+        <h2>Cuéntanos sobre ti</h2>
+        <p>Esto nos ayuda a entenderte mejor.</p>
+        <p className="instruction">
+          <strong>Marca todo lo que sea verdad para ti.</strong>
+          <br />
+          <span className="hint">Puedes marcar varias opciones.</span>
+        </p>
 
-                        <fieldset className="toggle-options-container">
-                            <legend className="sr-only">Selecciona con qué te identificas</legend>
-                            {[
-                                { id: "TEA", label: "TEA", icon: "🧩" },
-                                { id: "Dislexia", label: "Dislexia", icon: "🔠" },
-                                { id: "TDAH", label: "TDAH", icon: "⚡" },
-                                { id: "Memoria", label: "Memoria", icon: "🧠" },
-                                { id: "Prefiero no responder", label: "No responder", icon: "❌" }
-                            ].map((option) => (
-                                <div
-                                    key={option.id}
-                                    className={`toggle-option ${summary.discapacidad.includes(option.id) ? "active" : ""}`}
-                                >
-                                    <span className="toggle-label"><span aria-hidden="true">{option.icon} </span>{option.label}</span>
-                                    <label className="switch" htmlFor={`disc-${option.id}`}>
-                                        <input
-                                            id={`disc-${option.id}`}
-                                            type="checkbox"
-                                            checked={summary.discapacidad.includes(option.id)}
-                                            onChange={() => togglediscapacidad(option.id)}
-                                            aria-label={option.label}
-                                        />
-                                        <span className="slider"></span>
-                                    </label>
-                                </div>
-                            ))}
+        <fieldset className="checkbox-grid">
+          <legend className="sr-only">
+            Selecciona las características que te describen
+          </legend>
 
-                            {/* Botón "Otra opción" en Caso 2 */}
-                            <div className={`toggle-option ${otraData.caso2.guardada ? "active" : ""}`}>
-                                <span className="toggle-label"><span aria-hidden="true">➕ </span>Otra opción</span>
-                                <label className="switch" htmlFor="otra-caso2">
-                                    <input
-                                        id="otra-caso2"
-                                        type="checkbox"
-                                        checked={otraData.caso2.seleccionada}
-                                        aria-label="Otra opción"
-                                        onChange={() =>
-                                            setOtraData(prev => ({
-                                                ...prev,
-                                                caso2: { ...prev.caso2, seleccionada: !prev.caso2.seleccionada }
-                                            }))
-                                        }
-                                    />
-                                    <span className="slider"></span>
-                                </label>
-                            </div>
+          {[
+            {
+              id: "TEA",
+              label: "Tengo autismo (TEA)",
+              description: "Me cuesta entender lo que piensan otras personas",
+              icon: "🧩"
+            },
+            {
+              id: "TDAH",
+              label: "Me cuesta concentrarme (TDAH)",
+              description: "Me distraigo fácil o me muevo mucho",
+              icon: "⚡"
+            },
+            {
+              id: "Dislexia",
+              label: "Me cuesta leer (Dislexia)",
+              description: "Las letras se mezclan o leo muy despacio",
+              icon: "🔠"
+            },
+            {
+              id: "Memoria",
+              label: "Se me olvidan las cosas (Memoria)",
+              description: "Me cuesta recordar lo que acabo de leer",
+              icon: "🧠"
+            },
+            {
+              id: "Prefiero no responder",
+              label: "Prefiero no decirlo",
+              description: "",
+              icon: "🚫"
+            }
+          ].map((option) => (
+            <label
+              key={option.id}
+              className={`checkbox-card
+  ${summary.discapacidad.includes(option.id) ? 'checked' : ''}`}
+              htmlFor={`disc-${option.id}`}
+            >
+              <div className="checkbox-content">
+                <span className="checkbox-icon" aria-hidden="true">
+                  {option.icon}
+                </span>
+                <div className="checkbox-text">
+                  <span className="checkbox-label">{option.label}</span>
+                  {option.description && (
+                    <span className="checkbox-description">
+                      {option.description}
+                    </span>
+                  )}
+                </div>
+              </div>
+              <input
+                type="checkbox"
+                id={`disc-${option.id}`}
+                checked={summary.discapacidad.includes(option.id)}
+                onChange={() => togglediscapacidad(option.id)}
+                aria-describedby={option.description ?
+  `desc-${option.id}` : undefined}
+              />
+              <span className="checkbox-indicator" aria-hidden="true">
+                {summary.discapacidad.includes(option.id) ? '✓' : ''}
+              </span>
+            </label>
+          ))}
+        </fieldset>
 
-                            {/* Campo de texto y botón de guardar */}
-                            {otraData.caso2.seleccionada && (
-                                <div className="other-input-container">
-                                    <label htmlFor="otra-texto-caso2" className="sr-only">Escribe tu opción</label>
-                                    <textarea
-                                        id="otra-texto-caso2"
-                                        className="custom-textarea"
-                                        placeholder="Escribe aquí..."
-                                        value={otraData.caso2.respuesta}
-                                        onChange={(e) =>
-                                            setOtraData(prev => ({
-                                                ...prev,
-                                                caso2: { ...prev.caso2, respuesta: e.target.value }
-                                            }))
-                                        }
-                                    ></textarea>
+        {/* Opción personalizada */}
+        <div className="otra-seccion">
+          <button
+            type="button"
+            className={`otra-btn ${otraData.caso2.seleccionada ? 'activa'
+   : ''}`}
+            onClick={() => setOtraData(prev => ({
+              ...prev,
+              caso2: { ...prev.caso2, seleccionada:
+  !prev.caso2.seleccionada }
+            }))}
+            aria-expanded={otraData.caso2.seleccionada}
+          >
+            <span aria-hidden="true">➕</span>
+            Quiero escribir otra cosa
+          </button>
 
-                                    {otraData.caso2.respuesta.trim() && (
-                                        <button
-                                            className={`accept-btn ${otraData.caso2.guardada ? "saved" : ""}`}
-                                            onClick={() => {
-                                                setSummary(prevSummary => ({
-                                                    ...prevSummary,
-                                                    discapacidad: [...prevSummary.discapacidad, `Otra - ${otraData.caso2.respuesta}`]
-                                                }));
-                                                setOtraData(prev => ({
-                                                    ...prev,
-                                                    caso2: { ...prev.caso2, guardada: true }
-                                                }));
-                                            }}
-                                        >
-                                            {otraData.caso2.guardada ? "✅ Guardado" : "✅ Guardar"}
-                                        </button>
-                                    )}
-                                </div>
-                            )}
-                        </fieldset>
-                    </div>
-                );
+          {otraData.caso2.seleccionada && (
+            <div className="otra-contenido">
+              <label htmlFor="otra-texto-caso2">
+                Escribe aquí lo que quieras contarnos:
+              </label>
+              <textarea
+                id="otra-texto-caso2"
+                value={otraData.caso2.respuesta}
+                onChange={(e) => setOtraData(prev => ({
+                  ...prev,
+                  caso2: { ...prev.caso2, respuesta: e.target.value }
+                }))}
+                placeholder="Por ejemplo: me mareo cuando leo mucho..."
+                rows={3}
+              />
+              {otraData.caso2.respuesta.trim() && (
+                <button
+                  type="button"
+                  className={`guardar-otra-btn ${otraData.caso2.guardada
+  ? 'guardado' : ''}`}
+                  onClick={() => {
+                    setSummary(prev => ({
+                      ...prev,
+                      discapacidad: [...prev.discapacidad, `Otra:
+  ${otraData.caso2.respuesta}`]
+                    }));
+                    setOtraData(prev => ({
+                      ...prev,
+                      caso2: { ...prev.caso2, guardada: true }
+                    }));
+                  }}
+                  disabled={otraData.caso2.guardada}
+                >
+                  {otraData.caso2.guardada ? '✓ Guardado' : 'Guardar'}
+                </button>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+    );
 
             case 3:
                 return (
                     <div className="question-page">
-                        <h2><span aria-hidden="true">🌟 </span>¿Qué te cuesta más?</h2>
-                        <p>Elige todo lo que quieras:</p>
+                        <h2>¿Qué cosas te cuestan?</h2>
+                        <p>Así sabemos cómo ayudarte mejor.</p>
+                        <p className="instruction">
+                            <strong>Marca todo lo que te cueste hacer.</strong>
+                            <br />
+                            <span className="hint">Puedes marcar varias opciones.</span>
+                        </p>
 
-                        <fieldset className="toggle-options-container">
-                            <legend className="sr-only">Selecciona qué te cuesta más</legend>
+                        <fieldset className="checkbox-grid">
+                            <legend className="sr-only">Selecciona las cosas que te cuestan</legend>
                             {[
-                                { id: "Textos Largos", label: "Textos largos", icon: "📖" },
-                                { id: "Palabras Dificiles", label: "Palabras difíciles", icon: "🧩" },
-                                { id: "Organizar Ideas", label: "Organizar ideas", icon: "📝" },
-                                { id: "Mantener Atencion", label: "Mantener la atención", icon: "🎯" },
-                                { id: "Memoria", label: "Recordar", icon: "🧠" },
+                                { id: "Textos Largos", label: "Leer textos largos", description: "Me canso o me pierdo cuando hay mucho texto", icon: "📖" },
+                                { id: "Palabras Dificiles", label: "Entender palabras nuevas", description: "Hay palabras que no conozco", icon: "❓" },
+                                { id: "Organizar Ideas", label: "Ordenar mis ideas", description: "No sé por dónde empezar a pensar", icon: "🧩" },
+                                { id: "Mantener Atencion", label: "Estar concentrado", description: "Me distraigo con facilidad", icon: "🎯" },
+                                { id: "Memoria", label: "Recordar cosas", description: "Se me olvida lo que acabo de leer", icon: "🧠" },
                             ].map((option) => (
-                                <div
+                                <label
                                     key={option.id}
-                                    className={`toggle-option ${summary.retos.includes(option.id) ? "active" : ""}`}
+                                    className={`checkbox-card ${summary.retos.includes(option.id) ? 'checked' : ''}`}
+                                    htmlFor={`reto-${option.id}`}
                                 >
-                                    <span className="toggle-label"><span aria-hidden="true">{option.icon} </span>{option.label}</span>
-                                    <label className="switch" htmlFor={`reto-${option.id}`}>
-                                        <input
-                                            id={`reto-${option.id}`}
-                                            type="checkbox"
-                                            checked={summary.retos.includes(option.id)}
-                                            onChange={() => toggleReto(option.id)}
-                                            aria-label={option.label}
-                                        />
-                                        <span className="slider"></span>
-                                    </label>
-                                </div>
-                            ))}
-
-                            {/* Botón "Otra opción" en Caso 3 */}
-                            <div className={`toggle-option ${otraData.caso3.guardada ? "active" : ""}`}>
-                                <span className="toggle-label"><span aria-hidden="true">➕ </span>Otra opción</span>
-                                <label className="switch" htmlFor="otra-caso3">
+                                    <div className="checkbox-content">
+                                        <span className="checkbox-icon" aria-hidden="true">{option.icon}</span>
+                                        <div className="checkbox-text">
+                                            <span className="checkbox-label">{option.label}</span>
+                                            {option.description && (
+                                                <span className="checkbox-description">{option.description}</span>
+                                            )}
+                                        </div>
+                                    </div>
                                     <input
-                                        id="otra-caso3"
                                         type="checkbox"
-                                        checked={otraData.caso3.seleccionada}
-                                        aria-label="Otra opción"
-                                        onChange={() =>
-                                            setOtraData(prev => ({
-                                                ...prev,
-                                                caso3: { ...prev.caso3, seleccionada: !prev.caso3.seleccionada }
-                                            }))
-                                        }
+                                        id={`reto-${option.id}`}
+                                        checked={summary.retos.includes(option.id)}
+                                        onChange={() => toggleReto(option.id)}
                                     />
-                                    <span className="slider"></span>
+                                    <span className="checkbox-indicator" aria-hidden="true">
+                                        {summary.retos.includes(option.id) ? '✓' : ''}
+                                    </span>
                                 </label>
-                            </div>
+                            ))}
+                        </fieldset>
 
-                            {/* Campo de texto y botón de guardar */}
+                        {/* Opción "Otra" */}
+                        <div className="otra-seccion">
+                            <button
+                                type="button"
+                                className={`otra-btn ${otraData.caso3.seleccionada ? 'activa' : ''}`}
+                                onClick={() => setOtraData(prev => ({
+                                    ...prev,
+                                    caso3: { ...prev.caso3, seleccionada: !prev.caso3.seleccionada }
+                                }))}
+                                aria-expanded={otraData.caso3.seleccionada}
+                            >
+                                <span aria-hidden="true">➕</span>
+                                Quiero escribir otra cosa
+                            </button>
+
                             {otraData.caso3.seleccionada && (
-                                <div className="other-input-container">
-                                    <label htmlFor="otra-texto-caso3" className="sr-only">Escribe tu opción</label>
+                                <div className="otra-contenido">
+                                    <label htmlFor="otra-texto-caso3">
+                                        Escribe aquí lo que te cuesta:
+                                    </label>
                                     <textarea
                                         id="otra-texto-caso3"
-                                        className="custom-textarea"
-                                        placeholder="Escribe aquí..."
                                         value={otraData.caso3.respuesta}
-                                        onChange={(e) =>
-                                            setOtraData(prev => ({
-                                                ...prev,
-                                                caso3: { ...prev.caso3, respuesta: e.target.value }
-                                            }))
-                                        }
-                                    ></textarea>
-
+                                        onChange={(e) => setOtraData(prev => ({
+                                            ...prev,
+                                            caso3: { ...prev.caso3, respuesta: e.target.value }
+                                        }))}
+                                        placeholder="Por ejemplo: me pongo nervioso con los exámenes..."
+                                        rows={3}
+                                    />
                                     {otraData.caso3.respuesta.trim() && (
                                         <button
-                                            className={`accept-btn ${otraData.caso3.guardada ? "saved" : ""}`}
+                                            type="button"
+                                            className={`guardar-otra-btn ${otraData.caso3.guardada ? 'guardado' : ''}`}
                                             onClick={() => {
-                                                setSummary(prevSummary => ({
-                                                    ...prevSummary,
-                                                    retos: [...prevSummary.retos, `Otra - ${otraData.caso3.respuesta}`]
+                                                setSummary(prev => ({
+                                                    ...prev,
+                                                    retos: [...prev.retos, `Otra: ${otraData.caso3.respuesta}`]
                                                 }));
                                                 setOtraData(prev => ({
                                                     ...prev,
                                                     caso3: { ...prev.caso3, guardada: true }
                                                 }));
                                             }}
+                                            disabled={otraData.caso3.guardada}
                                         >
-                                            {otraData.caso3.guardada ? "✅ Guardado" : "✅ Guardar"}
+                                            {otraData.caso3.guardada ? '✓ Guardado' : 'Guardar'}
                                         </button>
                                     )}
                                 </div>
                             )}
-
-
-                        </fieldset>
+                        </div>
                     </div>
                 );
 
             case 4:
                 return (
                     <div className="question-page">
-                        <h2><span aria-hidden="true">🌟 </span>¿Cómo quieres que te ayude OlivIA?</h2>
-                        <p>Elige todo lo que quieras:</p>
+                        <h2>¿Cómo quieres que te ayude?</h2>
+                        <p>Elige cómo quieres que te explique las cosas.</p>
+                        <p className="instruction">
+                            <strong>Marca las opciones que prefieras.</strong>
+                            <br />
+                            <span className="hint">Mira los ejemplos de cada una.</span>
+                        </p>
 
                         <fieldset className="options-container">
                             <legend className="sr-only">Selecciona las herramientas que quieres usar</legend>
@@ -509,41 +565,18 @@ export default function Questionario({ onComplete }) {
                                             <span className="slider"></span>
                                         </label>
                                     </div>
-
-                                    {/* Ejemplo visual según la herramienta seleccionada */}
+                                    <p style={{ fontSize: '14px', color: '#555', margin: '4px 0 8px 0' }}>
+                                        {tool.description}
+                                    </p>
                                     <div className="example-container">
                                         <span className="example-title">Ejemplo:</span>
-                                        {tool.id === "ejemplo" && (
-                                            <ul>
-                                                <li>Un planeta es como una pelota gigante que da vueltas alrededor de una luz muy fuerte, como el Sol. Por ejemplo, la Tierra es un planeta que gira alrededor del Sol.</li>
-                                            </ul>
-                                        )}
-
-                                        {tool.id === "bullet" && (
-                                            <ul>
-                                                <li>🪐 Cuerpo celeste.</li>
-                                                <li>💫 Órbita alrededor de una estrella.</li>
-                                                <li>🌍 Suficiente masa para ser esférico.</li>
-                                            </ul>
-                                        )}
-
-                                        {tool.id === "textocorto" && (
-                                            <ul>
-                                                <li>Un planeta es un cuerpo celeste que gira alrededor de una estrella y tiene forma esférica.</li>
-                                            </ul>
-                                        )}
-
-                                        {tool.id === "frasescortas" && (
-                                            <ul>
-                                                <li>Es un cuerpo celeste. Orbita alrededor de una estrella. Tiene masa suficiente para volverse esférico.</li>
-                                            </ul>
-                                        )}
-
+                                        <p style={{ whiteSpace: 'pre-line', margin: '4px 0 0 0', fontSize: '13px' }}>
+                                            {tool.ejemplo}
+                                        </p>
                                     </div>
                                 </div>
                             ))}
                         </fieldset>
-
                     </div>
                 );
 
@@ -552,26 +585,28 @@ export default function Questionario({ onComplete }) {
                     <div className="question-page">
                         <div className="final-content">
                             <h2 className="final-title">
-                                <span aria-hidden="true">🚀 </span>OlivIA está lista para ayudarte
+                                <span aria-hidden="true">🎉 </span>¡Ya estamos listos!
                             </h2>
                             <p className="final-text">
-                                Gracias por contarnos cómo podemos ayudarte.
-                                OlivIA ya está preparada.</p>
+                                Mira si todo está bien.
+                            </p>
 
-                            {generateSummary()} {/* RESUMEN COMPLETO */}
+                            {generateSummary()}
 
                             <div className="robot-container">
-                                <img src={robotLogoCuerpo} alt="Compañero Virtual" className="robot-img" />
+                                <img src={robotLogoCuerpo} alt="OlivIA está lista" className="robot-img" />
                             </div>
 
-                            <h3 className="final-question">¿Todo está bien?</h3>
+                            <h3 className="final-question">¿Quieres cambiar algo?</h3>
 
                             <div className="button-group">
                                 <button className="final-btn gray" onClick={() => setPage(1)}>
-                                    <span aria-hidden="true">🔄 </span>Quiero cambiar algo
+                                    <span aria-hidden="true">🔄 </span>Sí, quiero cambiar algo
+                                    <span className="btn-hint">Volver al principio</span>
                                 </button>
                                 <button className="final-btn green" onClick={() => onComplete(summary)}>
-                                    <span aria-hidden="true">✔️ </span>Sí, estoy listo
+                                    <span aria-hidden="true">✓ </span>No, todo está bien
+                                    <span className="btn-hint">Empezar a usar OlivIA</span>
                                 </button>
                             </div>
                         </div>
