@@ -253,12 +253,12 @@ body {
 .checkbox-grid-2x2 {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
+  gap: 20px;
   width: 100%;
-  max-width: 600px;
-  margin: 0 auto 12px;
+  max-width: 800px;
+  margin: 0 auto 20px;
   border: none;
-  padding: 0;
+  padding: 0 20px;
 }
 
 .checkbox-card-compact {
@@ -268,14 +268,14 @@ body {
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 14px 10px;
-  min-height: 110px;
+  padding: 24px 16px;
+  min-height: 150px;
   background: white;
   border: 3px solid #d0d0d0;
-  border-radius: 16px;
+  border-radius: 20px;
   cursor: pointer;
   transition: all 0.2s ease;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .checkbox-card-compact:hover {
@@ -1465,42 +1465,40 @@ body {
 }
 
 /*==================================
-*    CUESTIONARIO
+*    CUESTIONARIO - PANTALLA COMPLETA
 * ==================================*/
 
 .container {
   text-align: center;
-  padding: 20px;
-  background: rgb(241, 243, 244);
-  border-radius: 12px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  padding: 20px 30px;
+  background: transparent;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-  margin-top: 10px;
-  max-height: calc(100vh - 100px);
+  margin-top: 0;
+  max-height: calc(100vh - 80px);
   overflow-y: auto;
-  width: 95%;
-  max-width: 900px;
+  width: 100%;
+  max-width: 100%;
   box-sizing: border-box;
 }
 
 @media (max-width: 768px) {
   .container {
-    padding: 15px;
-    margin-top: 5px;
-    max-height: calc(100vh - 80px);
+    padding: 15px 20px;
+    max-height: calc(100vh - 70px);
   }
 }
 
 /* Layout fullscreen para el cuestionario: todo en 1 pantalla */
 .container.questionnaire-layout {
-  height: calc(100dvh - 90px);
-  max-height: calc(100dvh - 90px);
+  height: calc(100dvh - 80px);
+  max-height: calc(100dvh - 80px);
   overflow: hidden;
   justify-content: space-between;
-  padding: 12px 20px;
+  padding: 15px 30px;
+  background: #f5f9fa;
 }
 
 .questionnaire-content {
@@ -1525,7 +1523,7 @@ body {
   .container.questionnaire-layout {
     height: calc(100dvh - 70px);
     max-height: calc(100dvh - 70px);
-    padding: 8px 12px;
+    padding: 10px 16px;
   }
 }
 
@@ -2302,115 +2300,357 @@ body {
 }
 
 
-.config-panel {
+/*==================================
+*    CONFIG PANEL REDISEÑADO
+* ==================================*/
+
+.config-panel-new {
   position: fixed;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  text-align: center;
-  top: 95px;
-  /* debajo de la barra superior */
+  top: 70px;
   left: 0;
   width: 100vw;
-  height: calc(100vh - 60px);
-  /* ajusta si tu header tiene otro alto */
-  background-color: white;
-  /* Negro */
-  color: black;
-  overflow-y: auto;
-  padding: 30px;
+  height: calc(100vh - 70px);
+  background: #f5f9fa;
+  display: flex;
+  flex-direction: column;
   z-index: 1000;
+  overflow: hidden;
 }
 
-.config-panel h2 {
-  color: black;
-  margin-bottom: 50px;
-  margin-top: 20px;
-  font-size: 45px
+.config-header {
+  text-align: center;
+  padding: 20px 20px 10px;
+  background: #f5f9fa;
 }
 
-.config-panel h3 {
-  color: black;
-  margin-bottom: 10px;
+.config-header h1 {
+  font-size: clamp(24px, 5vw, 32px);
+  color: #1a1a2e;
+  margin: 0 0 8px;
 }
 
-.config-panel p {
-  color: black;
+.config-header p {
+  font-size: 15px;
+  color: #555;
+  margin: 0;
 }
 
-
-.config-section {
-  width: 100%;
-  max-width: 700px;
-  text-align: left;
-  margin: 20px auto;
-  border-bottom: 1px solid #ccc;
-  padding-bottom: 10px;
-}
-
-
-.edit-options {
-  margin-top: 10px;
-}
-
-.edit-buttons-global {
+/* Tabs de navegación */
+.config-tabs {
   display: flex;
   justify-content: center;
-  align-items: center;
-  gap: 20px;
-  margin-top: 30px;
-  margin-bottom: 40px;
+  gap: 8px;
+  padding: 10px 16px;
+  background: #f5f9fa;
+  flex-wrap: wrap;
 }
 
-.edit-buttons-global .cancel-btn {
-
-  background-color: #626262;
-  color: white;
-  padding: 10px 20px;
-  border-radius: 8px;
-  border: none;
-  font-weight: bold;
+.config-tab {
+  padding: 10px 16px;
+  border: 2px solid #d0d0d0;
+  border-radius: 20px;
+  background: white;
+  font-size: 14px;
+  font-weight: 600;
+  color: #555;
   cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-.edit-buttons-global .save-btn {
-  background-color: #106813;
+.config-tab:hover {
+  border-color: #2196f3;
+  color: #2196f3;
+}
+
+.config-tab.active {
+  background: #2196f3;
+  border-color: #2196f3;
   color: white;
-  padding: 10px 20px;
-  border-radius: 8px;
-  border: none;
-  font-weight: bold;
-  cursor: pointer;
 }
 
-.config-title-row {
+/* Contenido principal */
+.config-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+.config-options-section,
+.config-nombre-section {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.config-options-section h2,
+.config-nombre-section h2 {
+  font-size: 22px;
+  color: #1a1a2e;
+  text-align: center;
+  margin: 0 0 8px;
+}
+
+.config-instruction {
+  text-align: center;
+  color: #555;
+  font-size: 15px;
+  margin: 0 0 20px;
+}
+
+/* Grid de opciones */
+.config-grid {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 5px;
-
+  flex-direction: column;
+  gap: 10px;
 }
 
-.nombre-input {
-  padding: 10px;
+.config-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  background: white;
+  border: 2px solid #d0d0d0;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.config-card:hover {
+  border-color: #2196f3;
+  background: #f8fbff;
+}
+
+.config-card.checked {
+  border-color: #43a047;
+  border-width: 3px;
+  background: #e8f5e9;
+}
+
+.config-card input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.config-card-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.config-card-label {
   font-size: 16px;
-  width: 100%;
-  margin-top: 8px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  background-color: #eaeaea;
-  color: black;
+  font-weight: 600;
+  color: #1a1a2e;
 }
 
-.config-toggle-option {
+.config-card-desc {
+  font-size: 13px;
+  color: #666;
+}
+
+.config-card-indicator {
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  border: 2px solid #bbb;
+  border-radius: 6px;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin: 8px 0;
-  padding: 8px 12px;
-  background-color: #f1f1f1;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: bold;
+  color: white;
+  background: white;
+}
+
+.config-card.checked .config-card-indicator {
+  border-color: #43a047;
+  background: #43a047;
+}
+
+/* Sección nombre */
+.config-nombre-section label {
+  display: block;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+.config-nombre-input {
+  width: 100%;
+  padding: 14px 18px;
+  font-size: 18px;
+  border: 2px solid #d0d0d0;
+  border-radius: 12px;
+  text-align: center;
+  background: white;
+  color: #333;
+}
+
+.config-nombre-input:focus {
+  outline: none;
+  border-color: #2196f3;
+  box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.2);
+}
+
+/* Botones de acción */
+.config-actions {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  padding: 16px 20px;
+  background: white;
+  border-top: 1px solid #e0e0e0;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.config-cancel-btn,
+.config-save-btn {
+  padding: 12px 28px;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
   border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.config-cancel-btn {
+  background: #e0e0e0;
+  color: #333;
+}
+
+.config-cancel-btn:hover {
+  background: #d0d0d0;
+}
+
+.config-save-btn {
+  background: #43a047;
+  color: white;
+}
+
+.config-save-btn:hover {
+  background: #388e3c;
+}
+
+.config-save-btn.saved {
+  background: #81c784;
+}
+
+/* Mensaje de guardado */
+.config-saved-message {
+  position: fixed;
+  bottom: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #43a047;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+/* Modal de confirmación */
+.config-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.config-modal {
+  background: white;
+  padding: 24px;
+  border-radius: 16px;
+  max-width: 400px;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.config-modal h3 {
+  margin: 0 0 12px;
+  font-size: 20px;
+  color: #1a1a2e;
+}
+
+.config-modal p {
+  color: #555;
+  margin: 0 0 20px;
+}
+
+.config-modal-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.config-modal-buttons button {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  background: #e0e0e0;
+  color: #333;
+}
+
+.config-modal-buttons button.danger {
+  background: #f44336;
+  color: white;
+}
+
+/* Responsive */
+@media (max-width: 500px) {
+  .config-tabs {
+    gap: 6px;
+  }
+
+  .config-tab {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+
+  .config-card {
+    padding: 12px 14px;
+  }
+
+  .config-card-label {
+    font-size: 15px;
+  }
+
+  .config-actions {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .config-cancel-btn,
+  .config-save-btn {
+    width: 100%;
+  }
 }
 
 .config-toggle-label {
