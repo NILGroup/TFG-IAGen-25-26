@@ -124,7 +124,8 @@ export default function Questionario({ onComplete }) {
         discapacidad: [],      // Para el caso 2
         retos: [],             // Para el caso 3
         herramientas: [],      // Para el caso 4
-        mostrarPorPartes: false // Para la opción "Mostrar por partes"
+        mostrarPorPartes: false, // Para la opción "Mostrar por partes"
+        lecturaFacil: true // de momento true por defecto
     });
 
     // PÁGINA 1

@@ -8,7 +8,9 @@
  */
 
 import { fetchFromGroq } from '../services/apiFunctions';
+import { promptLF } from '../utils/promptLF';
 import { useCallback } from "react";
+
 
 const usePromptFunctions = ({
     summary,                   // Información personalizada del usuario recogida en el cuestionario
@@ -111,7 +113,28 @@ ${response}
             { role: "user", content: apiPrompt }
         ];
 
-        const response = await fetchFromGroq(messages);
+        let response = await fetchFromGroq(messages); // cambio const por let por si la tengo que adaptar a LF
+
+        // Adaptar respuesta a LF
+        if (summary && summary.lecturaFacil === true){
+            setChatFlow((prev) => [
+                ...prev.filter((entry) => entry.type !== "loading"),
+                { type: "loading", content: "✨ Adaptando a Lectura Fácil..." }
+            ]);
+            const refinementMessages = [
+                {
+                    role: "user",
+                    content: `${promptLF}\n\n"${response}"`
+                }
+            ];
+
+            const refinedResponse = await fetchFromGroq(refinementMessages); // cambiar por fetchFromOllama
+
+            if (refinedResponse && !refinedResponse.includes("Error")) {
+                response = refinedResponse;
+            }
+        }
+
 
         setChatFlow((prev) => [
             ...prev.filter((entry) => entry.type !== "loading"),
@@ -122,7 +145,7 @@ ${response}
         setLoading(false);
         setPrompt("");
 
-    }, [chatFlow, buildPrompt]);
+    }, [chatFlow, buildPrompt, summary]);  // meto dependencia de summary
 
     // Enviar un mensaje personalizado (texto libre o contextual)
     const sendCustomPrompt = useCallback(
@@ -156,7 +179,27 @@ ${response}
                 { role: "user", content: apiPrompt }
             ];
 
-            const response = await fetchFunction(messages);   //DEPENDIENDO DE LA API QUE SE LE PASE X PARAMETRO SE USA UNA U OTRA
+            let response = await fetchFunction(messages);   //DEPENDIENDO DE LA API QUE SE LE PASE X PARAMETRO SE USA UNA U OTRA
+
+            // Adaptar respuesta a LF
+            if (summary && summary.lecturaFacil === true){
+                setChatFlow((prev) => [
+                    ...prev.filter((entry) => entry.type !== "loading"),
+                    { type: "loading", content: "✨ Adaptando a Lectura Fácil..." }
+                ]);
+                const refinementMessages = [
+                    {
+                        role: "user",
+                        content: `${promptLF}\n\n"${response}"`
+                    }
+                ];
+
+                const refinedResponse = await fetchFromGroq(refinementMessages); // cambiar por fetchFromOllama
+
+                if (refinedResponse && !refinedResponse.includes("Error")) {
+                    response = refinedResponse;
+                }
+            }
 
             setChatFlow((prev) => [
                 ...prev.filter((entry) => entry.type !== "loading"),
