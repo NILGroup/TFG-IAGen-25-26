@@ -28,10 +28,10 @@ import robotLogoCuerpo from "../assets/AventurIA_robotCuerposinfondo.png";
  */
 
 const stepLabels = [
-    { number: 1, label: "Tu nombre" },
-    { number: 2, label: "Sobre ti" },
-    { number: 3, label: "Qué te cuesta" },
-    { number: 4, label: "Cómo ayudarte" },
+    { number: 1, label: "Nombre" },
+    { number: 2, label: "Perfil" },
+    { number: 3, label: "Dificultades" },
+    { number: 4, label: "Ayuda" },
     { number: 5, label: "Resumen" }
 ];
 
@@ -296,7 +296,7 @@ export default function Questionario({ onComplete }) {
                 );
             case 2:
                 return (
-                    <div className="question-page page-no-scroll">
+                    <div className="question-page">
                         <h2 id="titulo-sobre-ti">Cuéntanos sobre ti</h2>
                         <p className="instruction">
                             <strong>Marca lo que se aplica a ti. Puedes elegir varias.</strong>
@@ -407,7 +407,7 @@ export default function Questionario({ onComplete }) {
 
             case 3:
                 return (
-                    <div className="question-page page-no-scroll">
+                    <div className="question-page">
                         <h2 id="titulo-que-cuesta">¿Qué te cuesta?</h2>
                         <p className="instruction">
                             <strong>Marca lo que te cueste. Puedes elegir varias.</strong>

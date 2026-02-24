@@ -71,7 +71,6 @@ export default function PantallaEleccion({ onSelectOption }) {
             onClick={() => onSelectOption("formulario")}
             aria-label="Empezar con ayuda"
           >
-            <span className="card-icon" aria-hidden="true">🧩</span>
             <span className="card-title card-title-blue">Con ayuda</span>
             <span className="card-description">
               Te haré unas preguntas sencillas para ayudarte a preparar tu mensaje
@@ -87,7 +86,6 @@ export default function PantallaEleccion({ onSelectOption }) {
             onClick={() => onSelectOption("directa")}
             aria-label="Empezar directamente"
           >
-            <span className="card-icon" aria-hidden="true">✏️</span>
             <span className="card-title card-title-green">Directa</span>
             <span className="card-description">
               Escribe directamente lo que quieras preguntarle a OlivIA
