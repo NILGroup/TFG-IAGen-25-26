@@ -38,8 +38,36 @@ const usePromptFunctions = ({
             };
         }
 
+        // Construir descripción de discapacidad
+        const buildDiscapacidadText = () => {
+            if (!summary.discapacidad?.tieneDI) return "Sin discapacidad específica";
+
+            const tieneDIMap = {
+                "si": "Tengo discapacidad intelectual",
+                "no": "No tengo discapacidad intelectual",
+                "no_se": "No estoy seguro/a de tener discapacidad intelectual",
+                "prefiero_no": "Prefiero no indicar información sobre discapacidad"
+            };
+
+            const gradoMap = {
+                "leve": "de grado leve",
+                "moderada": "de grado moderado",
+                "severa": "de grado severo",
+                "profunda": "de grado profundo",
+                "no_se": "(grado no especificado)",
+                "prefiero_no": ""
+            };
+
+            let texto = tieneDIMap[summary.discapacidad.tieneDI] || "";
+            if (summary.discapacidad.tieneDI === "si" && summary.discapacidad.grado) {
+                const gradoTexto = gradoMap[summary.discapacidad.grado];
+                if (gradoTexto) texto += ` ${gradoTexto}`;
+            }
+            return texto;
+        };
+
         // Estructura CO-STAR
-        const context = `Soy un usuario con las siguientes características: ${summary.discapacidad?.join(", ") || "Sin discapacidad específica"}.`;
+        const context = `Soy un usuario con las siguientes características: ${buildDiscapacidadText()}.`;
         const objective = `Tu tarea principal es responder a la siguiente consulta: "${promptText}"`;
         const style = `Utiliza el siguiente estilo o herramientas de apoyo: ${summary.herramientas?.join(", ") || "Lenguaje claro y sencillo"}.`;
         const tone = `Mantén un tono empático, paciente y respetuoso.`;

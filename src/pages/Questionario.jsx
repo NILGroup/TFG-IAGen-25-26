@@ -81,10 +81,6 @@ export default function Questionario({ onComplete }) {
 
     const [page, setPage] = useState(1);
 
-    const [otraData, setOtraData] = useState({
-        caso2: { seleccionada: false, respuesta: "", guardada: false },
-        caso3: { seleccionada: false, respuesta: "", guardada: false }
-    });
 
 
     /** =========================
@@ -114,7 +110,10 @@ export default function Questionario({ onComplete }) {
      */
     const [summary, setSummary] = useState({
         nombre: "",            // Para el caso 1
-        discapacidad: [],      // Para el caso 2
+        discapacidad: {        // Para el caso 2
+            tieneDI: "",       // "si", "no", "no_se", "prefiero_no"
+            grado: ""          // "leve", "moderada", "severa", "profunda", "no_se", "prefiero_no"
+        },
         retos: [],             // Para el caso 3
         herramientas: [],      // Para el caso 4
         mostrarPorPartes: false // Para la opción "Mostrar por partes"
@@ -128,13 +127,24 @@ export default function Questionario({ onComplete }) {
         }));
     };
 
-    // PÁGINA 2 - Toggle discapacidad
-    const togglediscapacidad = (id) => {
+    // PÁGINA 2 - Selección discapacidad intelectual
+    const handleTieneDI = (valor) => {
         setSummary(prev => ({
             ...prev,
-            discapacidad: prev.discapacidad.includes(id)
-                ? prev.discapacidad.filter(item => item !== id)
-                : [...prev.discapacidad, id]
+            discapacidad: {
+                tieneDI: valor,
+                grado: valor === "si" ? prev.discapacidad.grado : "" // Reset grado si no es "sí"
+            }
+        }));
+    };
+
+    const handleGradoDI = (valor) => {
+        setSummary(prev => ({
+            ...prev,
+            discapacidad: {
+                ...prev.discapacidad,
+                grado: valor
+            }
         }));
     };
 
@@ -162,17 +172,23 @@ export default function Questionario({ onComplete }) {
 
     // Mapeo de IDs a etiquetas legibles (Lectura Fácil)
     const labelMap = {
-        // Identificación
-        "TEA": "Tengo autismo",
-        "TDAH": "Me cuesta concentrarme",
-        "Dislexia": "Me cuesta leer",
-        "Memoria": "Se me olvidan las cosas",
-        "Prefiero no responder": "Prefiero no decirlo",
+        // Discapacidad intelectual
+        "si": "Sí, tengo discapacidad intelectual",
+        "no": "No tengo discapacidad intelectual",
+        "no_se": "No lo sé",
+        "prefiero_no": "Prefiero no decirlo",
+        // Grados
+        "leve": "Grado leve",
+        "moderada": "Grado moderado",
+        "severa": "Grado severo",
+        "profunda": "Grado profundo",
         // Retos
-        "Textos Largos": "Leer textos largos",
-        "Palabras Dificiles": "Entender palabras nuevas",
-        "Organizar Ideas": "Ordenar mis ideas",
-        "Mantener Atencion": "Estar concentrado",
+        "frases_largas": "Leer frases largas",
+        "palabras_dificiles": "Entender palabras difíciles",
+        "muchas_cosas": "Muchas cosas seguidas",
+        "recordar": "Recordar cosas",
+        "pensar_palabras": "Pensar palabras para escribir",
+        "escribir_largo": "Escribir frases largas",
         // Herramientas
         "ejemplo": "Con ejemplos",
         "bullet": "Con listas",
@@ -191,14 +207,17 @@ export default function Questionario({ onComplete }) {
             </div>
 
             <div className="summary-row">
-                <span className="summary-title"><span aria-hidden="true">⭐ </span>Sobre ti:</span>
+                <span className="summary-title"><span aria-hidden="true">⭐ </span>Perfil:</span>
                 <ul className="summary-bubbles">
-                    {summary.discapacidad.length > 0 ? (
-                        summary.discapacidad.map((item) => (
-                            <li key={item}>{labelMap[item] || item}</li>
-                        ))
+                    {summary.discapacidad.tieneDI ? (
+                        <>
+                            <li>{labelMap[summary.discapacidad.tieneDI] || summary.discapacidad.tieneDI}</li>
+                            {summary.discapacidad.grado && (
+                                <li>{labelMap[summary.discapacidad.grado] || summary.discapacidad.grado}</li>
+                            )}
+                        </>
                     ) : (
-                        <li>No seleccionado</li>
+                        <li>No indicado</li>
                     )}
                 </ul>
             </div>
@@ -297,133 +316,98 @@ export default function Questionario({ onComplete }) {
             case 2:
                 return (
                     <div className="question-page">
-                        <h2 id="titulo-sobre-ti">Cuéntanos sobre ti</h2>
-                        <p className="instruction">
-                            <strong>Marca lo que se aplica a ti. Puedes elegir varias.</strong>
-                        </p>
+                        <h2 id="titulo-sobre-ti">Sobre ti</h2>
 
-                        {/* Grid 2x2 sin emojis */}
-                        <fieldset className="checkbox-grid-2x2" aria-labelledby="titulo-sobre-ti">
+                        {/* Pregunta 1: ¿Tienes discapacidad intelectual? */}
+                        <fieldset className="radio-group" aria-labelledby="pregunta-di">
+                            <legend id="pregunta-di" className="question-label">
+                                <strong>¿Tienes discapacidad intelectual?</strong>
+                            </legend>
+
                             {[
-                                { id: "TEA", label: "Autismo (TEA)", description: "Me cuesta entender cómo piensan otros" },
-                                { id: "TDAH", label: "Atención (TDAH)", description: "Me distraigo rápido o me muevo mucho" },
-                                { id: "Dislexia", label: "Lectura (Dislexia)", description: "Las letras se mezclan o leo lento" },
-                                { id: "Memoria", label: "Memoria", description: "Olvido lo que acabo de leer o hacer" }
+                                { id: "si", label: "Sí" },
+                                { id: "no", label: "No" },
+                                { id: "no_se", label: "No lo sé / No estoy segura(o)" },
+                                { id: "prefiero_no", label: "Prefiero no decirlo" }
                             ].map((option) => (
                                 <label
                                     key={option.id}
-                                    className={`checkbox-card-compact no-icon ${summary.discapacidad.includes(option.id) ? 'checked' : ''}`}
-                                    htmlFor={`disc-${option.id}`}
+                                    className={`radio-card ${summary.discapacidad.tieneDI === option.id ? 'checked' : ''}`}
+                                    htmlFor={`di-${option.id}`}
                                 >
                                     <input
-                                        type="checkbox"
-                                        id={`disc-${option.id}`}
-                                        checked={summary.discapacidad.includes(option.id)}
-                                        onChange={() => togglediscapacidad(option.id)}
+                                        type="radio"
+                                        name="tieneDI"
+                                        id={`di-${option.id}`}
+                                        checked={summary.discapacidad.tieneDI === option.id}
+                                        onChange={() => handleTieneDI(option.id)}
                                     />
-                                    <span className="checkbox-label-compact">{option.label}</span>
-                                    <span className="checkbox-description-compact">{option.description}</span>
-                                    <span className="checkbox-indicator-compact" aria-hidden="true">
-                                        {summary.discapacidad.includes(option.id) ? '✓' : ''}
+                                    <span className="radio-label">{option.label}</span>
+                                    <span className="radio-indicator" aria-hidden="true">
+                                        {summary.discapacidad.tieneDI === option.id ? '✓' : ''}
                                     </span>
                                 </label>
                             ))}
                         </fieldset>
 
-                        {/* Opción "Prefiero no decirlo" separada */}
-                        <label
-                            className={`checkbox-standalone ${summary.discapacidad.includes("Prefiero no responder") ? 'checked' : ''}`}
-                            htmlFor="disc-prefiero-no"
-                        >
-                            <input
-                                type="checkbox"
-                                id="disc-prefiero-no"
-                                checked={summary.discapacidad.includes("Prefiero no responder")}
-                                onChange={() => togglediscapacidad("Prefiero no responder")}
-                            />
-                            <span className="checkbox-label-standalone">Prefiero no decirlo</span>
-                            <span className="checkbox-indicator-standalone" aria-hidden="true">
-                                {summary.discapacidad.includes("Prefiero no responder") ? '✓' : ''}
-                            </span>
-                        </label>
+                        {/* Pregunta 2: Grado (solo si respondió "Sí") */}
+                        {summary.discapacidad.tieneDI === "si" && (
+                            <fieldset className="radio-group radio-group-secondary" aria-labelledby="pregunta-grado">
+                                <legend id="pregunta-grado" className="question-label">
+                                    <strong>¿Sabes el grado de tu discapacidad intelectual?</strong>
+                                </legend>
 
-                        {/* Acordeón controlado con React */}
-                        <div className={`accordion-react ${otraData.caso2.seleccionada ? 'open' : ''}`}>
-                            <button
-                                type="button"
-                                className="accordion-react-btn"
-                                onClick={() => setOtraData(prev => ({
-                                    ...prev,
-                                    caso2: { ...prev.caso2, seleccionada: !prev.caso2.seleccionada }
-                                }))}
-                                aria-expanded={otraData.caso2.seleccionada}
-                            >
-                                <span className="accordion-icon" aria-hidden="true">
-                                    {otraData.caso2.seleccionada ? '−' : '+'}
-                                </span>
-                                Quiero añadir otra cosa
-                            </button>
-
-                            {otraData.caso2.seleccionada && (
-                                <div className="accordion-react-content">
-                                    <label htmlFor="otra-texto-caso2">
-                                        Escribe aquí si quieres contarnos algo más:
+                                {[
+                                    { id: "leve", label: "Leve" },
+                                    { id: "moderada", label: "Moderada" },
+                                    { id: "severa", label: "Severa" },
+                                    { id: "profunda", label: "Profunda" },
+                                    { id: "no_se", label: "No lo sé / No estoy segura(o)" },
+                                    { id: "prefiero_no", label: "Prefiero no decirlo" }
+                                ].map((option) => (
+                                    <label
+                                        key={option.id}
+                                        className={`radio-card ${summary.discapacidad.grado === option.id ? 'checked' : ''}`}
+                                        htmlFor={`grado-${option.id}`}
+                                    >
+                                        <input
+                                            type="radio"
+                                            name="gradoDI"
+                                            id={`grado-${option.id}`}
+                                            checked={summary.discapacidad.grado === option.id}
+                                            onChange={() => handleGradoDI(option.id)}
+                                        />
+                                        <span className="radio-label">{option.label}</span>
+                                        <span className="radio-indicator" aria-hidden="true">
+                                            {summary.discapacidad.grado === option.id ? '✓' : ''}
+                                        </span>
                                     </label>
-                                    <textarea
-                                        id="otra-texto-caso2"
-                                        value={otraData.caso2.respuesta}
-                                        onChange={(e) => setOtraData(prev => ({
-                                            ...prev,
-                                            caso2: { ...prev.caso2, respuesta: e.target.value }
-                                        }))}
-                                        placeholder="Por ejemplo: me mareo cuando leo mucho"
-                                        rows={2}
-                                        autoFocus
-                                    />
-                                    {otraData.caso2.respuesta.trim() && (
-                                        <button
-                                            type="button"
-                                            className={`guardar-otra-btn ${otraData.caso2.guardada ? 'guardado' : ''}`}
-                                            onClick={() => {
-                                                setSummary(prev => ({
-                                                    ...prev,
-                                                    discapacidad: [...prev.discapacidad, `Otra: ${otraData.caso2.respuesta}`]
-                                                }));
-                                                setOtraData(prev => ({
-                                                    ...prev,
-                                                    caso2: { ...prev.caso2, guardada: true }
-                                                }));
-                                            }}
-                                            disabled={otraData.caso2.guardada}
-                                        >
-                                            {otraData.caso2.guardada ? '✓ Guardado' : 'Guardar'}
-                                        </button>
-                                    )}
-                                </div>
-                            )}
-                        </div>
+                                ))}
+                            </fieldset>
+                        )}
                     </div>
                 );
 
             case 3:
                 return (
                     <div className="question-page">
-                        <h2 id="titulo-que-cuesta">¿Qué te cuesta?</h2>
+                        <h2 id="titulo-dificultades">OlivIA se adapta a ti</h2>
                         <p className="instruction">
-                            <strong>Marca lo que te cueste. Puedes elegir varias.</strong>
+                            <strong>Tú eliges lo que te cuesta.</strong>
                         </p>
 
-                        {/* Grid 2x2 sin emojis */}
-                        <fieldset className="checkbox-grid-2x2" aria-labelledby="titulo-que-cuesta">
+                        <fieldset className="checkbox-list-vertical" aria-labelledby="titulo-dificultades">
                             {[
-                                { id: "Textos Largos", label: "Leer mucho", description: "Me canso con textos largos" },
-                                { id: "Palabras Dificiles", label: "Palabras nuevas", description: "Hay palabras que no entiendo" },
-                                { id: "Organizar Ideas", label: "Ordenar ideas", description: "No sé por dónde empezar" },
-                                { id: "Mantener Atencion", label: "Concentrarme", description: "Me distraigo fácil" }
+                                { id: "frases_largas", label: "Me cuesta leer y entender frases largas." },
+                                { id: "palabras_dificiles", label: "Me cuesta leer y entender palabras difíciles." },
+                                { id: "muchas_cosas", label: "Me cuesta entender si me dicen muchas cosas seguidas." },
+                                { id: "recordar", label: "Me cuesta recordar cosas de hace poco tiempo." },
+                                { id: "pensar_palabras", label: "Me cuesta pensar las palabras para escribir lo que quiero." },
+                                { id: "escribir_largo", label: "Me cuesta escribir frases largas." }
                             ].map((option) => (
                                 <label
                                     key={option.id}
-                                    className={`checkbox-card-compact no-icon ${summary.retos.includes(option.id) ? 'checked' : ''}`}
+                                    className={`checkbox-card-row ${summary.retos.includes(option.id) ? 'checked' : ''}`}
                                     htmlFor={`reto-${option.id}`}
                                 >
                                     <input
@@ -432,90 +416,13 @@ export default function Questionario({ onComplete }) {
                                         checked={summary.retos.includes(option.id)}
                                         onChange={() => toggleReto(option.id)}
                                     />
-                                    <span className="checkbox-label-compact">{option.label}</span>
-                                    <span className="checkbox-description-compact">{option.description}</span>
-                                    <span className="checkbox-indicator-compact" aria-hidden="true">
+                                    <span className="checkbox-card-row-label">{option.label}</span>
+                                    <span className="checkbox-card-row-indicator" aria-hidden="true">
                                         {summary.retos.includes(option.id) ? '✓' : ''}
                                     </span>
                                 </label>
                             ))}
                         </fieldset>
-
-                        {/* Opción "Memoria" separada */}
-                        <label
-                            className={`checkbox-standalone-with-desc ${summary.retos.includes("Memoria") ? 'checked' : ''}`}
-                            htmlFor="reto-memoria"
-                        >
-                            <input
-                                type="checkbox"
-                                id="reto-memoria"
-                                checked={summary.retos.includes("Memoria")}
-                                onChange={() => toggleReto("Memoria")}
-                            />
-                            <div className="checkbox-standalone-text">
-                                <span className="checkbox-label-standalone">Recordar cosas</span>
-                                <span className="checkbox-description-standalone">Se me olvida lo que acabo de leer</span>
-                            </div>
-                            <span className="checkbox-indicator-standalone" aria-hidden="true">
-                                {summary.retos.includes("Memoria") ? '✓' : ''}
-                            </span>
-                        </label>
-
-                        {/* Acordeón controlado con React */}
-                        <div className={`accordion-react ${otraData.caso3.seleccionada ? 'open' : ''}`}>
-                            <button
-                                type="button"
-                                className="accordion-react-btn"
-                                onClick={() => setOtraData(prev => ({
-                                    ...prev,
-                                    caso3: { ...prev.caso3, seleccionada: !prev.caso3.seleccionada }
-                                }))}
-                                aria-expanded={otraData.caso3.seleccionada}
-                            >
-                                <span className="accordion-icon" aria-hidden="true">
-                                    {otraData.caso3.seleccionada ? '−' : '+'}
-                                </span>
-                                Quiero añadir otra cosa
-                            </button>
-
-                            {otraData.caso3.seleccionada && (
-                                <div className="accordion-react-content">
-                                    <label htmlFor="otra-texto-caso3">
-                                        Escribe aquí si te cuesta algo más:
-                                    </label>
-                                    <textarea
-                                        id="otra-texto-caso3"
-                                        value={otraData.caso3.respuesta}
-                                        onChange={(e) => setOtraData(prev => ({
-                                            ...prev,
-                                            caso3: { ...prev.caso3, respuesta: e.target.value }
-                                        }))}
-                                        placeholder="Por ejemplo: me pongo nervioso con los exámenes"
-                                        rows={2}
-                                        autoFocus
-                                    />
-                                    {otraData.caso3.respuesta.trim() && (
-                                        <button
-                                            type="button"
-                                            className={`guardar-otra-btn ${otraData.caso3.guardada ? 'guardado' : ''}`}
-                                            onClick={() => {
-                                                setSummary(prev => ({
-                                                    ...prev,
-                                                    retos: [...prev.retos, `Otra: ${otraData.caso3.respuesta}`]
-                                                }));
-                                                setOtraData(prev => ({
-                                                    ...prev,
-                                                    caso3: { ...prev.caso3, guardada: true }
-                                                }));
-                                            }}
-                                            disabled={otraData.caso3.guardada}
-                                        >
-                                            {otraData.caso3.guardada ? '✓ Guardado' : 'Guardar'}
-                                        </button>
-                                    )}
-                                </div>
-                            )}
-                        </div>
                     </div>
                 );
 
