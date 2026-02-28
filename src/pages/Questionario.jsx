@@ -202,12 +202,12 @@ export default function Questionario({ onComplete }) {
             <h3>Tu resumen:</h3>
 
             <div className="summary-row">
-                <span className="summary-title"><span aria-hidden="true">🧑 </span>Tu nombre:</span>
+                <span className="summary-title">Tu nombre:</span>
                 <span className="summary-data">{summary.nombre || "No indicado"}</span>
             </div>
 
             <div className="summary-row">
-                <span className="summary-title"><span aria-hidden="true">⭐ </span>Perfil:</span>
+                <span className="summary-title">Perfil:</span>
                 <ul className="summary-bubbles">
                     {summary.discapacidad.tieneDI ? (
                         <>
@@ -223,7 +223,7 @@ export default function Questionario({ onComplete }) {
             </div>
 
             <div className="summary-row">
-                <span className="summary-title"><span aria-hidden="true">📌 </span>Te cuesta:</span>
+                <span className="summary-title">Te cuesta:</span>
                 <ul className="summary-bubbles">
                     {summary.retos.length > 0 ? (
                         summary.retos.map((item) => (
@@ -236,7 +236,7 @@ export default function Questionario({ onComplete }) {
             </div>
 
             <div className="summary-row">
-                <span className="summary-title"><span aria-hidden="true">🛠️ </span>Te ayudaré:</span>
+                <span className="summary-title">Te ayudaré:</span>
                 <ul className="summary-bubbles">
                     {summary.herramientas.length > 0 ? (
                         summary.herramientas.map((toolId) => (
@@ -469,9 +469,7 @@ export default function Questionario({ onComplete }) {
                 return (
                     <div className="question-page">
                         <div className="final-content">
-                            <h2 className="final-title">
-                                <span aria-hidden="true">🎉 </span>¡Listo!
-                            </h2>
+                            <h2 className="final-title">¡Listo!</h2>
                             <p className="final-text">
                                 Mira si todo está bien.
                             </p>
@@ -480,15 +478,6 @@ export default function Questionario({ onComplete }) {
 
                             <div className="robot-container">
                                 <img src={robotLogoCuerpo} alt="OlivIA está lista" className="robot-img" />
-                            </div>
-
-                            <div className="button-group">
-                                <button className="final-btn gray" onClick={() => setPage(1)}>
-                                    <span aria-hidden="true">🔄 </span>Cambiar algo
-                                </button>
-                                <button className="final-btn green" onClick={() => onComplete(summary)}>
-                                    <span aria-hidden="true">✓ </span>Todo bien, empezar
-                                </button>
                             </div>
                         </div>
                     </div>
@@ -514,6 +503,12 @@ export default function Questionario({ onComplete }) {
             <div className={`nav-buttons ${page === 1 ? "center-nav" : "right-nav"}`}>
                 {page > 1 && page < 5 && <button className="back-btn" onClick={prevPage}>Anterior</button>}
                 {page < 5 && <button className="next-btn" onClick={nextPage}>Siguiente →</button>}
+                {page === 5 && (
+                    <>
+                        <button className="back-btn" onClick={() => setPage(1)}>Cambiar algo</button>
+                        <button className="next-btn green" onClick={() => onComplete(summary)}>Todo bien, empezar →</button>
+                    </>
+                )}
             </div>
         </div>
     );

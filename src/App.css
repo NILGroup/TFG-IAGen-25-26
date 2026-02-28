@@ -406,6 +406,13 @@ body {
   box-sizing: border-box;
 }
 
+.question-label {
+  display: block;
+  text-align: left;
+  width: 100%;
+  color: black;
+}
+
 .radio-group legend.question-label {
   font-size: 18px;
   color: #1a1a2e;
@@ -1227,25 +1234,6 @@ body {
   background-color: #d6d6d6;
 }
 
-.back-btn {
-  background: #b6b6b6;
-  border: none;
-  padding: 12px 20px;
-  font-size: 25px;
-  cursor: pointer;
-  border-radius: 8px;
-  font-weight: bold;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.back-btn::before {
-  content: "← ";
-  font-size: 25px;
-  margin-right: 5px;
-}
-
 /* Estilos generales para botones de generar pregunta*/
 .btn,
 .custom-btn {
@@ -1339,18 +1327,24 @@ body {
 .back-btn {
   background: #ae103d;
   color: white;
-  padding: 10px 20px;
-  font-size: 16px;
+  padding: 12px 24px;
+  font-size: 20px;
   border: none;
   cursor: pointer;
   border-radius: 8px;
   font-weight: bold;
-  font-size: 20px;
-
 }
 
 .back-btn {
   background: #4e4c4c;
+}
+
+.back-btn::before {
+  content: "← ";
+}
+
+.next-btn.green {
+  background: #1CA655;
 }
 
 /*==================================
@@ -1363,26 +1357,25 @@ body {
   max-width: 400px;
   padding: 12px;
   font-size: 16px;
-  text-align: center;
+  text-align: left;
   border: 2px solid #dbdbdb;
   border-radius: 8px;
   background-color: #f9f9f9;
   font-weight: bold;
   color: black;
-
   transition: all 0.3s ease;
 }
 
 .custom-input::placeholder {
   color: #7a7a7a;
   font-weight: normal;
+  text-align: left;
 }
 
 .custom-input:focus {
   outline: none;
   border-color: #c9c9c9;
   color: black;
-
   background-color: #e6e6e6;
 }
 
@@ -1537,16 +1530,22 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  /* Centra todos los elementos */
   justify-content: center;
   text-align: center;
 }
 
-/* Contenedor para centrar el robot */
+.final-title,
+.final-text,
+.summary-box,
+.summary-box-horizontal,
+.robot-container {
+  align-self: flex-start;
+  text-align: left;
+}
+
 .robot-container {
   display: flex;
-  justify-content: center;
-  /* Centra horizontalmente */
+  justify-content: left;
   width: 100%;
 }
 
@@ -1559,20 +1558,22 @@ body {
 
 .button-group {
   display: flex;
-  gap: 12px;
-  justify-content: center;
+  gap: 16px;
+  justify-content: left;
+  align-items: left;
   margin-top: 10px;
+  width: 100%;
 }
 
 .final-btn {
-  padding: 10px 20px;
-  font-size: 16px;
+  padding: 12px 24px;
+  font-size: 20px;
   font-weight: bold;
-  border-radius: 10px;
+  border-radius: 8px;
+  border: none;
   cursor: pointer;
   transition: 0.3s;
-  width: 200px;
-  text-align: center;
+  text-align: left;
 }
 
 .final-btn.green {
@@ -1596,14 +1597,12 @@ body {
   font-family: Verdana, Geneva, Tahoma, sans-serif;
   background-color: #d7e6ff;
   border: 3px solid #000;
-  /* Borde negro */
   border-radius: 15px;
   padding: 20px 30px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   max-width: 600px;
-  margin: 0 auto;
-  text-align: center;
-
+  margin: 0;
+  text-align: left;
 }
 
 /* Títulos dentro del resumen */
@@ -1616,7 +1615,7 @@ body {
   padding: 12px 16px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   max-width: 700px;
-  margin: 8px auto;
+  margin: 8px 0;
   text-align: left;
   display: flex;
   flex-direction: column;
@@ -1625,14 +1624,14 @@ body {
 
 .summary-box-horizontal h3 {
   font-size: 18px;
-  text-align: center;
+  text-align: left;
   margin-bottom: 4px;
   margin-top: 0;
 }
 
 .summary-row {
   display: flex;
-  align-items: center;
+  align-items: left;
   gap: 10px;
   flex-wrap: wrap;
 }
