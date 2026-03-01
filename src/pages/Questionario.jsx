@@ -91,7 +91,8 @@ export default function Questionario({ onComplete }) {
         discapacidad: [],      // Para el caso 2
         retos: [],             // Para el caso 3
         herramientas: [],      // Para el caso 4
-        mostrarPorPartes: false // Para la opción "Mostrar por partes"
+        mostrarPorPartes: false, // Para la opción "Mostrar por partes"
+        rol: "profesor"        // Rol de OlivIA: "profesor" o "familiar" (configurable desde frontend)
     });
 
     // PÁGINA 1
@@ -104,55 +105,23 @@ export default function Questionario({ onComplete }) {
 
     // PÁGINA 2
     const togglediscapacidad = (id) => {
-        if (id === "Otra") {
-            setOtraSeleccionada(!otraSeleccionada);
-
-            if (!otraSeleccionada && otraRespuesta.trim()) {
-                setSummary(prevSummary => ({
-                    ...prevSummary,
-                    discapacidad: [...prevSummary.discapacidad, `Otra - ${otraRespuesta}`]
-                }));
-            } else {
-                setSummary(prevSummary => ({
-                    ...prevSummary,
-                    discapacidad: prevSummary.discapacidad.filter(item => !item.startsWith("Otra - "))
-                }));
-            }
-        } else {
-            setSummary(prevSummary => ({
-                ...prevSummary,
-                discapacidad: prevSummary.discapacidad.includes(id)
-                    ? prevSummary.discapacidad.filter((item) => item !== id)
-                    : [...prevSummary.discapacidad, id]
-            }));
-        }
+        setSummary(prevSummary => ({
+            ...prevSummary,
+            discapacidad: prevSummary.discapacidad.includes(id)
+                ? prevSummary.discapacidad.filter((item) => item !== id)
+                : [...prevSummary.discapacidad, id]
+        }));
     };
 
 
     // PÁGINA 3
     const toggleReto = (id) => {
-        if (id === "Otra") {
-            setOtraSeleccionada(!otraSeleccionada);
-
-            if (!otraSeleccionada && otraRespuesta.trim()) {
-                setSummary(prevSummary => ({
-                    ...prevSummary,
-                    retos: [...prevSummary.retos, `Otra - ${otraRespuesta}`]
-                }));
-            } else {
-                setSummary(prevSummary => ({
-                    ...prevSummary,
-                    retos: prevSummary.retos.filter(item => !item.startsWith("Otra - "))
-                }));
-            }
-        } else {
-            setSummary(prevSummary => ({
-                ...prevSummary,
-                retos: prevSummary.retos.includes(id)
-                    ? prevSummary.retos.filter((item) => item !== id)
-                    : [...prevSummary.retos, id]
-            }));
-        }
+        setSummary(prevSummary => ({
+            ...prevSummary,
+            retos: prevSummary.retos.includes(id)
+                ? prevSummary.retos.filter((item) => item !== id)
+                : [...prevSummary.retos, id]
+        }));
     };
 
 
@@ -164,7 +133,6 @@ export default function Questionario({ onComplete }) {
                 ? prevSummary.herramientas.filter((item) => item !== id)
                 : [...prevSummary.herramientas, id]
         }));
-
     };
 
     // PÁGINA 5
@@ -326,7 +294,7 @@ export default function Questionario({ onComplete }) {
                                             }))
                                         }
                                     ></textarea>
-
+                                    {/* Tenemos que revisar que guarde en cada momento la respuesta escrita en la caja de otra ya que una vez se guarda la primera vez no vuelve a guardar bien los cambios */}
                                     {otraData.caso2.respuesta.trim() && (
                                         <button
                                             className={`accept-btn ${otraData.caso2.guardada ? "saved" : ""}`}

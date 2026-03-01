@@ -9,6 +9,8 @@
 
 import React from "react";
 import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm"; // Para tablas, tachados, listas de tareas, etc.
+import rehypeRaw from "rehype-raw"; // Para renderizar HTML directo (como <br>, <center>...)
 
 export default function Chat({
     chatFlow,            // Array que contiene todos los mensajes del chat (usuario y IA)
@@ -28,7 +30,10 @@ export default function Chat({
                     <div className={`chat-message ${entry.type === "user" ? "user-message" : "ai-message"}`}>
 
                         {/* Muestra el contenido del mensaje en formato Markdown */}
-                        <ReactMarkdown>
+                        <ReactMarkdown 
+                            remarkPlugins={[remarkGfm]} 
+                            rehypePlugins={[rehypeRaw]}
+                        >
                             {expandedResponses[index] || entry.content.length <= 1000
                                 ? entry.content
                                 : entry.content.slice(0, 1000) + "…"}
