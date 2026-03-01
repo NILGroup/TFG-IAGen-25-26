@@ -319,11 +319,6 @@ export default function InterfazPrincipal({ summary, modoSeleccionado, promptIni
     const [editingField, setEditingField] = useState(null);
     const [tempSummary, setTempSummary] = useState({ ...summary });
 
-    const [otraOpciones, setOtraOpciones] = useState({
-        discapacidad: { activa: false, valor: "", guardado: false },
-        retos: { activa: false, valor: "", guardado: false }
-    });
-
     /** =============================================
      *  EFECTO PARA CARGAR PROMPT INICIAL
      *  =============================================
@@ -386,8 +381,6 @@ export default function InterfazPrincipal({ summary, modoSeleccionado, promptIni
                     summary={summary}
                     tempSummary={tempSummary}
                     setTempSummary={setTempSummary}
-                    otraOpciones={otraOpciones}
-                    setOtraOpciones={setOtraOpciones}
                     savedEffect={savedEffect}
                     setSavedEffect={setSavedEffect}
                     setEditingField={setEditingField}
