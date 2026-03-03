@@ -1431,7 +1431,80 @@ body {
   box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.2);
   font-size: 18px;
   margin: 10px 0;
+  overflow-wrap: break-word; /* Evita que palabras largas rompan el chat */
+}
 
+/* === ESTILOS PARA MARKDOWN DENTRO DEL CHAT === */
+
+/* Párrafos dentro del chat */
+.chat-message p {
+  margin: 0 0 10px 0; /* Espacio entre párrafos */
+  line-height: 1.6;
+}
+
+.chat-message p:last-child {
+  margin-bottom: 0;
+}
+
+/* Títulos dentro de la respuesta */
+.chat-message h1, 
+.chat-message h2, 
+.chat-message h3, 
+.chat-message h4 {
+  margin-top: 15px;
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: #2c3e50; /* Un color oscuro para jerarquía */
+}
+
+.chat-message h1 { font-size: 24px; }
+.chat-message h2 { font-size: 22px; }
+.chat-message h3 { font-size: 20px; }
+.chat-message h4 { font-size: 18px; }
+
+/* Listas ordenadas y desordenadas */
+.chat-message ul, 
+.chat-message ol {
+  padding-left: 20px;
+  margin: 10px 0;
+}
+
+.chat-message li {
+  margin-bottom: 5px;
+}
+
+/* Negritas más evidentes */
+.chat-message strong, 
+.chat-message b {
+  color: #000;
+  font-weight: 700;
+}
+
+/* Bloques de código o citas */
+.chat-message blockquote {
+  border-left: 4px solid #ccc;
+  margin: 10px 0;
+  padding-left: 10px;
+  font-style: italic;
+  color: #555;
+  background: rgba(0,0,0,0.05); /* Fondo sutil */
+}
+
+.chat-message pre {
+  background-color: #eee;
+  padding: 10px;
+  border-radius: 5px;
+  overflow-x: auto;
+  font-family: monospace;
+}
+
+.chat-message code {
+  background-color: #e4e4e4;
+  padding: 2px 4px;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 0.9em;
+  color: #d63384; /* Color típico de código */
 }
 
 /* Estilos para el estado de carga */

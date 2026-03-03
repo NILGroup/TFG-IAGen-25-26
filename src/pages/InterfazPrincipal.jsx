@@ -456,6 +456,11 @@ export default function InterfazPrincipal({ summary, promptInicial, onBack }) {
                             placeholder="Escribe aquí..."
                             value={prompt}
                             onChange={(e) => setPrompt(e.target.value)}
+                            onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                    sendPrompt(prompt, selectedOption);
+                                }
+                            }}
                         />
 
                         <button

@@ -107,6 +107,15 @@ export default function BotonesInteraccion({
                                     placeholder="Escribe aquí tu pregunta..."
                                     value={prompt}
                                     onChange={(e) => setPrompt(e.target.value)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === "Enter" && !e.shiftKey) {
+                                            e.preventDefault();
+                                            if (prompt.trim()) {
+                                                sendCustomPrompt(prompt);
+                                                setPrompt("");
+                                            }
+                                        }
+                                    }}
                                 ></textarea>
                                 <button
                                     className="custom-followup-btn"
