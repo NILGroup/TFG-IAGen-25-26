@@ -2,7 +2,6 @@
  * ConfigPanel.jsx
  *
  * Panel de configuración para editar el perfil del usuario.
- * Diseño consistente con el cuestionario (COGA + Lectura Fácil)
  */
 
 import React, { useState } from "react";

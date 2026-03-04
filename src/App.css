@@ -434,7 +434,8 @@ body {
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
 }
 
-.checkbox-card-example:hover {
+/* Efecto hover para las tarjetas de ejemplo cuando se pasa el mouse por encima */
+.checkbox-card-example:hover { 
   border-color: #2196f3;
   background: #f8fbff;
 }
@@ -460,7 +461,7 @@ body {
 .card-example-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: left;
   margin-bottom: 6px;
 }
 
@@ -496,6 +497,7 @@ body {
   color: #555;
   margin-bottom: 10px;
   line-height: 1.4;
+  text-align: left;
 }
 
 .card-example-box {
@@ -503,6 +505,7 @@ body {
   border: 1px solid #90caf9;
   border-radius: 8px;
   padding: 10px;
+  text-align: left;
 }
 
 .card-example-title {
@@ -511,6 +514,8 @@ body {
   color: #1565c0;
   display: block;
   margin-bottom: 4px;
+  align-items: center;
+  text-align: left;
 }
 
 .card-example-text {
@@ -775,9 +780,9 @@ body {
 .final-content {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
+  align-items: left;
+  justify-content: flex-start;
+  text-align: left;
 }
 
 .final-title,

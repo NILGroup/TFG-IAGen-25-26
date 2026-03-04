@@ -12,8 +12,8 @@
 
 import { useState } from "react";
 import Questionario from "./pages/Questionario";
-import PantallaModo from "./components/PantallaModo";
-import PantallaEleccion from "./components/PantallaEleccion";
+import PantallaModo from "./pages/PantallaModo";
+import PantallaEleccion from "./pages/PantallaEleccion";
 import FormularioPrompt from "./components/FormularioPrompt";
 import InterfazPrincipal from "./pages/InterfazPrincipal";
 import "./App.css";

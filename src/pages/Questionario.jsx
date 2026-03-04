@@ -3,9 +3,9 @@
  *
  * Este componente representa un cuestionario que recopila información sobre:
  * - El nombre del usuario
- * - Con qué condiciones o discapacidades se identifica
- * - Qué retos tiene al aprender o entender información
- * - Qué herramientas le resultan más útiles para ayudarle con los retos
+ * - Si tiene discapacidad intelectual y su grado (si aplica)
+ * - Centrado en las principales dificultades: leer-entender-escribir.
+ * - Qué herramientas le resultan más útiles para ayudarle 
  * 
  * Con la finalidad de personalizar al máximo su experiencia usando OlivIA.
  *
@@ -81,8 +81,6 @@ export default function Questionario({ onComplete }) {
 
     const [page, setPage] = useState(1);
 
-
-
     /** =========================
       *  NAVEGACIÓN ENTRE PÁGINAS
       *  ========================
@@ -119,7 +117,7 @@ export default function Questionario({ onComplete }) {
         mostrarPorPartes: false // Para la opción "Mostrar por partes"
     });
 
-    // PÁGINA 1
+    // PASO 1 - Nombre
     const handleNameChange = (e) => {
         setSummary(prevSummary => ({
             ...prevSummary,
@@ -127,12 +125,12 @@ export default function Questionario({ onComplete }) {
         }));
     };
 
-    // PÁGINA 2 - Selección discapacidad intelectual
+    // PASO 2 - Selección Perfil - discapacidad intelectual
     const handleTieneDI = (valor) => {
-        setSummary(prev => ({
-            ...prev,
+        setSummary(prev => ({ //actualiza el estado de discapacidad, reseteando el grado si no es "sí"
+            ...prev,    // copia todo el estado anterior (nombre, retos, herramientas, etc.)
             discapacidad: {
-                tieneDI: valor,
+                tieneDI: valor, // guarda la nueva respuesta sobre si tiene discapacidad intelectual
                 grado: valor === "si" ? prev.discapacidad.grado : "" // Reset grado si no es "sí"
             }
         }));
@@ -148,7 +146,7 @@ export default function Questionario({ onComplete }) {
         }));
     };
 
-    // PÁGINA 3 - Toggle retos
+    // PÁGINA 3 - Dificultades - retos
     const toggleReto = (id) => {
         setSummary(prev => ({
             ...prev,
