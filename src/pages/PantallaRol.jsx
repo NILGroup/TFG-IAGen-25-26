@@ -1,5 +1,5 @@
 /**
- * PantallaModo.jsx
+ * PantallaRol.jsx
  *
  * Pantalla que aparece después del cuestionario inicial.
  * El usuario elige quién le va a acompañar: Profesor o Familia.
@@ -7,9 +7,9 @@
  * junto a las respuestas de la IA en el chat.
  */
 
-import "../styles/PantallaModo.css";
+import "../styles/PantallaRol.css";
 
-export default function PantallaModo({ onSelectMode }) {
+export default function PantallaRol({ onSelectMode }) {
     return (
         <div className="modo-container">
             <div className="modo-content">
@@ -42,7 +42,7 @@ export default function PantallaModo({ onSelectMode }) {
                             alt=""
                             className="modo-img"
                         />
-                        <span className="modo-card-title">Familia</span>
+                        <span className="modo-card-title">Familiar</span>
                     </button>
                 </div>
             </div>

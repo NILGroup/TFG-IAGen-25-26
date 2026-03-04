@@ -12,7 +12,7 @@
 
 import { useState } from "react";
 import Questionario from "./pages/Questionario";
-import PantallaModo from "./pages/PantallaModo";
+import PantallaRol from "./pages/PantallaRol";
 import PantallaEleccion from "./pages/PantallaEleccion";
 import FormularioPrompt from "./components/FormularioPrompt";
 import InterfazPrincipal from "./pages/InterfazPrincipal";
@@ -58,6 +58,11 @@ export default function App() {
     setPaso("eleccion");
   };
 
+  // 6. Para volver a la pantalla de rol
+  const handleVolverARol = () => {
+    setPaso("modo");
+  };
+
   return (
     <div className="app-wrapper">
       {/* Barra superior siempre visible */}
@@ -69,11 +74,14 @@ export default function App() {
       )}
 
       {paso === "modo" && (
-        <PantallaModo onSelectMode={handleModoComplete} />
+        <PantallaRol onSelectMode={handleModoComplete} />
       )}
 
       {paso === "eleccion" && (
-        <PantallaEleccion onSelectOption={handleSelectOption} />
+        <PantallaEleccion
+          onSelectOption={handleSelectOption}
+          onBack={handleVolverARol}
+        />
       )}
 
       {paso === "formulario" && (

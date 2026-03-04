@@ -1,5 +1,6 @@
-/* PantallaModo.css */
+/* PantallaRol.css */
 
+/* Contenedor principal - centra todo en la pantalla */
 .modo-container {
   min-height: calc(100vh - 80px);
   display: flex;
@@ -10,6 +11,7 @@
   box-sizing: border-box;
 }
 
+/* Contenido central - limita el ancho y organiza en columna */
 .modo-content {
   max-width: 700px;
   width: 100%;
@@ -19,6 +21,7 @@
   gap: 1rem;
 }
 
+/* Título principal */
 .modo-title {
   font-size: clamp(1.4rem, 3.5vw, 2.2rem);
   font-weight: bold;
@@ -27,6 +30,7 @@
   margin: 0;
 }
 
+/* Subtítulo explicativo */
 .modo-subtitle {
   font-size: clamp(0.95rem, 2vw, 1.15rem);
   text-align: center;
@@ -34,6 +38,7 @@
   margin: 0;
 }
 
+/* Grid de opciones - 2 columnas */
 .modo-options {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -42,6 +47,7 @@
   margin-top: 0.5rem;
 }
 
+/* Tarjeta de opción - estado normal */
 .modo-card {
   background: white;
   padding: 1.2rem;
@@ -60,6 +66,7 @@
   width: 100%;
 }
 
+/* Tarjeta - estado hover y focus */
 .modo-card:hover,
 .modo-card:focus-visible {
   transform: translateY(-6px);
@@ -67,11 +74,13 @@
   border-color: #2196f3;
 }
 
+/* Tarjeta - estado activo (click) */
 .modo-card:active {
   transform: translateY(-2px);
   border-color: #1565c0;
 }
 
+/* Imagen dentro de la tarjeta */
 .modo-img {
   width: 100%;
   max-width: 200px;
@@ -79,6 +88,7 @@
   border-radius: 1rem;
 }
 
+/* Título dentro de la tarjeta */
 .modo-card-title {
   font-size: clamp(1.1rem, 2.5vw, 1.5rem);
   font-weight: bold;
@@ -87,7 +97,7 @@
   text-align: center;
 }
 
-/* Responsive: 1 columna en movil */
+/* Responsive: 1 columna en móvil */
 @media (max-width: 550px) {
   .modo-options {
     grid-template-columns: 1fr;

@@ -205,7 +205,7 @@ export default function Questionario({ onComplete }) {
             </div>
 
             <div className="summary-row">
-                <span className="summary-title">Perfil:</span>
+                <span className="summary-title">Tu perfil:</span>
                 <ul className="summary-bubbles">
                     {summary.discapacidad.tieneDI ? (
                         <>
