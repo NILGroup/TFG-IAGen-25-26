@@ -287,6 +287,53 @@ ${response}
 
     }, [sendCustomPrompt]);
 
+    /*===================================================
+    * EXPLICAR TEXTO SELECCIONADO EN FORMA DE BOCADILLO
+    * ===================================================*/
+    const explainWord = useCallback(async (selectedText) => {
+
+        if (selectedText && selectedText.trim()) {
+            const cleanText = selectedText.trim();
+            
+            const smartPrompt = `
+            Eres un asistente experto en accesibilidad cognitiva.
+            El usuario ha seleccionado el siguiente texto: "${cleanText}"
+
+            INSTRUCCIONES:
+            Fase 1: Analiza si el texto seleccionado es una sola palabra/expresión corta, o si es una frase/oración completa.
+            Fase 2: Actúa según el caso:
+
+            CASO A - Si es una PALABRA o EXPRESIÓN:
+            Devuelve EXACTAMENTE este formato:
+            Definición: [definición muy breve y sencilla, máximo 2 líneas]
+            Sinónimos: [2 o 3 sinónimos populares]
+
+            CASO B - Si es una FRASE u ORACIÓN:
+            Devuelve EXACTAMENTE este formato:
+            Reformulación: [Reescribe la frase de la forma más sencilla, directa y fácil de entender posible]
+
+            REGLA ESTRICTA DE SALIDA: No saludes, no expliques tu razonamiento de la Fase 1, ni añadas texto extra. Devuelve ÚNICAMENTE el resultado del Caso A o del Caso B.
+            `;
+
+            const messages = [{ role: "user", content: smartPrompt }];
+
+            try {
+                // Llamada silenciosa a la IA
+                const response = await fetchFromGroq(messages);
+                return response; 
+                
+            } catch (error) {
+                console.error("Error al procesar el texto:", error);
+                return "Error al analizar el texto.";
+            }
+
+        } else {
+            console.warn("No se ha seleccionado texto válido.");
+            return null;
+        }
+
+    }, []);
+
     return {
         sendPrompt,
         sendCustomPrompt,
@@ -295,6 +342,7 @@ ${response}
         requestSimplifiedResponse,
         requestSynonyms,
         generateTitleFromChat,
+        explainWord,
     };
 };
 

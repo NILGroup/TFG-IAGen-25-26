@@ -230,7 +230,8 @@ export default function InterfazPrincipal({ summary, promptInicial, onBack }) {
         requestExample,
         requestSimplifiedResponse,
         requestSynonyms,
-        generateTitleFromChat
+        generateTitleFromChat,
+        explainWord
     } = usePromptFunctions({
         summary,
         chatFlow,
@@ -247,6 +248,48 @@ export default function InterfazPrincipal({ summary, promptInicial, onBack }) {
         prompt,
         selectedOption
     });
+
+    /** ===================================
+     * ESTADO PARA EL BOCADILLO EXPLICATIVO
+     * ===================================
+     */
+    const [tooltipInfo, setTooltipInfo] = useState({
+        visible: false, // Si se ve el bocadillo en pantalla
+        x: 0,           // Posicion del bocadillo
+        y: 0,           
+        content: "",    // Lo que mostramos
+        loading: false  
+    });
+
+    const handleTextSelection = async () => {
+        const selection = window.getSelection(); //texto seleccionado
+        const text = selection.toString().trim();
+
+        if (text.length > 0) { //se ha seleccionado texto (no es solo un click random)
+            
+            const range = selection.getRangeAt(0); 
+            const rect = range.getBoundingClientRect();
+
+            setTooltipInfo({
+                visible: true,
+                x: rect.left + window.scrollX + (rect.width / 2), // centro de la palabra
+                y: rect.top + window.scrollY - 10,                // un poco por encima
+                content: "",
+                loading: true
+            });
+
+            const respuestaIA = await explainWord(text); //llamada IA
+
+            setTooltipInfo(prev => ({
+                ...prev,
+                content: respuestaIA,
+                loading: false
+            }));
+
+        } else { //si es un click random no mostramos nada
+            setTooltipInfo({ visible: false, x: 0, y: 0, content: "", loading: false });
+        }
+    };
 
     /** ===================================
      *  ESTADOS Y LÓGICA PARA EL HISTORIAL
@@ -472,14 +515,50 @@ export default function InterfazPrincipal({ summary, promptInicial, onBack }) {
             ) : (
                 <>
                     {/*LÓGICA GENERADOR DE RESPUESTA Y MANEJO CHAT*/}
-                    <Chat
-                        chatFlow={chatFlow}
-                        expandedResponses={expandedResponses}
-                        toggleExpanded={toggleExpanded}
-                        toggleSpeech={toggleSpeech}
-                        activeSpeechId={activeSpeechId}
-                        speechState={speechState}
-                    />
+                    
+                    {/* envolvemos chat para vigilar los clicks del ratón*/}
+                    <div className="chat-selection-area" onMouseUp={handleTextSelection}>
+                        
+                        <Chat
+                            chatFlow={chatFlow}
+                            expandedResponses={expandedResponses}
+                            toggleExpanded={toggleExpanded}
+                            toggleSpeech={toggleSpeech}
+                            activeSpeechId={activeSpeechId}
+                            speechState={speechState}
+                        />
+
+                        {/* BOCADILLO */}
+                        {tooltipInfo.visible && (
+                            <div 
+                                style={{
+                                    position: "absolute",
+                                    top: `${tooltipInfo.y}px`,
+                                    left: `${tooltipInfo.x}px`,
+                                    transform: "translate(-50%, -100%)",
+                                    backgroundColor: "white",
+                                    border: "2px solid #5C32A8",
+                                    borderRadius: "10px",
+                                    padding: "10px",
+                                    boxShadow: "0px 4px 6px rgba(0,0,0,0.1)",
+                                    zIndex: 1000,
+                                    maxWidth: "250px",
+                                    fontSize: "14px",
+                                    color: "black" 
+                                }}
+                            >
+                                {tooltipInfo.loading ? (
+                                    <span>✨ Pensando...</span>
+                                ) : (
+                                    <div style={{ whiteSpace: "pre-wrap" }}>
+                                        {tooltipInfo.content}
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                    </div> 
+
 
                     {/*LÓGICA BOTONES INTERACCIÓN CON RESPUESTA*/}
                     <BotonesInteraccion
@@ -509,7 +588,6 @@ export default function InterfazPrincipal({ summary, promptInicial, onBack }) {
                     />
                 </>
             )}
-
 
         </div>
     );
