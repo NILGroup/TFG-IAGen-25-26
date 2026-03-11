@@ -197,15 +197,15 @@ export default function Questionario({ onComplete }) {
     // PÁGINA 5 - Resumen con etiquetas claras
     const generateSummary = () => (
         <div className="summary-box-horizontal" role="region" aria-label="Resumen de tu configuración">
-            <h3>Tu resumen:</h3>
+            <h3>Resumen:</h3>
 
             <div className="summary-row">
-                <span className="summary-title">Tu nombre:</span>
+                <span className="summary-title">Nombre:</span>
                 <span className="summary-data">{summary.nombre || "No indicado"}</span>
             </div>
 
             <div className="summary-row">
-                <span className="summary-title">Tu perfil:</span>
+                <span className="summary-title">Perfil:</span>
                 <ul className="summary-bubbles">
                     {summary.discapacidad.tieneDI ? (
                         <>
@@ -221,7 +221,7 @@ export default function Questionario({ onComplete }) {
             </div>
 
             <div className="summary-row">
-                <span className="summary-title">Te cuesta:</span>
+                <span className="summary-title">Dificultades:</span>
                 <ul className="summary-bubbles">
                     {summary.retos.length > 0 ? (
                         summary.retos.map((item) => (
@@ -234,7 +234,7 @@ export default function Questionario({ onComplete }) {
             </div>
 
             <div className="summary-row">
-                <span className="summary-title">Te ayudaré:</span>
+                <span className="summary-title">Ayuda:</span>
                 <ul className="summary-bubbles">
                     {summary.herramientas.length > 0 ? (
                         summary.herramientas.map((toolId) => (
@@ -468,17 +468,15 @@ export default function Questionario({ onComplete }) {
             case 5:
                 return (
                     <div className="question-page">
-                        <div className="final-content">
-                            <h2 className="final-title">¡Listo!</h2>
-                            <p className="final-text">
-                                Mira si todo está bien.
-                            </p>
+                        <h2>¡Listo!</h2>
+                        <p className="instruction">
+                            <strong>Mira si todo está bien.</strong>
+                        </p>
 
-                            {generateSummary()}
+                        {generateSummary()}
 
-                            <div className="robot-container">
-                                <img src={robotLogoCuerpo} alt="OlivIA está lista" className="robot-img" />
-                            </div>
+                        <div className="robot-container">
+                            <img src={robotLogoCuerpo} alt="OlivIA está lista" className="robot-img" />
                         </div>
                     </div>
                 );

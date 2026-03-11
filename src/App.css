@@ -582,8 +582,7 @@ body {
   justify-content: flex-start;
   align-items: center;
   margin-top: 0;
-  max-height: calc(100vh - 80px);
-  overflow-y: auto;
+  min-height: calc(100vh - 80px);
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
@@ -592,18 +591,17 @@ body {
 @media (max-width: 768px) {
   .container {
     padding: 15px 20px;
-    max-height: calc(100vh - 70px);
+    min-height: calc(100vh - 70px);
   }
 }
 
-/* Layout fullscreen para el cuestionario: todo en 1 pantalla */
+/* Layout para el cuestionario: usa scroll natural del navegador */
 .container.questionnaire-layout {
-  height: calc(100dvh - 80px);
-  max-height: calc(100dvh - 80px);
-  overflow: hidden;
-  justify-content: space-between;
+  min-height: calc(100dvh - 80px);
+  justify-content: flex-start;
   padding: 15px 30px;
   background: #f5f9fa;
+  gap: 20px;
 }
 
 .questionnaire-content {
@@ -612,16 +610,13 @@ body {
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-  overflow-y: auto;
-  min-height: 0;
   width: 100%;
   padding: 8px 0;
 }
 
 @media (max-width: 768px) {
   .container.questionnaire-layout {
-    height: calc(100dvh - 70px);
-    max-height: calc(100dvh - 70px);
+    min-height: calc(100dvh - 70px);
     padding: 10px 16px;
   }
 }
@@ -764,20 +759,9 @@ body {
 
 
 /*====================================
-*   RESUMEN CUESIONARIO
+*   RESUMEN CUESTIONARIO
 * ====================================*/
 
-/* Contenedor de la página final */
-.final-content {
-  display: flex;
-  flex-direction: column;
-  align-items: left;
-  justify-content: flex-start;
-  text-align: left;
-}
-
-.final-title,
-.final-text,
 .summary-box,
 .summary-box-horizontal,
 .robot-container {
@@ -837,11 +821,11 @@ body {
 /* Contenedor principal del resumen */
 .summary-box {
   font-family: Verdana, Geneva, Tahoma, sans-serif;
-  background-color: #d7e6ff;
-  border: 3px solid #000;
-  border-radius: 15px;
+  background: white;
+  border: 2px solid #d0d0d0;
+  border-radius: 12px;
   padding: 20px 30px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
   max-width: 600px;
   margin: 0;
   text-align: left;
@@ -851,11 +835,11 @@ body {
 
 .summary-box-horizontal {
   font-family: Verdana, Geneva, Tahoma, sans-serif;
-  background-color: #d7e6ff;
-  border: 3px solid #000;
-  border-radius: 15px;
+  background: white;
+  border: 2px solid #d0d0d0;
+  border-radius: 12px;
   padding: 12px 16px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
   max-width: 700px;
   margin: 8px 0;
   text-align: left;
@@ -873,9 +857,10 @@ body {
 
 .summary-row {
   display: flex;
-  align-items: left;
+  align-items: baseline;
+  justify-content: flex-start;
   gap: 10px;
-  flex-wrap: wrap;
+  width: 100%;
 }
 
 .summary-title {
@@ -894,15 +879,16 @@ body {
 
 .summary-bubbles {
   list-style: none;
-  display: flex;
+  display: inline-flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: 6px;
   padding: 0;
   margin: 0;
 }
 
 .summary-bubbles li {
-  background-color: #000366;
+  background-color: #1CA655;
   color: white;
   padding: 4px 10px;
   border-radius: 16px;
