@@ -432,12 +432,12 @@ export default function Questionario({ onComplete }) {
                             <strong>Marca lo que prefieras. Puedes elegir varias.</strong>
                         </p>
 
-                        {/* Grid 2x2 con ejemplos visibles */}
-                        <fieldset className="checkbox-grid-2x2-examples" aria-labelledby="titulo-como-ayudar">
+                        {/* Lista vertical con descripción y ejemplo */}
+                        <fieldset className="checkbox-list-vertical" aria-labelledby="titulo-como-ayudar">
                             {tools.map((tool) => (
                                 <label
                                     key={tool.id}
-                                    className={`checkbox-card-example ${summary.herramientas.includes(tool.id) ? 'checked' : ''}`}
+                                    className={`checkbox-card-row-expanded ${summary.herramientas.includes(tool.id) ? 'checked' : ''}`}
                                     htmlFor={`tool-${tool.id}`}
                                 >
                                     <input
@@ -446,16 +446,18 @@ export default function Questionario({ onComplete }) {
                                         checked={summary.herramientas.includes(tool.id)}
                                         onChange={() => toggleTool(tool.id)}
                                     />
-                                    <div className="card-example-header">
-                                        <span className="card-example-label">{tool.label}</span>
-                                        <span className="card-example-indicator" aria-hidden="true">
-                                            {summary.herramientas.includes(tool.id) ? '✓' : ''}
-                                        </span>
-                                    </div>
-                                    <span className="card-example-desc">{tool.description}</span>
-                                    <div className="card-example-box">
-                                        <span className="card-example-title">Ejemplo:</span>
-                                        <p className="card-example-text">{tool.ejemplo}</p>
+                                    <div className="checkbox-card-row-content">
+                                        <div className="checkbox-card-row-header">
+                                            <span className="checkbox-card-row-label">{tool.label}</span>
+                                            <span className="checkbox-card-row-indicator" aria-hidden="true">
+                                                {summary.herramientas.includes(tool.id) ? '✓' : ''}
+                                            </span>
+                                        </div>
+                                        <span className="checkbox-card-row-desc">{tool.description}</span>
+                                        <div className="checkbox-card-row-example">
+                                            <span className="checkbox-card-row-example-title">Ejemplo:</span>
+                                            <p className="checkbox-card-row-example-text">{tool.ejemplo}</p>
+                                        </div>
                                     </div>
                                 </label>
                             ))}

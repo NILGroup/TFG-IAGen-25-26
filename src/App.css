@@ -263,6 +263,145 @@ body {
 }
 
 /*==================================
+*    LISTA CON EJEMPLOS (Paso 4 - Herramientas)
+*    Versión expandida con descripción y ejemplo
+* ==================================*/
+
+.checkbox-card-row-expanded {
+  display: flex;
+  flex-direction: column;
+  padding: 16px 18px;
+  background: white;
+  border: 2px solid #d0d0d0;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+  text-align: left;
+}
+
+.checkbox-card-row-expanded:hover {
+  border-color: #2196f3;
+  background: #f8fbff;
+}
+
+.checkbox-card-row-expanded:focus-within {
+  outline: 3px solid #2196f3;
+  outline-offset: 2px;
+}
+
+.checkbox-card-row-expanded.checked {
+  border-color: #43a047;
+  border-width: 3px;
+  background: #e8f5e9;
+}
+
+.checkbox-card-row-expanded input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.checkbox-card-row-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  text-align: left;
+}
+
+.checkbox-card-row-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.checkbox-card-row-expanded .checkbox-card-row-label {
+  font-size: 17px;
+  font-weight: 700;
+  color: #1a1a2e;
+  text-align: left;
+}
+
+.checkbox-card-row-expanded .checkbox-card-row-indicator {
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  border: 3px solid #bbb;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: bold;
+  color: white;
+  background: white;
+  transition: all 0.2s ease;
+}
+
+.checkbox-card-row-expanded.checked .checkbox-card-row-indicator {
+  border-color: #43a047;
+  background: #43a047;
+}
+
+.checkbox-card-row-expanded .checkbox-card-row-desc {
+  font-size: 14px;
+  color: #555;
+  line-height: 1.4;
+  text-align: left;
+}
+
+.checkbox-card-row-example {
+  background: #e3f2fd;
+  border: 1px solid #90caf9;
+  border-radius: 8px;
+  padding: 10px;
+  margin-top: 4px;
+  text-align: left;
+}
+
+.checkbox-card-row-example-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #1565c0;
+  display: block;
+  margin-bottom: 4px;
+  text-align: left;
+}
+
+.checkbox-card-row-example-text {
+  font-size: 13px;
+  color: #333;
+  margin: 0;
+  line-height: 1.4;
+  white-space: pre-line;
+  text-align: left;
+}
+
+@media (max-width: 480px) {
+  .checkbox-card-row-expanded {
+    padding: 14px;
+  }
+
+  .checkbox-card-row-expanded .checkbox-card-row-label {
+    font-size: 16px;
+  }
+
+  .checkbox-card-row-expanded .checkbox-card-row-desc {
+    font-size: 13px;
+  }
+
+  .checkbox-card-row-example {
+    padding: 8px;
+  }
+
+  .checkbox-card-row-example-text {
+    font-size: 12px;
+  }
+}
+
+/*==================================
 *    RADIO BUTTONS (Paso 2 - Perfil)
 * ==================================*/
 
@@ -403,154 +542,6 @@ body {
 
   .radio-group legend.question-label {
     font-size: 16px;
-  }
-}
-
-/*==================================
-*    GRID 2x2 CON EJEMPLOS (Página 4)
-* ==================================*/
-
-.checkbox-grid-2x2-examples {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-  width: 100%;
-  max-width: 700px;
-  margin: 0 auto;
-  border: none;
-  padding: 0;
-}
-
-.checkbox-card-example {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  padding: 14px;
-  background: white;
-  border: 2px solid #d0d0d0;
-  border-radius: 14px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-}
-
-/* Efecto hover para las tarjetas de ejemplo cuando se pasa el mouse por encima */
-.checkbox-card-example:hover { 
-  border-color: #2196f3;
-  background: #f8fbff;
-}
-
-.checkbox-card-example:focus-within {
-  outline: 3px solid #2196f3;
-  outline-offset: 2px;
-}
-
-.checkbox-card-example.checked {
-  border-color: #43a047;
-  border-width: 3px;
-  background: #f1f8f2;
-}
-
-.checkbox-card-example input[type="checkbox"] {
-  position: absolute;
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-.card-example-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: left;
-  margin-bottom: 6px;
-}
-
-.card-example-label {
-  font-size: 16px;
-  font-weight: 700;
-  color: #1a1a2e;
-}
-
-.card-example-indicator {
-  width: 28px;
-  height: 28px;
-  min-width: 28px;
-  border: 3px solid #bbb;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-  font-weight: bold;
-  color: white;
-  background: white;
-  transition: all 0.2s ease;
-}
-
-.checkbox-card-example.checked .card-example-indicator {
-  border-color: #43a047;
-  background: #43a047;
-}
-
-.card-example-desc {
-  font-size: 13px;
-  color: #555;
-  margin-bottom: 10px;
-  line-height: 1.4;
-  text-align: left;
-}
-
-.card-example-box {
-  background: #e3f2fd;
-  border: 1px solid #90caf9;
-  border-radius: 8px;
-  padding: 10px;
-  text-align: left;
-}
-
-.card-example-title {
-  font-size: 12px;
-  font-weight: 600;
-  color: #1565c0;
-  display: block;
-  margin-bottom: 4px;
-  align-items: center;
-  text-align: left;
-}
-
-.card-example-text {
-  font-size: 12px;
-  color: #333;
-  margin: 0;
-  line-height: 1.4;
-  white-space: pre-line;
-}
-
-/* Responsive para grid con ejemplos */
-@media (max-width: 550px) {
-  .checkbox-grid-2x2-examples {
-    grid-template-columns: 1fr;
-    gap: 10px;
-  }
-
-  .checkbox-card-example {
-    padding: 12px;
-  }
-
-  .card-example-label {
-    font-size: 15px;
-  }
-
-  .card-example-desc {
-    font-size: 12px;
-  }
-
-  .card-example-box {
-    padding: 8px;
-  }
-
-  .card-example-text {
-    font-size: 11px;
   }
 }
 
