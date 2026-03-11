@@ -14,7 +14,7 @@ import { useState } from "react";
 import Questionario from "./pages/Questionario";
 import PantallaRol from "./pages/PantallaRol";
 import PantallaEleccion from "./pages/PantallaEleccion";
-import FormularioPrompt from "./components/FormularioPrompt";
+import FormularioPrompt from "./pages/FormularioPrompt";
 import InterfazPrincipal from "./pages/InterfazPrincipal";
 import "./App.css";
 
@@ -63,12 +63,17 @@ export default function App() {
     setPaso("modo");
   };
 
+  // Las páginas formulario y chat tienen su propio header con botones
+  const paginasConHeaderPropio = paso === "formulario" || paso === "chat";
+
   return (
     <div className="app-wrapper">
-      {/* Barra superior siempre visible */}
-      <div className="header-bar">OlivIA</div>
+      {/* Barra superior - solo para páginas sin header propio */}
+      {!paginasConHeaderPropio && (
+        <div className="header-bar">OlivIA</div>
+      )}
 
-      {/* Renderizado condicional según el paso */}
+      {/* Renderizado condicional según el paso */} 
       {paso === "cuestionario" && (
         <Questionario onComplete={handleQuestionnaireComplete} />
       )}

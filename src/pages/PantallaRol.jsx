@@ -7,7 +7,7 @@
  * junto a las respuestas de la IA en el chat.
  */
 
-import "../styles/PantallaRol.css";
+import "../styles/Pantallas.css";
 
 export default function PantallaRol({ onSelectMode }) {
     return (

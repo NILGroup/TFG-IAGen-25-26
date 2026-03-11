@@ -7,14 +7,14 @@
  * 2. "Directa" - Le permite escribir libremente sin ayuda
  */
 
-import "../styles/PantallaEleccion.css";
+import "../styles/Pantallas.css";
 
 export default function PantallaEleccion({ onSelectOption, onBack }) {
     return (
         <div className="eleccion-container">
             <div className="eleccion-content">
                 {/* Botón volver */}
-                <button className="eleccion-back-btn" onClick={onBack}>
+                <button className="pantalla-back-btn" onClick={onBack}>
                     Volver
                 </button>
 

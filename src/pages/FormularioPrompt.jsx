@@ -6,13 +6,31 @@
  * Diseñado para usuarios con discapacidad cognitiva.
  */
 
-import "../styles/FormularioPrompt.css";
+import "../styles/Pantallas.css";
 import { useState } from "react";
+import ConfigPanel from "../components/ConfigPanel";
+import ChatHistory from "../components/ChatHistory";
 
 export default function FormularioPrompt({ onComplete, onBack, summary }) {
   // Estados para las 2 preguntas
   const [tema, setTema] = useState("");
   const [objetivo, setObjetivo] = useState("");
+
+  // Estados para configuración
+  const [showConfig, setShowConfig] = useState(false);
+  const [savedEffect, setSavedEffect] = useState(false);
+  const [tempSummary, setTempSummary] = useState({ ...summary });
+  const [editingField, setEditingField] = useState(null);
+
+  // Estados para historial
+  const [showHistory, setShowHistory] = useState(false);
+  const [chatHistory, setChatHistory] = useState([]);
+  const [activeChat, setActiveChat] = useState(null);
+  const [chatFlow, setChatFlow] = useState([]);
+  const [showChat, setShowChat] = useState(false);
+  const [showHelpOptions, setShowHelpOptions] = useState(false);
+
+  const toggleHistory = () => setShowHistory(!showHistory);
 
   // Función para generar el prompt
   const generarPrompt = () => {
@@ -37,14 +55,59 @@ export default function FormularioPrompt({ onComplete, onBack, summary }) {
     onComplete(promptFinal);
   };
 
-  // Validar que al menos el objetivo esté respondido
-  const esFormularioValido = objetivo.trim() !== "";
+  // Validar que ambas preguntas estén respondidas
+  const esFormularioValido = tema.trim() !== "" && objetivo.trim() !== "";
 
   return (
-    <div className="formulario-container">
-      <div className="formulario-content">
+    <div className="app-wrapper">
+      {/* Header con logo y botones */}
+      <div className="header-bar">
+        OlivIA
+
+        <button
+          className={`history-btn ${showHistory ? "open" : "closed"}`}
+          onClick={toggleHistory}
+        >
+          {showHistory ? "Cerrar Historial" : "Abrir Historial"}
+        </button>
+
+        <button
+          className={`config-btn ${showConfig ? "open" : "closed"}`}
+          onClick={() => setShowConfig(!showConfig)}
+        >
+          {showConfig ? "Cerrar Configuración" : "Configuración"}
+        </button>
+
+        {/* Panel de historial */}
+        <ChatHistory
+          showHistory={showHistory}
+          chatHistory={chatHistory}
+          activeChat={activeChat}
+          chatFlow={chatFlow}
+          setActiveChat={setActiveChat}
+          setChatFlow={setChatFlow}
+          setShowChat={setShowChat}
+          setShowHelpOptions={setShowHelpOptions}
+          setChatHistory={setChatHistory}
+        />
+      </div>
+
+      {/* Panel de configuración */}
+      {showConfig && (
+        <ConfigPanel
+          summary={summary}
+          tempSummary={tempSummary}
+          setTempSummary={setTempSummary}
+          savedEffect={savedEffect}
+          setSavedEffect={setSavedEffect}
+          setEditingField={setEditingField}
+        />
+      )}
+
+      <div className="formulario-container">
+        <div className="formulario-content">
         {/* Botón volver */}
-        <button className="formulario-back-btn" onClick={onBack}>
+        <button className="pantalla-back-btn" onClick={onBack}>
           Volver
         </button>
 
@@ -74,7 +137,7 @@ export default function FormularioPrompt({ onComplete, onBack, summary }) {
         {/* PREGUNTA 2: Objetivo */}
         <div className="formulario-card">
           <label className="formulario-label">
-            2. ¿Qué quieres que haga OlivIA por ti? *
+            2. ¿Qué quieres que haga OlivIA por ti?
           </label>
           <p className="formulario-helper">
             Por ejemplo: Explícame, Ayúdame a entender, Cuéntame, Dame ejemplos de...
@@ -99,9 +162,10 @@ export default function FormularioPrompt({ onComplete, onBack, summary }) {
 
         {!esFormularioValido && (
           <p className="formulario-validation">
-            * Escribe qué quieres que haga OlivIA
+            Completa las dos preguntas para continuar
           </p>
         )}
+        </div>
       </div>
     </div>
   );

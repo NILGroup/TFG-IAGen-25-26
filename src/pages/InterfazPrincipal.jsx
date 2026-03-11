@@ -458,7 +458,7 @@ export default function InterfazPrincipal({ summary, modoSeleccionado, promptIni
                                 setPrompt("");
                             }}
                         >
-                            🔍 ¡Descubrir Respuesta!
+                            ¡Descubrir Respuesta!
                         </button>
                     </div>
                 </>
