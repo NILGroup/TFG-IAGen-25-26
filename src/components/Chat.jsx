@@ -12,21 +12,38 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm"; // Para tablas, tachados, listas de tareas, etc.
 import rehypeRaw from "rehype-raw"; // Para renderizar HTML directo (como <br>, <center>...)
 
+const BASE = import.meta.env.BASE_URL;
+const AVATAR_IMAGES = {
+    profesor: `${BASE}Profesor_avatar.png`,
+    familiar: `${BASE}Familiar_avatar.png`
+};
+
 export default function Chat({
     chatFlow,            // Array que contiene todos los mensajes del chat (usuario y IA)
     expandedResponses,   // Objeto que indica qué respuestas están expandidas
     toggleExpanded,      // Función para alternar entre "ver más" y "ver menos"
     toggleSpeech,        // Función para reproducir/pausar/reanudar el texto con síntesis de voz
     activeSpeechId,      // ID del mensaje actualmente siendo leído por voz
-    speechState          // Estado de la reproducción de voz: "idle" (inactivo), "playing" (leyendo) o "paused" (esperando reanudación)
+    speechState,         // Estado de la reproducción de voz: "idle" (inactivo), "playing" (leyendo) o "paused" (esperando reanudación)
+    avatarMode           // Modo seleccionado: "profesor" | "familiar"
 }) {
+    const avatarSrc = avatarMode ? AVATAR_IMAGES[avatarMode] : null;
+
     return (
-        <div className="chat-wrapper">
+        <div className="chat-wrapper" aria-live="polite" aria-relevant="additions">
             {chatFlow.map((entry, index) => (
                 <div
                     key={index}
                     className={`chat-container ${entry.type === "user" ? "user-container" : "ai-container"}`}
                 >
+                    {/* Avatar junto a respuestas de la IA */}
+                    {entry.type === "ai" && avatarSrc && (
+                        <img
+                            src={avatarSrc}
+                            alt={avatarMode === "profesor" ? "Profesor" : "Familia"}
+                            className="chat-avatar"
+                        />
+                    )}
                     <div className={`chat-message ${entry.type === "user" ? "user-message" : "ai-message"}`}>
 
                         {/* Muestra el contenido del mensaje en formato Markdown */}
@@ -56,19 +73,28 @@ export default function Chat({
                                 <button
                                     className="audio-btn"
                                     onClick={() => toggleSpeech(entry.content, index)}
+                                    aria-label={
+                                        activeSpeechId !== index || speechState === "idle"
+                                            ? "Reproducir en voz alta"
+                                            : speechState === "playing"
+                                                ? "Pausar lectura"
+                                                : "Reanudar lectura"
+                                    }
                                     title={
                                         activeSpeechId !== index || speechState === "idle"
-                                            ? "🔊 Reproducir"
+                                            ? "Reproducir"
                                             : speechState === "playing"
-                                                ? "⏸️ Pausar"
-                                                : "▶️ Reanudar"
+                                                ? "Pausar"
+                                                : "Reanudar"
                                     }
                                 >
+                                    <span aria-hidden="true">
                                     {activeSpeechId !== index || speechState === "idle"
                                         ? "🔊"
                                         : speechState === "playing"
                                             ? "⏸️"
                                             : "▶️"}
+                                    </span>
                                 </button>
                             </div>
                         )}

@@ -23,7 +23,7 @@ import ChatHistory from "../components/ChatHistory";
 import Chat from "../components/Chat";
 import BotonesInteraccion from "../components/BotonesInteraccion";
 
-export default function InterfazPrincipal({ summary, promptInicial, onBack }) {
+export default function InterfazPrincipal({ summary, modoSeleccionado, promptInicial, onBack }) {
 
 
     /** ===============================
@@ -319,11 +319,6 @@ export default function InterfazPrincipal({ summary, promptInicial, onBack }) {
     const [editingField, setEditingField] = useState(null);
     const [tempSummary, setTempSummary] = useState({ ...summary });
 
-    const [otraOpciones, setOtraOpciones] = useState({
-        discapacidad: { activa: false, valor: "", guardado: false },
-        retos: { activa: false, valor: "", guardado: false }
-    });
-
     /** =============================================
      *  EFECTO PARA CARGAR PROMPT INICIAL
      *  =============================================
@@ -386,8 +381,6 @@ export default function InterfazPrincipal({ summary, promptInicial, onBack }) {
                     summary={summary}
                     tempSummary={tempSummary}
                     setTempSummary={setTempSummary}
-                    otraOpciones={otraOpciones}
-                    setOtraOpciones={setOtraOpciones}
                     savedEffect={savedEffect}
                     setSavedEffect={setSavedEffect}
                     setEditingField={setEditingField}
@@ -408,7 +401,7 @@ export default function InterfazPrincipal({ summary, promptInicial, onBack }) {
 
             {/*GENERADOR/SELECCIONADOR DE PREGUNTA*/}
             {!showChat ? (
-                <>
+                <div className="principal-container">
                     {/* Botón volver a elegir modo */}
                     {onBack && (
                         <button className="back-to-choice-btn" onClick={onBack}>
@@ -417,32 +410,14 @@ export default function InterfazPrincipal({ summary, promptInicial, onBack }) {
                     )}
 
                     {/* Logo y saludo inicial personalizado */}
-                    <img src={robotLogo} alt="AventurIA Logo" className="robot-logo" />
+                    <div className="icon-container">
+                        <img src={robotLogo} alt="AventurIA Logo" className="robot-logo" />
+                    </div>
                     <h1 className="title">
                         {summary?.nombre
                             ? `Hola ${summary.nombre}, ¿Qué vamos a aprender hoy?`
                             : "Hola ¿Qué vamos a aprender hoy?"}
                     </h1>
-
-                    {/* Opciones de preguntas predefinidas */}
-                    <div className="box-container">
-                        <div className="grid">
-                            {options.map((option) => (
-                                <button
-                                    key={option.id}
-                                    className={`btn ${option.color}`}
-                                    onClick={() => handleOptionClick(option)}
-                                >
-                                    {option.text} ___{option.needsQuestionMark ? " ?" : ""}
-                                </button>
-                            ))}
-                        </div>
-
-                        {/* Botón para escribir una pregunta personalizada */}
-                        <button className="custom-btn" onClick={handleResetQuestion}>
-                            Quiero ayuda para escribir mi pregunta
-                        </button>
-                    </div>
 
                     {/* Input para la pregunta */}
                     <div className={`question-container ${selectedOption ? selectedOption.color : ""}`}>
@@ -470,10 +445,10 @@ export default function InterfazPrincipal({ summary, promptInicial, onBack }) {
                                 setPrompt("");
                             }}
                         >
-                            🔍 ¡Descubrir Respuesta!
+                            ¡Descubrir Respuesta!
                         </button>
                     </div>
-                </>
+                </div>
             ) : (
                 <>
                     {/*LÓGICA GENERADOR DE RESPUESTA Y MANEJO CHAT*/}
@@ -484,6 +459,7 @@ export default function InterfazPrincipal({ summary, promptInicial, onBack }) {
                         toggleSpeech={toggleSpeech}
                         activeSpeechId={activeSpeechId}
                         speechState={speechState}
+                        avatarMode={modoSeleccionado}
                     />
 
                     {/*LÓGICA BOTONES INTERACCIÓN CON RESPUESTA*/}

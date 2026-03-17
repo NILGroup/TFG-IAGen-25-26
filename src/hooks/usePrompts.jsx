@@ -41,6 +41,41 @@ const usePromptFunctions = ({
         const userDisabilities = summary.discapacidad?.length > 0 ? summary.discapacidad.join(", ") : "Ninguna específica";
         const userChallenges = summary.retos?.length > 0 ? summary.retos.join(", ") : "Ninguno específico";
         const userTools = summary.herramientas?.length > 0 ? summary.herramientas.join(", ") : "Ninguna preferencia marcada";
+        // Construir descripción de discapacidad
+        const buildDiscapacidadText = () => {
+            if (!summary.discapacidad?.tieneDI) return "Sin discapacidad específica";
+
+            const tieneDIMap = {
+                "si": "Tengo discapacidad intelectual",
+                "no": "No tengo discapacidad intelectual",
+                "no_se": "No estoy seguro/a de tener discapacidad intelectual",
+                "prefiero_no": "Prefiero no indicar información sobre discapacidad"
+            };
+
+            const gradoMap = {
+                "leve": "de grado leve",
+                "moderada": "de grado moderado",
+                "severa": "de grado severo",
+                "profunda": "de grado profundo",
+                "no_se": "(grado no especificado)",
+                "prefiero_no": ""
+            };
+
+            let texto = tieneDIMap[summary.discapacidad.tieneDI] || "";
+            if (summary.discapacidad.tieneDI === "si" && summary.discapacidad.grado) {
+                const gradoTexto = gradoMap[summary.discapacidad.grado];
+                if (gradoTexto) texto += ` ${gradoTexto}`;
+            }
+            return texto;
+        };
+
+        // Estructura CO-STAR
+        const context = `Soy un usuario con las siguientes características: ${buildDiscapacidadText()}.`;
+        const objective = `Tu tarea principal es responder a la siguiente consulta: "${promptText}"`;
+        const style = `Utiliza el siguiente estilo o herramientas de apoyo: ${summary.herramientas?.join(", ") || "Lenguaje claro y sencillo"}.`;
+        const tone = `Mantén un tono empático, paciente y respetuoso.`;
+        const audience = `La respuesta es para mí. Debes evitar estrictamente: ${summary.retos?.join(", ") || "Ninguna limitación adicional"}.`;
+        const response = `Asegúrate de que la respuesta cumpla con todas las restricciones anteriores.`;
 
         // Por defecto el rol es "familiar", se actualiza desde summary.rol cuando el frontend lo establezca
         const userRole = summary.rol?.toLowerCase() || "familiar";
