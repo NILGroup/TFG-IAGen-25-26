@@ -8,6 +8,7 @@ h1,
   font-size: 36px;
   /* Se ajusta dentro del rango pedido */
   font-weight: bold;
+  
 }
 
 /* Tamaño de H2 entre 24-32px */
@@ -96,7 +97,7 @@ body {
 .title {
   font-size: 60px;
   font-weight: bold;
-  margin-bottom: 60px;
+  margin-bottom: 30px;
   text-align: center;
   color: black;
 }
@@ -607,7 +608,6 @@ body {
 .questionnaire-content {
   flex: 1;
   display: flex;
-  flex-direction: column;
   justify-content: flex-start;
   align-items: center;
   width: 100%;
@@ -1569,7 +1569,6 @@ body {
   padding: 25px;
   border-radius: 12px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  margin-top: 90px;
   width: 80%;
   max-width: 800px;
   transition: background-color 0.3s, border-color 0.3s;
@@ -1848,7 +1847,6 @@ body {
   background-color: #059c16;
   color: white;
 
-
 }
 
 .help-btn.gray {
@@ -2001,4 +1999,27 @@ body {
 
 .see-more-btn:hover {
   background-color: #dceeff;
+}
+
+/* CONTENEDOR PAGINA TRAS ELECCION ROL */
+.principal-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 20px;
+  margin-top: 50px;
+  background-color: white;
+  border-radius: 20px;
+  width: 50vw;
+  min-width: 50vw;
+  max-width: 50vw;
+  min-height: 80vh;
+}
+.icon-container {
+  display: flex;
+  justify-content: top;
+  align-items: center;
+  width: 100%;
+  height: 20px;
 }

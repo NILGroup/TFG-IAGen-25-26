@@ -294,7 +294,9 @@ export default function Questionario({ onComplete }) {
             case 1:
                 return (
                     <div className="question-page">
-                        <img src={robotLogo} alt="Robot OlivIA" className="robot-logo" />
+                        <div className="icon-container">
+                            <img src={robotLogo} alt="Robot OlivIA" className="robot-logo" />
+                        </div>
                         <h2>¡Hola! Soy OlivIA</h2>
                         <p>Te ayudaré a aprender y resolver dudas.</p>
                         <label htmlFor="user-name" className="question-label">
@@ -491,7 +493,7 @@ export default function Questionario({ onComplete }) {
      */
 
     return (
-        <div className="container questionnaire-layout">
+        <div className="principal-container">
             <ProgressStepper currentStep={page} />
 
             <div className="questionnaire-content">
