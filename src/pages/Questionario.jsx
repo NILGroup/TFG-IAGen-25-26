@@ -306,7 +306,7 @@ export default function Questionario({ onComplete }) {
                         <input
                             id="user-name"
                             type="text"
-                            placeholder="Escribe tu nombre..."
+                            placeholder="Escribe tu nombre..."      
                             className="custom-input"
                             autoComplete="name"
                             value={summary.nombre}
@@ -503,11 +503,11 @@ export default function Questionario({ onComplete }) {
 
             <div className={`nav-buttons ${page === 1 ? "center-nav" : "right-nav"}`}>
                 {page > 1 && page < 5 && <button className="back-btn" onClick={prevPage}>Anterior</button>}
-                {page < 5 && <button className="next-btn" onClick={nextPage}>Siguiente →</button>}
+                {page < 5 && <button className="next-btn" onClick={nextPage}>Siguiente</button>}
                 {page === 5 && (
                     <>
                         <button className="back-btn" onClick={() => setPage(1)}>Cambiar algo</button>
-                        <button className="next-btn green" onClick={() => onComplete(summary)}>Todo bien, empezar →</button>
+                        <button className="next-btn" onClick={() => onComplete(summary)}>Empezar</button>
                     </>
                 )}
             </div>

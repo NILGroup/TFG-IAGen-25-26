@@ -678,8 +678,6 @@ body {
   background: white;
   width: 100%;
   flex-shrink: 0;
-  border-top: 2px solid #e0e0e0;
-  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.08);
 }
 
 @media (max-width: 768px) {
@@ -711,6 +709,7 @@ body {
   cursor: pointer;
   border-radius: 8px;
   font-weight: bold;
+  box-shadow: none;
 }
 
 .back-btn {
@@ -721,8 +720,12 @@ body {
   content: "← ";
 }
 
-.next-btn.green {
+.next-btn {
   background: #1CA655;
+}
+
+.next-btn::after {
+  content: " → ";
 }
 
 /*==================================
@@ -745,7 +748,7 @@ body {
 }
 
 .custom-input::placeholder {
-  color: #7a7a7a;
+  color: #595959;
   font-weight: normal;
   text-align: left;
 }
@@ -966,7 +969,7 @@ body {
 
 .stepper-circle.pending {
   background-color: #e0e0e0;
-  color: #888;
+  color: #555;
   border: 3px solid #bdbdbd;
 }
 
@@ -2094,5 +2097,5 @@ body {
   justify-content: top;
   align-items: center;
   width: 100%;
-  height: 20px;
+  height: 70px;
 }
