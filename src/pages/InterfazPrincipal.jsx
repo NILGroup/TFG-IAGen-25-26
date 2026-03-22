@@ -23,7 +23,7 @@ import ChatHistory from "../components/ChatHistory";
 import Chat from "../components/Chat";
 import BotonesInteraccion from "../components/BotonesInteraccion";
 
-export default function InterfazPrincipal({ summary, modoSeleccionado, promptInicial, onBack }) {
+export default function InterfazPrincipal({ summary, modoSeleccionado, promptInicial, onBack, onOpenGlossary, onOpenConfig }) {
 
 
     /** ===============================
@@ -345,47 +345,22 @@ export default function InterfazPrincipal({ summary, modoSeleccionado, promptIni
 
         <div className="app-wrapper">
             <div className="header-bar">
-                OlivIA
-
                 <button
-                    className={`history-btn ${showHistory ? "open" : "closed"}`}
-                    onClick={toggleHistory}
+                    className="header-panel-btn header-panel-btn-left"
+                    onClick={onOpenGlossary}
+                    aria-label="Abrir diccionario"
                 >
-                    {showHistory ? "📁 Cerrar Historial" : "📂 Abrir Historial"}
+                    Diccionario
                 </button>
-
+                <span className="header-title">OlivIA</span>
                 <button
-                    className={`config-btn ${showConfig ? "open" : "closed"}`}
-                    onClick={() => setShowConfig(!showConfig)}
+                    className="header-panel-btn header-panel-btn-right"
+                    onClick={onOpenConfig}
+                    aria-label="Abrir configuración"
                 >
-                    {showConfig ? "⚙️ Cerrar Configuración" : "⚙️  Configuración"}
+                    Configuración
                 </button>
-
-                {/*LÓGICA HISTORIAL*/}
-                <ChatHistory
-                    showHistory={showHistory}
-                    chatHistory={chatHistory}
-                    activeChat={activeChat}
-                    chatFlow={chatFlow}
-                    setActiveChat={setActiveChat}
-                    setChatFlow={setChatFlow}
-                    setShowChat={setShowChat}
-                    setShowHelpOptions={setShowHelpOptions}
-                    setChatHistory={setChatHistory}
-                />
-
             </div>
-            {/*LÓGICA CONFIGURACIÓN*/}
-            {showConfig && (
-                <ConfigPanel
-                    summary={summary}
-                    tempSummary={tempSummary}
-                    setTempSummary={setTempSummary}
-                    savedEffect={savedEffect}
-                    setSavedEffect={setSavedEffect}
-                    setEditingField={setEditingField}
-                />
-            )}
             {activeChat && (
                 <div className="chat-wrapper">
                     <div className="chat-container">
@@ -405,7 +380,7 @@ export default function InterfazPrincipal({ summary, modoSeleccionado, promptIni
                     {/* Botón volver a elegir modo */}
                     {onBack && (
                         <button className="back-to-choice-btn" onClick={onBack}>
-                            ← Volver a elegir modo
+                            Volver a elegir modo
                         </button>
                     )}
 
