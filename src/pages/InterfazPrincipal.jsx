@@ -250,7 +250,7 @@ export default function InterfazPrincipal({ summary, modoSeleccionado, promptIni
     });
 
     /** ===================================
-     * ESTADO PARA EL BOCADILLO EXPLICATIVO
+     * ESTADO PARA EL BOCADILLO EXPLICATIVO + GLOSARIO
      * ===================================
      */
     const [tooltipInfo, setTooltipInfo] = useState({
@@ -262,6 +262,8 @@ export default function InterfazPrincipal({ summary, modoSeleccionado, promptIni
         content: "",    // Lo que mostramos
         loading: false  
     });
+
+    const [glossary, setGlossary] = useState([]);
 
     const handleTextSelection = async () => {
         const selection = window.getSelection(); //texto seleccionado
@@ -322,7 +324,7 @@ export default function InterfazPrincipal({ summary, modoSeleccionado, promptIni
     
     // escribimos el prompt según el botón pulsado
     if (accion === "definicion") {
-        promptFinal = `Eres un experto en accesibilidad. Teniendo en cuenta este texto como contexto: "${contexto}", define de forma muy breve, sencilla y en Lectura Fácil (máximo 2 líneas) este término: "${tooltipInfo.text}". Devuelve SOLO la definición.`;
+        promptFinal = `Eres un experto en accesibilidad. Teniendo en cuenta este texto como contexto: "${contexto}", define de forma muy breve (máximo 2 líneas), sencilla y en Lectura Fácil este término: "${tooltipInfo.text}". Devuelve SOLO la definición.`;
     } else if (accion === "sinonimo") {
         promptFinal = `Eres un experto en accesibilidad. Teniendo en cuenta este texto como contexto: "${contexto}", escribe 2 o 3 sinónimos muy fáciles de entender para: "${tooltipInfo.text}". Devuelve SOLO los sinónimos separados por comas.`;
     } else if (accion === "reformular") {
@@ -391,12 +393,6 @@ export default function InterfazPrincipal({ summary, modoSeleccionado, promptIni
         setTooltipInfo({ visible: false, x: 0, y: 0, text: "", type: null, content: "", loading: false });
     };
 
-    /** ===================================
-     *  ESTADO Y LÓGICA PARA GLOSARIO
-     *  ===================================
-     */
-
-    const [glossary, setGlossary] = useState([]);
 
     /** ===================================
      *  ESTADOS Y LÓGICA PARA EL HISTORIAL
