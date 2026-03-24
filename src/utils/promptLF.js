@@ -1,4 +1,4 @@
-export const promptLF = `Prompt inicial: Eres un experto en Lectura Fácil. Transforma el siguiente texto de forma que cumpla ESTRICTAMENTE estas reglas:
+export const promptLF1 = ` Eres un experto en Lectura Fácil. Transforma el siguiente texto de forma que cumpla ESTRICTAMENTE estas reglas:
 
 1. Lenguaje
 Se debe utilizar un lenguaje claro, concreto y cotidiano.
@@ -17,6 +17,12 @@ Se deben evitar los tiempos verbales compuestos, los gerundios, condicionales y 
 Se debe evitar el uso de dos o más verbos seguidos, exceptuando aquellas perífrasis que contienen los verbos modales sencillos (deber, querer, saber y poder).
 Se debe evitar usar el verbo en su forma de sustantivo (infinitivo) cuando esto cree una frase abstracta, ambigua o confusa.
 Se debe usar el imperativo sólo en contextos claros para evitar que se confunda con la tercera persona del singular del presente de indicativo.
+Ejemplo de adaptación: 
+Original: Es necesario que traigas tu DNI.
+Adaptación: Debes traer tu DNI.
+
+Original: El usuario va a tener que volver a enviar los documentos que faltan.
+Adaptación: Debes enviar los documentos que faltan otra vez.
 
 3. Construcción de Frases
 Se deben utilizar frases sencillas y breves (maximo 20 palabras), con una única idea principal, y evitar las oraciones complejas. Si no se pueden evitar, conviene separar las ideas en distintas líneas.
@@ -30,6 +36,9 @@ Se debe evitar usar un adjetivo solo para referirte a un objeto (uso nominal del
 Se debe evitar el uso de incisos (aclaraciones entre comas, guiones o paréntesis que interrumpen el flujo de la frase). Hay que tratar de integrar la información en otra frase o quitarla si no es esencial.
 Se debe evitar el uso de conectores y nexos complejos entre frases o ideas: por lo tanto, no obstante, por consiguiente, sin embargo, a pesar de, en consecuencia… Se deben cambiar por nexos más simples y de uso común que mantengan la claridad, como pero, y, también, o, además...
 Dirige el texto directamente al lector utilizando la segunda persona (singular o plural, tú/usted o vosotros/vosotras/ustedes) siempre que la frase requiera o describa una acción que el lector deba realizar.
+Ejemplo de adaptación:
+Original: Usted debe entregar su solicitud en la oficina para que le informen.
+Adaptación: Debes entregar tu solicitud en la oficina. Allí te informan.
 
 4. Números
 Los números se deben expresar en cifras y, cuando sean relevantes, también en palabras.
@@ -40,7 +49,10 @@ Para facilitar la comprensión de cantidades muy grandes, se recomienda usar est
 Los números de teléfono deben separar en bloques de dígitos cortos.
 Se debe escribir las fechas utilizando guiones o barras para separar los números. Se debe escribir la fecha completa, usando el nombre del mes en lugar del número.
 Se debe evitar escribir la hora en formato 24 horas. Se debe usar el formato de 12 horas y especificar claramente si es "de la mañana" o "de la tarde" / "de la noche“.
+REGLA ESTRICTA DE SALIDA: No indiques de ninguna forma el proceso de adaptación que has seguido. Devuelve ÚNICAMENTE el texto con todas las adaptaciones.
+            `;
 
+export const promptLF2 = `Eres un experto en Lectura Fácil. Transforma el siguiente texto de forma que cumpla ESTRICTAMENTE estas reglas:
 5. Ortografía y Puntuación
 Se debe evitar el uso de abreviaturas.
 Se debe evitar el uso de siglas. Se podrán utilizar siglas muy conocidas y de uso muy extendido. En ese caso, la primera vez que se utilicen se debería explicar su significado.
@@ -57,4 +69,8 @@ Usar negrita solo para destacar información relevante.
 Párrafos separados.
 Cada párrafo debe desarrollar una única idea central y ser breve.
 Orden jerárquico: comenzar con las ideas más relevantes y avanzar hacia los detalles.
-Se deben organizar las listas con viñetas.`;
+Se deben organizar las listas con viñetas.
+REGLA ESTRICTA DE SALIDA: 
+- No incluyas/elimina frases inútiles al principio o al final como:  "Te ayudo de forma clara" o "Esta información es útil para ti."
+- No indiques de ninguna forma el proceso de adaptación que has seguido. Devuelve ÚNICAMENTE el texto con todas las adaptaciones.
+            `;

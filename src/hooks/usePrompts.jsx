@@ -7,8 +7,8 @@
  * un título que englobe toda la conversación.
  */
 
-import { fetchFromGroq } from '../services/apiFunctions';
-import { promptLF } from '../utils/promptLF';
+import { fetchFromGroq, fetchFromGemini } from '../services/apiFunctions';
+import { promptLF1, promptLF2 } from '../utils/promptLF';
 import { useCallback } from "react";
 
 
@@ -117,24 +117,43 @@ ${response}
 
         // Adaptar respuesta a LF
         if (summary && summary.lecturaFacil === true){
-            setChatFlow((prev) => [
-                ...prev.filter((entry) => entry.type !== "loading"),
-                { type: "loading", content: "✨ Adaptando a Lectura Fácil..." }
-            ]);
-            const refinementMessages = [
-                {
-                    role: "user",
-                    content: `${promptLF}\n\n"${response}"`
+                setChatFlow((prev) => [
+                    ...prev.filter((entry) => entry.type !== "loading"),
+                    { type: "loading", content: "✨ Adaptando a Lectura Fácil..." }
+                ]);
+
+                // Primera adaptación
+                const refinementMessages1 = [
+                    {
+                        role: "user",
+                        content: `${promptLF1}\n\n"${response}"`
+                    }
+                ];
+
+                let refinedResponse1 = "";
+                try{
+                    refinedResponse1 = await fetchFromGemini(refinementMessages1); 
                 }
-            ];
+                catch(errorGemini){
+                    console.log("Falló Gemini, usamos Groq");
+                    refinedResponse1 = await fetchFromGroq(refinementMessages1); 
+                }
+                
+                // Segunda adaptación
+                const refinementMessages2 = [
+                    {
+                        role: "user",
+                        content: `${promptLF2}\n\n"${refinedResponse1}"`
+                    }
+                ];
 
-            const refinedResponse = await fetchFromGroq(refinementMessages); // cambiar por fetchFromOllama
+                const refinedResponse2 = await fetchFromGroq(refinementMessages2); 
 
-            if (refinedResponse && !refinedResponse.includes("Error")) {
-                response = refinedResponse;
+                if (refinedResponse2 && !refinedResponse2.includes("Error")) {
+                    response = refinedResponse2;
+                }
+
             }
-        }
-
 
         setChatFlow((prev) => [
             ...prev.filter((entry) => entry.type !== "loading"),
@@ -179,7 +198,7 @@ ${response}
                 { role: "user", content: apiPrompt }
             ];
 
-            let response = await fetchFunction(messages);   //DEPENDIENDO DE LA API QUE SE LE PASE X PARAMETRO SE USA UNA U OTRA
+            let response = await fetchFunction(messages); 
 
             // Adaptar respuesta a LF
             if (summary && summary.lecturaFacil === true){
@@ -187,18 +206,31 @@ ${response}
                     ...prev.filter((entry) => entry.type !== "loading"),
                     { type: "loading", content: "✨ Adaptando a Lectura Fácil..." }
                 ]);
-                const refinementMessages = [
+
+                // Primera adaptación
+                const refinementMessages1 = [
                     {
                         role: "user",
-                        content: `${promptLF}\n\n"${response}"`
+                        content: `${promptLF1}\n\n"${response}"`
                     }
                 ];
 
-                const refinedResponse = await fetchFromGroq(refinementMessages); // cambiar por fetchFromOllama
+                const refinedResponse1 = await fetchFromGemini(refinementMessages1); 
 
-                if (refinedResponse && !refinedResponse.includes("Error")) {
-                    response = refinedResponse;
+                // Segunda adaptación
+                const refinementMessages2 = [
+                    {
+                        role: "user",
+                        content: `${promptLF2}\n\n"${refinedResponse1}"`
+                    }
+                ];
+
+                const refinedResponse2 = await fetchFromGroq(refinementMessages2); 
+
+                if (refinedResponse2 && !refinedResponse2.includes("Error")) {
+                    response = refinedResponse2;
                 }
+
             }
 
             setChatFlow((prev) => [
@@ -290,7 +322,7 @@ ${response}
     /*===================================================
     * EXPLICAR TEXTO SELECCIONADO EN FORMA DE BOCADILLO
     * ===================================================*/
-    const explainWord = useCallback(async (selectedText) => {
+    /*const explainWord = useCallback(async (selectedText) => {
 
         if (selectedText && selectedText.trim()) {
             const cleanText = selectedText.trim();
@@ -305,7 +337,7 @@ ${response}
 
             CASO A - Si es una PALABRA o EXPRESIÓN:
             Devuelve EXACTAMENTE este formato:
-            Definición: [definición muy breve y sencilla, máximo 2 líneas]
+            Definición: [definición muy breve y sencilla, con vocabulario muy común, máximo 2 líneas]
             Sinónimos: [2 o 3 sinónimos populares]
 
             CASO B - Si es una FRASE u ORACIÓN:
@@ -332,7 +364,7 @@ ${response}
             return null;
         }
 
-    }, []);
+    }, []);*/
 
     return {
         sendPrompt,
@@ -342,7 +374,7 @@ ${response}
         requestSimplifiedResponse,
         requestSynonyms,
         generateTitleFromChat,
-        explainWord,
+       // explainWord,
     };
 };
 
