@@ -16,8 +16,6 @@ import PantallaRol from "./pages/PantallaRol";
 import PantallaEleccion from "./pages/PantallaEleccion";
 import FormularioPrompt from "./pages/FormularioPrompt";
 import InterfazPrincipal from "./pages/InterfazPrincipal";
-import GlossaryPanel from "./components/GlossaryPanel";
-import ResponseConfigPanel from "./components/ResponseConfigPanel";
 import "./App.css";
 
 export default function App() {
@@ -26,11 +24,6 @@ export default function App() {
   const [summary, setSummary] = useState(null); // Resumen del cuestionario inicial
   const [modoSeleccionado, setModoSeleccionado] = useState(null); // "profesor" | "familiar"
   const [promptGenerado, setPromptGenerado] = useState(null); // Prompt del formulario
-
-  // Estados para los paneles laterales
-  const [isGlossaryOpen, setIsGlossaryOpen] = useState(false);
-  const [isConfigOpen, setIsConfigOpen] = useState(false);
-  const [responseConfig, setResponseConfig] = useState([]); // Opciones de configuración de respuesta
 
   // 1. Cuando termina el cuestionario inicial
   const handleQuestionnaireComplete = (data) => {
@@ -73,32 +66,11 @@ export default function App() {
   // Las páginas formulario y chat tienen su propio header con botones
   const paginasConHeaderPropio = paso === "formulario" || paso === "chat";
 
-  // Handlers para los paneles
-  const handleApplyConfig = (config) => {
-    setResponseConfig(config);
-  };
-
   return (
     <div className="app-wrapper">
       {/* Barra superior - solo para páginas sin header propio */}
       {!paginasConHeaderPropio && (
-        <div className="header-bar">
-          <button
-            className="header-panel-btn header-panel-btn-left"
-            onClick={() => setIsGlossaryOpen(true)}
-            aria-label="Abrir diccionario"
-          >
-            Diccionario
-          </button>
-          <span className="header-title">OlivIA</span>
-          <button
-            className="header-panel-btn header-panel-btn-right"
-            onClick={() => setIsConfigOpen(true)}
-            aria-label="Abrir configuración"
-          >
-            Configuración
-          </button>
-        </div>
+        <div className="header-bar">OlivIA</div>
       )}
 
       {/* Renderizado condicional según el paso */} 
@@ -122,8 +94,6 @@ export default function App() {
           onComplete={handleFormularioComplete}
           onBack={handleVolverAEleccion}
           summary={summary}
-          onOpenGlossary={() => setIsGlossaryOpen(true)}
-          onOpenConfig={() => setIsConfigOpen(true)}
         />
       )}
 
@@ -133,22 +103,8 @@ export default function App() {
           modoSeleccionado={modoSeleccionado}
           promptInicial={promptGenerado}
           onBack={handleVolverAEleccion}
-          onOpenGlossary={() => setIsGlossaryOpen(true)}
-          onOpenConfig={() => setIsConfigOpen(true)}
         />
       )}
-
-      {/* Paneles laterales */}
-      <GlossaryPanel
-        isOpen={isGlossaryOpen}
-        onClose={() => setIsGlossaryOpen(false)}
-      />
-      <ResponseConfigPanel
-        isOpen={isConfigOpen}
-        onClose={() => setIsConfigOpen(false)}
-        currentConfig={responseConfig}
-        onApply={handleApplyConfig}
-      />
     </div>
   );
 }

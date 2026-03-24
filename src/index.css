@@ -1,138 +1,75 @@
-/* ============================================================================
- * index.css - Estilos globales base
- * Diseño OlivIA - Figma
- * ============================================================================ */
-
-/* Reset y configuración base */
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
+/*@import "tailwindcss";*/
 
 :root {
-  /* Tipografía */
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
-               'Helvetica Neue', Arial, sans-serif, Verdana, Geneva, Tahoma;
-  line-height: 1.6;
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
   font-weight: 400;
 
-  /* Colores base */
-  color-scheme: light;
-  color: #1a1a2e;
-  background-color: #f5f9fa;
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
 
-  /* Optimizaciones de rendering */
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Reset de elementos */
-html, body {
-  margin: 0;
-  padding: 0;
-  min-height: 100vh;
-}
-
-body {
-  display: flex;
-  flex-direction: column;
-  min-width: 320px;
-  background-color: #f5f9fa;
-}
-
-#root {
-  width: 100%;
-  min-height: 100vh;
-}
-
-/* Links */
 a {
   font-weight: 500;
-  color: #1f4189;
-  text-decoration: none;
-  transition: color 0.2s ease;
+  color: #646cff;
+  text-decoration: inherit;
 }
 
 a:hover {
-  color: #2a5497;
-  text-decoration: underline;
+  color: #535bf2;
 }
 
-/* Botones - reset base */
-button {
-  font-family: inherit;
-  font-size: inherit;
-  line-height: inherit;
-  cursor: pointer;
-  border: none;
-  background: none;
-  padding: 0;
+body {
   margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
 }
 
-button:focus-visible {
-  outline: 3px solid #2196f3;
-  outline-offset: 2px;
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
 }
 
-/* Inputs - reset base */
-input,
-textarea,
-select {
+button {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
   font-family: inherit;
-  font-size: inherit;
-  line-height: inherit;
+  background-color: #1a1a1a;
+  cursor: pointer;
+  transition: border-color 0.25s;
 }
 
-/* Imágenes responsive */
-img {
-  max-width: 100%;
-  height: auto;
-  display: block;
+button:hover {
+  border-color: #646cff;
 }
 
-/* Scrollbar personalizado (navegadores WebKit) */
-::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
+button:focus,
+button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
 }
 
-::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 5px;
-}
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #213547;
+    background-color: #ffffff;
+  }
 
-::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
-  border-radius: 5px;
-}
+  a:hover {
+    color: #747bff;
+  }
 
-::-webkit-scrollbar-thumb:hover {
-  background: #a1a1a1;
-}
-
-/* Selección de texto */
-::selection {
-  background-color: #bbdefb;
-  color: #1a1a2e;
-}
-
-/* Focus visible para accesibilidad */
-:focus-visible {
-  outline: 3px solid #2196f3;
-  outline-offset: 2px;
-}
-
-/* Animación reducida para usuarios que lo prefieren */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+  button {
+    background-color: #f9f9f9;
   }
 }

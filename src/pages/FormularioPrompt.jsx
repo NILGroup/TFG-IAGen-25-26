@@ -8,11 +8,29 @@
 
 import "../styles/Pantallas.css";
 import { useState } from "react";
+import ConfigPanel from "../components/ConfigPanel";
+import ChatHistory from "../components/ChatHistory";
 
-export default function FormularioPrompt({ onComplete, onBack, summary, onOpenGlossary, onOpenConfig }) {
+export default function FormularioPrompt({ onComplete, onBack, summary }) {
   // Estados para las 2 preguntas
   const [tema, setTema] = useState("");
   const [objetivo, setObjetivo] = useState("");
+
+  // Estados para configuración
+  const [showConfig, setShowConfig] = useState(false);
+  const [savedEffect, setSavedEffect] = useState(false);
+  const [tempSummary, setTempSummary] = useState({ ...summary });
+  const [editingField, setEditingField] = useState(null);
+
+  // Estados para historial
+  const [showHistory, setShowHistory] = useState(false);
+  const [chatHistory, setChatHistory] = useState([]);
+  const [activeChat, setActiveChat] = useState(null);
+  const [chatFlow, setChatFlow] = useState([]);
+  const [showChat, setShowChat] = useState(false);
+  const [showHelpOptions, setShowHelpOptions] = useState(false);
+
+  const toggleHistory = () => setShowHistory(!showHistory);
 
   // Función para generar el prompt
   const generarPrompt = () => {
@@ -42,30 +60,55 @@ export default function FormularioPrompt({ onComplete, onBack, summary, onOpenGl
 
   return (
     <div className="app-wrapper">
-      {/* Header con logo y botones de paneles */}
+      {/* Header con logo y botones */}
       <div className="header-bar">
+        OlivIA
+
         <button
-          className="header-panel-btn header-panel-btn-left"
-          onClick={onOpenGlossary}
-          aria-label="Abrir diccionario"
+          className={`history-btn ${showHistory ? "open" : "closed"}`}
+          onClick={toggleHistory}
         >
-          Diccionario
+          {showHistory ? "Cerrar Historial" : "Abrir Historial"}
         </button>
-        <span className="header-title">OlivIA</span>
+
         <button
-          className="header-panel-btn header-panel-btn-right"
-          onClick={onOpenConfig}
-          aria-label="Abrir configuración"
+          className={`config-btn ${showConfig ? "open" : "closed"}`}
+          onClick={() => setShowConfig(!showConfig)}
         >
-          Configuración
+          {showConfig ? "Cerrar Configuración" : "Configuración"}
         </button>
+
+        {/* Panel de historial */}
+        <ChatHistory
+          showHistory={showHistory}
+          chatHistory={chatHistory}
+          activeChat={activeChat}
+          chatFlow={chatFlow}
+          setActiveChat={setActiveChat}
+          setChatFlow={setChatFlow}
+          setShowChat={setShowChat}
+          setShowHelpOptions={setShowHelpOptions}
+          setChatHistory={setChatHistory}
+        />
       </div>
+
+      {/* Panel de configuración */}
+      {showConfig && (
+        <ConfigPanel
+          summary={summary}
+          tempSummary={tempSummary}
+          setTempSummary={setTempSummary}
+          savedEffect={savedEffect}
+          setSavedEffect={setSavedEffect}
+          setEditingField={setEditingField}
+        />
+      )}
 
       <div className="formulario-container">
         <div className="formulario-content">
-        {/* Botón volver a elegir modo */}
-        <button className="back-to-choice-btn" onClick={onBack}>
-          Volver a elegir modo
+        {/* Botón volver */}
+        <button className="pantalla-back-btn" onClick={onBack}>
+          Volver
         </button>
 
         {/* Título */}
