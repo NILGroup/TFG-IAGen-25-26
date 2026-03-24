@@ -115,6 +115,7 @@ export default function Questionario({ onComplete }) {
         retos: [],             // Para el caso 3
         herramientas: [],      // Para el caso 4
         mostrarPorPartes: false, // Para la opción "Mostrar por partes"
+        lecturaFacil: true // de momento true por defecto
         rol: "profesor"        // Rol de OlivIA: "profesor" o "familiar" (configurable desde frontend)
     });
 

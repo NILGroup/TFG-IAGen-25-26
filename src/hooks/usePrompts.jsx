@@ -7,8 +7,10 @@
  * un título que englobe toda la conversación.
  */
 
-import { fetchFromGroq, fetchFromOllama, enhancePromptWithCoStar } from '../services/apiFunctions';
+import { promptLF1, promptLF2 } from '../utils/promptLF';
+import { fetchFromGroq, fetchFromOllama, enhancePromptWithCoStar, fetchFromGemini } from '../services/apiFunctions';
 import { useCallback } from "react";
+
 
 const usePromptFunctions = ({
     summary,                   // Información personalizada del usuario recogida en el cuestionario
@@ -186,7 +188,47 @@ Eres OlivIA${userRole === "familiar" ? ", compañera virtual cercana como un fam
             { role: "user", content: enhancedPrompt }
         ];
 
-        const response = await fetchFromGroq(messages);
+        let response = await fetchFromGroq(messages); // cambio const por let por si la tengo que adaptar a LF
+
+        // Adaptar respuesta a LF
+        if (summary && summary.lecturaFacil === true){
+                setChatFlow((prev) => [
+                    ...prev.filter((entry) => entry.type !== "loading"),
+                    { type: "loading", content: "✨ Adaptando a Lectura Fácil..." }
+                ]);
+
+                // Primera adaptación
+                const refinementMessages1 = [
+                    {
+                        role: "user",
+                        content: `${promptLF1}\n\n"${response}"`
+                    }
+                ];
+
+                let refinedResponse1 = "";
+                try{
+                    refinedResponse1 = await fetchFromGemini(refinementMessages1); 
+                }
+                catch(errorGemini){
+                    console.log("Falló Gemini, usamos Groq");
+                    refinedResponse1 = await fetchFromGroq(refinementMessages1); 
+                }
+                
+                // Segunda adaptación
+                const refinementMessages2 = [
+                    {
+                        role: "user",
+                        content: `${promptLF2}\n\n"${refinedResponse1}"`
+                    }
+                ];
+
+                const refinedResponse2 = await fetchFromGroq(refinementMessages2); 
+
+                if (refinedResponse2 && !refinedResponse2.includes("Error")) {
+                    response = refinedResponse2;
+                }
+
+            }
 
         setChatFlow((prev) => [
             ...prev.filter((entry) => entry.type !== "loading"),
@@ -197,7 +239,7 @@ Eres OlivIA${userRole === "familiar" ? ", compañera virtual cercana como un fam
         setLoading(false);
         setPrompt("");
 
-    }, [chatFlow, buildPrompt, summary]);
+    }, [chatFlow, buildPrompt, summary]);  // meto dependencia de summary
 
     // Enviar un mensaje personalizado (texto libre o contextual)
     const sendCustomPrompt = useCallback(
@@ -238,7 +280,46 @@ Eres OlivIA${userRole === "familiar" ? ", compañera virtual cercana como un fam
                 { role: "user", content: enhancedPrompt }
             ];
 
-            const response = await fetchFunction(messages, targetmodel);
+            let response = await fetchFunction(messages); 
+
+            // Adaptar respuesta a LF
+            if (summary && summary.lecturaFacil === true){
+                setChatFlow((prev) => [
+                    ...prev.filter((entry) => entry.type !== "loading"),
+                    { type: "loading", content: "✨ Adaptando a Lectura Fácil..." }
+                ]);
+
+                // Primera adaptación
+                let refinedResponse1 = "";
+                const refinementMessages1 = [
+                    {
+                        role: "user",
+                        content: `${promptLF1}\n\n"${response}"`
+                    }
+                ];
+
+                try{
+                    refinedResponse1 = await fetchFromGemini(refinementMessages1); 
+                }
+                catch(errorGemini){
+                    console.log("Falló Gemini, usamos Groq");
+                    refinedResponse1 = await fetchFromGroq(refinementMessages1); 
+                }
+                // Segunda adaptación
+                const refinementMessages2 = [
+                    {
+                        role: "user",
+                        content: `${promptLF2}\n\n"${refinedResponse1}"`
+                    }
+                ];
+
+                const refinedResponse2 = await fetchFromGroq(refinementMessages2); 
+
+                if (refinedResponse2 && !refinedResponse2.includes("Error")) {
+                    response = refinedResponse2;
+                }
+
+            }
 
             setChatFlow((prev) => [
                 ...prev.filter((entry) => entry.type !== "loading"),
@@ -329,6 +410,53 @@ Eres OlivIA${userRole === "familiar" ? ", compañera virtual cercana como un fam
 
     }, [sendCustomPrompt]);
 
+    /*===================================================
+    * EXPLICAR TEXTO SELECCIONADO EN FORMA DE BOCADILLO
+    * ===================================================*/
+    /*const explainWord = useCallback(async (selectedText) => {
+
+        if (selectedText && selectedText.trim()) {
+            const cleanText = selectedText.trim();
+            
+            const smartPrompt = `
+            Eres un asistente experto en accesibilidad cognitiva.
+            El usuario ha seleccionado el siguiente texto: "${cleanText}"
+
+            INSTRUCCIONES:
+            Fase 1: Analiza si el texto seleccionado es una sola palabra/expresión corta, o si es una frase/oración completa.
+            Fase 2: Actúa según el caso:
+
+            CASO A - Si es una PALABRA o EXPRESIÓN:
+            Devuelve EXACTAMENTE este formato:
+            Definición: [definición muy breve y sencilla, con vocabulario muy común, máximo 2 líneas]
+            Sinónimos: [2 o 3 sinónimos populares]
+
+            CASO B - Si es una FRASE u ORACIÓN:
+            Devuelve EXACTAMENTE este formato:
+            Reformulación: [Reescribe la frase de la forma más sencilla, directa y fácil de entender posible]
+
+            REGLA ESTRICTA DE SALIDA: No saludes, no expliques tu razonamiento de la Fase 1, ni añadas texto extra. Devuelve ÚNICAMENTE el resultado del Caso A o del Caso B.
+            `;
+
+            const messages = [{ role: "user", content: smartPrompt }];
+
+            try {
+                // Llamada silenciosa a la IA
+                const response = await fetchFromGroq(messages);
+                return response; 
+                
+            } catch (error) {
+                console.error("Error al procesar el texto:", error);
+                return "Error al analizar el texto.";
+            }
+
+        } else {
+            console.warn("No se ha seleccionado texto válido.");
+            return null;
+        }
+
+    }, []);*/
+
     return {
         sendPrompt,
         sendCustomPrompt,
@@ -337,6 +465,7 @@ Eres OlivIA${userRole === "familiar" ? ", compañera virtual cercana como un fam
         requestSimplifiedResponse,
         requestSynonyms,
         generateTitleFromChat,
+       // explainWord,
     };
 };
 
