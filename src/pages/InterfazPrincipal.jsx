@@ -250,7 +250,7 @@ export default function InterfazPrincipal({ summary, modoSeleccionado, promptIni
     });
 
     /** ===================================
-     * ESTADO PARA EL BOCADILLO EXPLICATIVO
+     * ESTADO PARA EL BOCADILLO EXPLICATIVO + GLOSARIO
      * ===================================
      */
     const [tooltipInfo, setTooltipInfo] = useState({
@@ -262,6 +262,8 @@ export default function InterfazPrincipal({ summary, modoSeleccionado, promptIni
         content: "",    // Lo que mostramos
         loading: false  
     });
+
+    const [glossary, setGlossary] = useState([]);
 
     const handleTextSelection = async () => {
         const selection = window.getSelection(); //texto seleccionado
@@ -391,12 +393,6 @@ export default function InterfazPrincipal({ summary, modoSeleccionado, promptIni
         setTooltipInfo({ visible: false, x: 0, y: 0, text: "", type: null, content: "", loading: false });
     };
 
-    /** ===================================
-     *  ESTADO Y LÓGICA PARA GLOSARIO
-     *  ===================================
-     */
-
-    const [glossary, setGlossary] = useState([]);
 
     /** ===================================
      *  ESTADOS Y LÓGICA PARA EL HISTORIAL
