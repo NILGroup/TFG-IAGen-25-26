@@ -1,0 +1,364 @@
+/* ============================================================================
+ * Pantallas.css
+ *
+ * Estilos para las 3 pantallas intermedias del flujo:
+ * - PantallaRol.jsx      → Usuario elige: Profesor o Familiar
+ * - PantallaEleccion.jsx → Usuario elige: Con ayuda o Directa
+ * - FormularioPrompt.jsx → Usuario escribe: Tema y Objetivo
+ * ============================================================================ */
+
+
+/* ============================================================================
+ * ESTILOS COMPARTIDOS
+ * Estos estilos se usan en las 3 pantallas
+ * ============================================================================ */
+
+/* Contenedor principal de cada pantalla
+ * - min-height: ocupa toda la pantalla menos el header (80px)
+ * - display flex + center: centra el contenido vertical y horizontalmente
+ * - background: color de fondo gris claro
+ */
+.modo-container,
+.eleccion-container,
+.formulario-container {
+  min-height: calc(100vh - 80px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f5f9fa;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+/* Contenido central de cada pantalla
+ * - max-width 700px: no crece más de 700px de ancho
+ * - flex column: organiza hijos en vertical
+ * - gap 1rem: espacio entre cada elemento
+ */
+.modo-content,
+.eleccion-content,
+.formulario-content {
+  max-width: 700px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Títulos principales de cada pantalla
+ * - clamp: tamaño responsive (mínimo 1.4rem, máximo 2.2rem)
+ * - color #1a1a2e: azul muy oscuro (casi negro)
+ */
+.modo-title,
+.eleccion-title,
+.formulario-title {
+  font-size: clamp(1.4rem, 3.5vw, 2.2rem);
+  font-weight: bold;
+  text-align: center;
+  color: #1a1a2e;
+  margin: 0;
+}
+
+/* Subtítulos explicativos
+ * - color #555: gris medio para texto secundario
+ */
+.modo-subtitle,
+.eleccion-subtitle,
+.formulario-subtitle {
+  font-size: clamp(0.95rem, 2vw, 1.15rem);
+  text-align: center;
+  color: #555;
+  margin: 0;
+}
+
+/* Grid de tarjetas (PantallaRol y PantallaEleccion)
+ * - grid 2 columnas: muestra 2 tarjetas lado a lado
+ * - gap 1.5rem: espacio entre tarjetas
+ */
+.modo-options,
+.eleccion-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+/* Tarjetas clickeables (Profesor/Familiar, Con ayuda/Directa)
+ * - background white: fondo blanco
+ * - border 4px #e0e0e0: borde gris claro
+ * - border-radius 1.5rem: esquinas muy redondeadas
+ * - box-shadow: sombra para efecto elevado
+ * - transition: animación suave al hacer hover
+ * - cursor pointer: muestra mano al pasar el mouse
+ */
+.modo-card,
+.eleccion-card {
+  background: white;
+  padding: 1.2rem;
+  border-radius: 1.5rem;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  border: 4px solid #e0e0e0;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  width: 100%;
+}
+
+/* Tarjetas de elección tienen más padding */
+.eleccion-card {
+  padding: 1.5rem;
+}
+
+/* Tarjetas - cuando el mouse pasa por encima o tiene foco
+ * - transform translateY(-6px): sube la tarjeta 6px
+ * - box-shadow más grande: sombra más pronunciada
+ * - border-color azul: borde cambia a azul
+ */
+.modo-card:hover,
+.modo-card:focus-visible,
+.eleccion-card:hover,
+.eleccion-card:focus-visible {
+  transform: translateY(-6px);
+  box-shadow: 0 16px 35px rgba(0, 0, 0, 0.15);
+  border-color: #2196f3;
+}
+
+/* Tarjetas - cuando se hace click
+ * - sube menos (2px) para efecto de presión
+ * - borde azul más oscuro
+ */
+.modo-card:active,
+.eleccion-card:active {
+  transform: translateY(-2px);
+  border-color: #1565c0;
+}
+
+/* Texto del título dentro de las tarjetas */
+.modo-card-title,
+.eleccion-card-title {
+  font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+  font-weight: bold;
+  color: #1a1a2e;
+  margin: 0;
+  text-align: center;
+}
+
+/* Botón "← Volver" - usado en PantallaEleccion y FormularioPrompt
+ * - align-self flex-start: se posiciona a la izquierda
+ * - ::before añade la flecha automáticamente
+ */
+.pantalla-back-btn {
+  align-self: flex-start;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #555;
+  background-color: #f3f4f6;
+  border: 2px solid #d1d5db;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* Añade "← " antes del texto del botón */
+.pantalla-back-btn::before {
+  content: "← ";
+}
+
+/* Botón volver - hover: fondo más oscuro */
+.pantalla-back-btn:hover {
+  background-color: #e5e7eb;
+  color: #333;
+}
+
+
+/* ============================================================================
+ * PANTALLA ROL - Estilos específicos
+ * Solo para PantallaRol.jsx (elegir Profesor o Familiar)
+ * ============================================================================ */
+
+/* Imagen del profesor/familiar dentro de la tarjeta */
+.modo-img {
+  width: 100%;
+  max-width: 200px;
+  height: auto;
+  border-radius: 1rem;
+}
+
+
+/* ============================================================================
+ * PANTALLA ELECCION - Estilos específicos
+ * Solo para PantallaEleccion.jsx (elegir Con ayuda o Directa)
+ * ============================================================================ */
+
+/* Descripción dentro de las tarjetas de elección
+ * Ej: "Te haré unas preguntas sencillas para preparar tu mensaje"
+ */
+.eleccion-card-desc {
+  font-size: clamp(0.85rem, 1.8vw, 1rem);
+  color: #555;
+  text-align: center;
+  margin: 0;
+  line-height: 1.4;
+}
+
+
+/* ============================================================================
+ * FORMULARIO PROMPT - Estilos específicos
+ * Solo para FormularioPrompt.jsx (escribir Tema y Objetivo)
+ * ============================================================================ */
+
+/* Tarjeta blanca que contiene cada pregunta */
+.formulario-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 1.5rem;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  border: 4px solid #e0e0e0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Etiqueta de la pregunta
+ * Ej: "1. ¿Sobre qué tema quieres hablar?"
+ */
+.formulario-label {
+  display: block;
+  font-size: clamp(1rem, 2.5vw, 1.25rem);
+  font-weight: bold;
+  color: #1a1a2e;
+  margin-bottom: 0.5rem;
+}
+
+/* Texto de ayuda debajo de la etiqueta
+ * Ej: "Por ejemplo: Animales, Cocina, Historia..."
+ */
+.formulario-helper {
+  font-size: clamp(0.85rem, 2vw, 1rem);
+  color: #555;
+  margin: 0 0 0.75rem 0;
+}
+
+/* Input (1 línea) y Textarea (varias líneas)
+ * - color #333: texto gris oscuro (visible)
+ * - background #fafafa: fondo gris muy claro
+ * - border gris: borde sutil
+ */
+.formulario-input,
+.formulario-textarea {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  font-size: 1.1rem;
+  font-family: inherit;
+  color: #333;
+  border: 2px solid #d1d5db;
+  border-radius: 0.5rem;
+  background-color: #fafafa;
+  box-sizing: border-box;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+/* Input/Textarea - cuando tiene foco (usuario está escribiendo)
+ * - borde azul
+ * - sombra azul suave alrededor
+ */
+.formulario-input:focus,
+.formulario-textarea:focus {
+  outline: none;
+  border-color: #2196f3;
+  box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.2);
+}
+
+/* Textarea específico - puede redimensionarse verticalmente */
+.formulario-textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* Botón "Continuar al chat"
+ * - background verde: color de acción positiva
+ * - border-radius: esquinas redondeadas
+ */
+.formulario-submit-btn {
+  width: 100%;
+  padding: 1rem;
+  font-size: clamp(1.1rem, 2.5vw, 1.3rem);
+  font-weight: bold;
+  background-color: #43a047;
+  color: white;
+  border: none;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  margin-top: 0.5rem;
+}
+
+/* Botón enviar - hover: verde más oscuro */
+.formulario-submit-btn:hover:not(.disabled) {
+  background-color: #388e3c;
+}
+
+/* Botón enviar - deshabilitado (cuando falta completar campos)
+ * - opacity 0.4: semitransparente
+ * - cursor not-allowed: muestra que no se puede hacer click
+ */
+.formulario-submit-btn.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Mensaje de error de validación (texto rojo) */
+.formulario-validation {
+  color: #dc2626;
+  font-size: 0.95rem;
+  text-align: center;
+  margin: 0;
+}
+
+
+/* ============================================================================
+ * RESPONSIVE - Ajustes para pantallas pequeñas (móvil)
+ * Cuando la pantalla es menor a 550px de ancho
+ * ============================================================================ */
+
+@media (max-width: 550px) {
+  /* Grid pasa de 2 columnas a 1 columna */
+  .modo-options,
+  .eleccion-options {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  /* Tarjetas con menos padding */
+  .modo-card,
+  .eleccion-card {
+    padding: 1rem;
+  }
+
+  .eleccion-card {
+    padding: 1.2rem;
+  }
+
+  /* Imágenes más pequeñas */
+  .modo-img {
+    max-width: 160px;
+  }
+
+  /* Tarjeta de formulario más compacta */
+  .formulario-card {
+    padding: 1.2rem;
+  }
+
+  /* Textarea más pequeño */
+  .formulario-textarea {
+    min-height: 60px;
+  }
+}

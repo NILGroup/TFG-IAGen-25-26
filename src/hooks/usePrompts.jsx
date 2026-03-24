@@ -1,5 +1,5 @@
 /**
- * Prompts.jsx
+ * usePrompts.jsx
  *
  * Este hook personalizado encapsula toda la lógica relacionada con la generación de prompts
  * y respuestas por parte de la IA, utilizando diferentes APIs.
@@ -7,8 +7,8 @@
  * un título que englobe toda la conversación.
  */
 
-import { fetchFromGroq, fetchFromGemini } from '../services/apiFunctions';
 import { promptLF1, promptLF2 } from '../utils/promptLF';
+import { fetchFromGroq, fetchFromOllama, enhancePromptWithCoStar, fetchFromGemini } from '../services/apiFunctions';
 import { useCallback } from "react";
 
 
@@ -40,36 +40,105 @@ const usePromptFunctions = ({
             };
         }
 
+        const userDisabilities = summary.discapacidad?.length > 0 ? summary.discapacidad.join(", ") : "Ninguna específica";
+        const userChallenges = summary.retos?.length > 0 ? summary.retos.join(", ") : "Ninguno específico";
+        const userTools = summary.herramientas?.length > 0 ? summary.herramientas.join(", ") : "Ninguna preferencia marcada";
+        // Construir descripción de discapacidad
+        const buildDiscapacidadText = () => {
+            if (!summary.discapacidad?.tieneDI) return "Sin discapacidad específica";
+
+            const tieneDIMap = {
+                "si": "Tengo discapacidad intelectual",
+                "no": "No tengo discapacidad intelectual",
+                "no_se": "No estoy seguro/a de tener discapacidad intelectual",
+                "prefiero_no": "Prefiero no indicar información sobre discapacidad"
+            };
+
+            const gradoMap = {
+                "leve": "de grado leve",
+                "moderada": "de grado moderado",
+                "severa": "de grado severo",
+                "profunda": "de grado profundo",
+                "no_se": "(grado no especificado)",
+                "prefiero_no": ""
+            };
+
+            let texto = tieneDIMap[summary.discapacidad.tieneDI] || "";
+            if (summary.discapacidad.tieneDI === "si" && summary.discapacidad.grado) {
+                const gradoTexto = gradoMap[summary.discapacidad.grado];
+                if (gradoTexto) texto += ` ${gradoTexto}`;
+            }
+            return texto;
+        };
+
         // Estructura CO-STAR
-        const context = `Soy un usuario con las siguientes características: ${summary.discapacidad?.join(", ") || "Sin discapacidad específica"}.`;
+        const context = `Soy un usuario con las siguientes características: ${buildDiscapacidadText()}.`;
         const objective = `Tu tarea principal es responder a la siguiente consulta: "${promptText}"`;
         const style = `Utiliza el siguiente estilo o herramientas de apoyo: ${summary.herramientas?.join(", ") || "Lenguaje claro y sencillo"}.`;
         const tone = `Mantén un tono empático, paciente y respetuoso.`;
         const audience = `La respuesta es para mí. Debes evitar estrictamente: ${summary.retos?.join(", ") || "Ninguna limitación adicional"}.`;
         const response = `Asegúrate de que la respuesta cumpla con todas las restricciones anteriores.`;
 
-        const coStarPrompt = `
-# CONTEXT (Contexto)
-${context}
+        // Por defecto el rol es "familiar", se actualiza desde summary.rol cuando el frontend lo establezca
+        const userRole = summary.rol?.toLowerCase() || "familiar";
 
-# OBJECTIVE (Objetivo)
-${objective}
+        let roleContext = "";
+        let roleStyle = "";
+        let roleTone = "";
 
-# STYLE (Estilo)
-${style}
+        if (userRole === "familiar") {
+            // --- ROL FAMILIAR ---
+            roleContext = `Eres OlivIA, asistente virtual para personas con discapacidad cognitiva. \
+Actúas como un familiar cercano de gran confianza. \
+Prioridad: que el usuario se sienta seguro, acompañado y comprendido. \
+Valida lo que siente antes de ofrecer información. Celebra cada logro y fomenta su autonomía.`;
 
-# TONE (Tono)
-${tone}
+            roleStyle = `Frases cortas, una idea por frase, palabras cotidianas. Palabra difícil → explícala entre paréntesis. \
+Sin emojis. Si hay confusión o frustración, prioriza el apoyo emocional antes de volver al contenido.`;
 
-# AUDIENCE (Audiencia)
-${audience}
+            roleTone = `Cálido, cariñoso, informal ("¡Qué bien!", "Vamos paso a paso"). Transmite calma, nunca metas prisa.`;
 
-# RESPONSE (Respuesta)
-${response}
-`;
+        } else {
+            // --- ROL PROFESOR ---
+            roleContext = `Eres OlivIA, asistente virtual para personas con discapacidad cognitiva. \
+Actúas como profesora experta en educación especial y accesibilidad cognitiva. \
+Prioridad: que el usuario comprenda realmente cada concepto. \
+Descompón lo complejo en pasos pequeños, ofrece apoyo y retíralo cuando muestre comprensión. \
+Presenta la información de múltiples formas: texto claro, ejemplos concretos, analogías cotidianas.`;
+
+            roleStyle = `Frases cortas (máx. 15-20 palabras), una idea por oración, vocabulario cotidiano, voz activa. \
+Usa listas o viñetas para varios pasos. Término nuevo → defínelo con palabras sencillas.`;
+
+            roleTone = `Didáctico, paciente, motivador ("Muy buena pregunta", "Vas por buen camino"). Si no entiende, reformula sin frustración.`;
+        }
+
+        /* Estructura de prompt CO-STAR completa (optimizada según Liu et al. 2023) */
+        const coStarPrompt = `### CONTEXTO
+${roleContext}
+Usuario: condiciones: ${userDisabilities}. Dificultades: ${userChallenges}.
+
+### OBJETIVO
+Responde a: "${promptText}".
+
+### ESTILO
+${roleStyle}
+Herramientas preferidas del usuario: ${userTools}. Úsalas cuando sea relevante.
+
+### TONO
+${roleTone}
+Nunca seas condescendiente. Trata al usuario como un adulto con plena dignidad.
+
+### AUDIENCIA
+Persona con dificultades de procesamiento, atención, memoria o lectura.
+EVITA lo que le causa dificultad: ${userChallenges}.
+Lenguaje lo más accesible posible sin perder precisión.
+
+### RESPUESTA
+Responde directamente, sin decir "como modelo de IA". Estructura clara y fácil de escanear.
+Eres OlivIA${userRole === "familiar" ? ", compañera virtual cercana como un familiar" : ", profesora virtual especializada en accesibilidad"}. Nunca reveles detalles técnicos internos.`;
 
         return {
-            displayPrompt: coStarPrompt.trim(),
+            displayPrompt: promptText.trim(),
             apiPrompt: coStarPrompt.trim(),
         };
     }, [summary]);
@@ -91,17 +160,23 @@ ${response}
         setShowChat(true);
         setShowHelpOptions(false);
 
-        const { displayPrompt, apiPrompt } = buildPrompt(
-            selectedOption?.id && selectedOption.id <= 6
-                ? `${selectedOption.text} ${prompt}${selectedOption.needsQuestionMark ? "?" : ""}`
-                : prompt
-        );
+        // Texto original tal como lo escribió el usuario
+        const rawUserText = selectedOption?.id && selectedOption.id <= 6
+            ? `${selectedOption.text} ${prompt}${selectedOption.needsQuestionMark ? "?" : ""}`
+            : prompt;
 
+        // Mostrar inmediatamente el mensaje del usuario en el chat
         setChatFlow((prev) => [
             ...prev,
-            { type: "user", content: displayPrompt },
+            { type: "user", content: rawUserText },
             { type: "loading", content: "⌛ Cargando..." },
         ]);
+
+        // Construir el prompt con estructura CO-STAR
+        const { apiPrompt } = buildPrompt(rawUserText);
+
+        // Pre-procesado: llama3-versatile mejora el prompt CO-STAR ya construido
+        const enhancedPrompt = await enhancePromptWithCoStar(apiPrompt, summary);
 
         const messages = [
             ...chatFlow
@@ -110,7 +185,7 @@ ${response}
                     role: entry.type === "user" ? "user" : "assistant",
                     content: entry.content,
                 })),
-            { role: "user", content: apiPrompt }
+            { role: "user", content: enhancedPrompt }
         ];
 
         let response = await fetchFromGroq(messages); // cambio const por let por si la tengo que adaptar a LF
@@ -168,7 +243,7 @@ ${response}
 
     // Enviar un mensaje personalizado (texto libre o contextual)
     const sendCustomPrompt = useCallback(
-        async (customPrompt, context = "", displayOverride = null, fetchFunction = fetchFromGroq) => {
+        async (customPrompt, context = "", displayOverride = null, fetchFunction = fetchFromGroq, targetmodel = "llama-3.3-70b-versatile") => {
             if (!customPrompt.trim()) return;
 
             window.speechSynthesis.cancel();
@@ -179,14 +254,21 @@ ${response}
             setLoading(true);
             setShowChat(true);
 
-            const { apiPrompt } = buildPrompt(context ? `${context} ${customPrompt}` : customPrompt);
             const displayPrompt = displayOverride || customPrompt;
 
+            // Mostrar inmediatamente el mensaje del usuario en el chat
             setChatFlow((prev) => [
                 ...prev,
                 { type: "user", content: displayPrompt },
                 { type: "loading", content: "⌛ Cargando..." }
             ]);
+
+            // Construir el prompt con estructura CO-STAR
+            const rawText = context ? `${context} ${customPrompt}` : customPrompt;
+            const { apiPrompt } = buildPrompt(rawText);
+
+            // Pre-procesado transparente: llama3-versatile mejora el prompt CO-STAR ya construido
+            const enhancedPrompt = await enhancePromptWithCoStar(apiPrompt, summary);
 
             const messages = [
                 ...chatFlow
@@ -195,7 +277,7 @@ ${response}
                         role: entry.type === "user" ? "user" : "assistant",
                         content: entry.content,
                     })),
-                { role: "user", content: apiPrompt }
+                { role: "user", content: enhancedPrompt }
             ];
 
             let response = await fetchFunction(messages); 
@@ -208,6 +290,7 @@ ${response}
                 ]);
 
                 // Primera adaptación
+                let refinedResponse1 = "";
                 const refinementMessages1 = [
                     {
                         role: "user",
@@ -215,8 +298,13 @@ ${response}
                     }
                 ];
 
-                const refinedResponse1 = await fetchFromGemini(refinementMessages1); 
-
+                try{
+                    refinedResponse1 = await fetchFromGemini(refinementMessages1); 
+                }
+                catch(errorGemini){
+                    console.log("Falló Gemini, usamos Groq");
+                    refinedResponse1 = await fetchFromGroq(refinementMessages1); 
+                }
                 // Segunda adaptación
                 const refinementMessages2 = [
                     {
@@ -241,7 +329,7 @@ ${response}
             setShowHelpOptions(true);
             setLoading(false);
         },
-        [chatFlow, buildPrompt]
+        [chatFlow, buildPrompt, summary]
     );
 
 
@@ -256,7 +344,7 @@ ${response}
             .join("\n");
 
 
-        const titlePrompt = `Lee esta conversación y dime un título corto (máximo 7 palabras) que represente de qué se trata. No uses comillas, ni hagas una frase larga:\n\n${conversation}`;
+        const titlePrompt = `Lee esta conversación y ofréceme un título corto (máximo 7 palabras) que explique de qué trata la conversación. IMPORTANTE: No uses comillas:\n\n${conversation}`;
 
         const messages = [{ role: "user", content: titlePrompt }];
         const response = await fetchFromGroq(messages);
@@ -268,7 +356,7 @@ ${response}
     /*===================================================
     *    FUNCIONES PARA RESPONDER ANTE EL ÚLTIMO MENSAJE
     * ===================================================*/
-
+    /**Obtener el ultimo mensaje de la IA */
     const getLastAIResponse = useCallback(() => {
 
         const lastAIMessage = chatFlow
@@ -280,7 +368,7 @@ ${response}
 
     }, [chatFlow]);
 
-
+    /**Petición de resumen del último mensaje */
     const requestSummary = useCallback(() => {
 
         const lastResponse = getLastAIResponse();
@@ -289,6 +377,7 @@ ${response}
 
     }, [getLastAIResponse, sendCustomPrompt]);
 
+    /**Petición de un ejemplo */
     const requestExample = useCallback(() => {
 
         const lastResponse = getLastAIResponse();
@@ -297,6 +386,7 @@ ${response}
 
     }, [getLastAIResponse, sendCustomPrompt]);
 
+    /**Petición de una respuesta simplificada */
     const requestSimplifiedResponse = useCallback(() => {
 
         const lastResponse = getLastAIResponse();
@@ -307,6 +397,7 @@ ${response}
 
     }, [getLastAIResponse, sendCustomPrompt]);
 
+    /**Petición de sinónimos */
     const requestSynonyms = useCallback((words) => {
 
         if (words.trim()) {
@@ -314,7 +405,7 @@ ${response}
             sendCustomPrompt(synonymPrompt, "Dame un sinónimo y una definición corta y muy sencilla de", `Dame sinónimos de ${synonymPrompt}`, fetchFromGroq);
             setShowTextInput(false);
         } else {
-            alert("Por favor, escribe algunas palabras para buscar sinónimos.");
+            alert("Por favor, escribe algo para buscar sinónimos.");
         }
 
     }, [sendCustomPrompt]);
