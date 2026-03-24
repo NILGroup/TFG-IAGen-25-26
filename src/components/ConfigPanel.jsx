@@ -1,149 +1,211 @@
 /**
  * ConfigPanel.jsx
  *
- *  Este componente muestra el panel de configuración que permite al usuario editar la 
- *  información proporcionada en el cuestionario inicial. Se pueden modificar el nombre, 
- *  discapacidades, retos y herramientas de ayuda seleccionadas.
- *  También gestiona las opciones personalizadas cuando el usuario selecciona "Otra".
+ * Panel de configuración para editar el perfil del usuario.
  */
 
-import React from "react";
+import React, { useState } from "react";
 
 const ConfigPanel = ({
-    summary,               // Resumen original del cuestionario
-    tempSummary,           // Versión editable del resumen
-    setTempSummary,        // Setter para actualizar el resumen editable
-    otraOpciones,          // Estado que maneja el valor personalizado de "Otra"
-    setOtraOpciones,       // Setter para actualizar el valor personalizado de "Otra"
-    savedEffect,           // Indica si se activó el efecto visual de guardado
-    setSavedEffect,        // Setter para activar/desactivar el efecto visual
-    setEditingField        // Setter para gestionar el campo que se está editando
+    summary,
+    tempSummary,
+    setTempSummary,
+    savedEffect,
+    setSavedEffect,
+    setEditingField
 }) => {
+    const [showDiscardConfirm, setShowDiscardConfirm] = useState(false);
+    const [activeSection, setActiveSection] = useState("sobre-ti");
 
-    // Opciones disponibles por categoría
-    const getOptionsForField = (key) => {
-        const options = {
-            nombre: [],
-            discapacidad: ["TEA", "Dislexia", "TDAH", "Memoria", "Prefiero no responder", "Otra"],
-            retos: ["Textos Largos", "Palabras Dificiles", "Organizar Ideas", "Mantener Atencion", "Memoria", "Otra"],
-            herramientas: ["ejemplo", "bullet", "textocorto", "frasescortas"]
-        };
-        return options[key] || [];
-    };
-
-    // Etiquetas descriptivas de las opciones
-    const getLabelForOption = (option) => {
-        const labels = {
-            "TEA": "TEA", "Dislexia": "Dislexia", "TDAH": "TDAH", "Memoria": "Memoria",
-            "Prefiero no responder": "Prefiero no responder", "Textos Largos": "Textos largos",
-            "Palabras Dificiles": "Palabras difíciles", "Organizar Ideas": "Organizar ideas",
-            "Mantener Atencion": "Mantener la atención", "ejemplo": "Usar ejemplos",
-            "bullet": "Respuestas en bullets", "textocorto": "Texto corto", "frasescortas": "Frases cortas"
-        };
-        return labels[option] || option;
-    };
-
-    // Emojis representativos de cada opción
-    const getEmojiForOption = (option) => {
-        const emojis = {
-            "TEA": "🧩", "Dislexia": "🔠", "TDAH": "⚡", "Memoria": "🧠",
-            "Prefiero no responder": "❌", "Textos Largos": "📖", "Palabras Dificiles": "🧩",
-            "Organizar Ideas": "📝", "Mantener Atencion": "🎯", "ejemplo": "🖋️",
-            "bullet": "📒", "textocorto": "📃", "frasescortas": "✂️"
-        };
-        return emojis[option] || "🔧";
-    };
-
-    // Activa o desactiva opciones seleccionadas
-    const toggleOption = (key, option) => {
-        const current = tempSummary[key] || [];
-        const exists = current.includes(option);
-        let updated;
-
-        if (option === "Otra") {
-            updated = exists
-                ? current.filter(o => !o.startsWith("Otra -") && o !== "Otra")
-                : [...current, option];
-
-            setOtraOpciones(prev => ({
-                ...prev,
-                [key]: { activa: !exists, valor: "", guardado: false }
-            }));
-        } else {
-            updated = exists
-                ? current.filter(o => o !== option)
-                : [...current, option];
+    // Opciones para cada sección (sin emojis, Lectura Fácil)
+    const sections = {
+        "sobre-ti": {
+            title: "Sobre ti",
+            key: "discapacidad",
+            options: [
+                { id: "TEA", label: "Autismo (TEA)", description: "Me cuesta entender cómo piensan otros" },
+                { id: "TDAH", label: "Atención (TDAH)", description: "Me distraigo rápido o me muevo mucho" },
+                { id: "Dislexia", label: "Lectura (Dislexia)", description: "Las letras se mezclan o leo lento" },
+                { id: "Memoria", label: "Memoria", description: "Olvido lo que acabo de leer o hacer" },
+                { id: "Prefiero no responder", label: "Prefiero no decirlo", description: "" }
+            ]
+        },
+        "retos": {
+            title: "Qué te cuesta",
+            key: "retos",
+            options: [
+                { id: "Textos Largos", label: "Leer mucho", description: "Me canso con textos largos" },
+                { id: "Palabras Dificiles", label: "Palabras nuevas", description: "Hay palabras que no entiendo" },
+                { id: "Organizar Ideas", label: "Ordenar ideas", description: "No sé por dónde empezar" },
+                { id: "Mantener Atencion", label: "Concentrarme", description: "Me distraigo fácil" },
+                { id: "Memoria", label: "Recordar cosas", description: "Se me olvida lo que leo" }
+            ]
+        },
+        "herramientas": {
+            title: "Cómo ayudarte",
+            key: "herramientas",
+            options: [
+                { id: "ejemplo", label: "Con ejemplos", description: "Te explico con casos de la vida real" },
+                { id: "bullet", label: "Con listas", description: "Te lo cuento punto por punto" },
+                { id: "textocorto", label: "Textos cortos", description: "Te lo cuento en pocas palabras" },
+                { id: "frasescortas", label: "Frases sencillas", description: "Uso palabras fáciles" }
+            ]
         }
+    };
 
+    const toggleOption = (key, optionId) => {
+        const current = tempSummary[key] || [];
+        const updated = current.includes(optionId)
+            ? current.filter(o => o !== optionId)
+            : [...current, optionId];
         setTempSummary({ ...tempSummary, [key]: updated });
     };
 
+    const handleSave = () => {
+        Object.keys(sections).forEach(sectionKey => {
+            const key = sections[sectionKey].key;
+            summary[key] = tempSummary[key];
+        });
+        summary.nombre = tempSummary.nombre;
+        setSavedEffect(true);
+        setTimeout(() => setSavedEffect(false), 2000);
+    };
+
+    const handleDiscard = () => {
+        setTempSummary({ ...summary });
+        setEditingField(null);
+        setShowDiscardConfirm(false);
+    };
+
+    const currentSection = sections[activeSection];
+
     return (
-        <div className="config-panel">
-            <h2>🔧 Configuración del cuestionario</h2>
+        <div className="config-panel-new">
+            {/* Header */}
+            <div className="config-header">
+                <h1>Tu configuración</h1>
+                <p>Cambia lo que quieras. Tus cambios se guardan cuando pulses "Guardar".</p>
+            </div>
 
-            {/* Sección para cada campo configurable */}
-            {Object.entries(summary)
-                .filter(([key]) => ["nombre", "discapacidad", "retos", "herramientas"].includes(key))
-                .map(([key]) => (
-                    <div className="config-section" key={key}>
-                        <h3>{key.charAt(0).toUpperCase() + key.slice(1)}</h3>
-
-                        <div className="edit-options">
-                            {/* Campo nombre como input de texto */}
-                            {key === "nombre" ? (
-                                <input
-                                    type="text"
-                                    className="nombre-input"
-                                    value={tempSummary.nombre}
-                                    onChange={(e) => setTempSummary({ ...tempSummary, nombre: e.target.value })}
-                                />
-                            ) : (
-                                <>
-                                    {/* Toggle para cada opción (discapacidad, retos, herramientas) */}
-                                    {getOptionsForField(key).map(option => (
-                                        <label key={option} className="config-toggle-option">
-                                            <span>{getEmojiForOption(option)} {getLabelForOption(option)}</span>
-                                            <label className="switch">
-                                                <input
-                                                    type="checkbox"
-                                                    checked={tempSummary[key]?.includes(option)}
-                                                    onChange={() => toggleOption(key, option)}
-                                                />
-                                                <span className="slider"></span>
-                                            </label>
-                                        </label>
-                                    ))}
-                                </>
-                            )}
-                        </div>
-                    </div>
-                ))}
-
-            {/* Botones de guardar y cancelar cambios */}
-            <div className="edit-buttons-global">
-                <button className="cancel-btn" onClick={() => {
-                    setTempSummary({ ...summary });
-                    setEditingField(null);
-                }}>
-                    ❌ Descartar cambios
-                </button>
-
+            {/* Tabs de navegación */}
+            <div className="config-tabs">
                 <button
-                    className={`save-btn ${savedEffect ? "saved-effect" : ""}`}
-                    onClick={() => {
-                        Object.keys(summary).forEach(key => {
-                            if (["nombre", "discapacidad", "retos", "herramientas"].includes(key)) {
-                                summary[key] = tempSummary[key];
-                            }
-                        });
-                        setSavedEffect(true);
-                        setTimeout(() => setSavedEffect(false), 2000);
-                    }}
+                    className={`config-tab ${activeSection === "nombre" ? "active" : ""}`}
+                    onClick={() => setActiveSection("nombre")}
                 >
-                    {savedEffect ? "✅ Cambios guardados" : "✅ Guardar cambios"}
+                    Tu nombre
+                </button>
+                <button
+                    className={`config-tab ${activeSection === "sobre-ti" ? "active" : ""}`}
+                    onClick={() => setActiveSection("sobre-ti")}
+                >
+                    Sobre ti
+                </button>
+                <button
+                    className={`config-tab ${activeSection === "retos" ? "active" : ""}`}
+                    onClick={() => setActiveSection("retos")}
+                >
+                    Qué te cuesta
+                </button>
+                <button
+                    className={`config-tab ${activeSection === "herramientas" ? "active" : ""}`}
+                    onClick={() => setActiveSection("herramientas")}
+                >
+                    Cómo ayudarte
                 </button>
             </div>
+
+            {/* Contenido de la sección activa */}
+            <div className="config-content">
+                {activeSection === "nombre" ? (
+                    <div className="config-nombre-section">
+                        <h2>Tu nombre</h2>
+                        <label htmlFor="config-nombre-input">
+                            ¿Cómo te llamas?
+                        </label>
+                        <input
+                            id="config-nombre-input"
+                            type="text"
+                            className="config-nombre-input"
+                            value={tempSummary.nombre || ""}
+                            onChange={(e) => setTempSummary({ ...tempSummary, nombre: e.target.value })}
+                            placeholder="Escribe tu nombre..."
+                        />
+                    </div>
+                ) : (
+                    <div className="config-options-section">
+                        <h2>{currentSection.title}</h2>
+                        <p className="config-instruction">Marca lo que se aplica a ti.</p>
+
+                        <div className="config-grid">
+                            {currentSection.options.map((option) => (
+                                <label
+                                    key={option.id}
+                                    className={`config-card ${tempSummary[currentSection.key]?.includes(option.id) ? 'checked' : ''}`}
+                                    htmlFor={`config-${currentSection.key}-${option.id}`}
+                                >
+                                    <input
+                                        type="checkbox"
+                                        id={`config-${currentSection.key}-${option.id}`}
+                                        checked={tempSummary[currentSection.key]?.includes(option.id) || false}
+                                        onChange={() => toggleOption(currentSection.key, option.id)}
+                                    />
+                                    <div className="config-card-text">
+                                        <span className="config-card-label">{option.label}</span>
+                                        {option.description && (
+                                            <span className="config-card-desc">{option.description}</span>
+                                        )}
+                                    </div>
+                                    <span className="config-card-indicator" aria-hidden="true">
+                                        {tempSummary[currentSection.key]?.includes(option.id) ? '✓' : ''}
+                                    </span>
+                                </label>
+                            ))}
+                        </div>
+                    </div>
+                )}
+            </div>
+
+            {/* Botones de acción fijos */}
+            <div className="config-actions">
+                <button
+                    className="config-cancel-btn"
+                    onClick={() => setShowDiscardConfirm(true)}
+                >
+                    Cancelar
+                </button>
+                <button
+                    className={`config-save-btn ${savedEffect ? "saved" : ""}`}
+                    onClick={handleSave}
+                >
+                    {savedEffect ? "✓ Guardado" : "Guardar cambios"}
+                </button>
+            </div>
+
+            {/* Mensaje de guardado */}
+            {savedEffect && (
+                <div className="config-saved-message" role="status" aria-live="polite">
+                    ¡Listo! Tus cambios están guardados.
+                </div>
+            )}
+
+            {/* Modal de confirmación */}
+            {showDiscardConfirm && (
+                <div className="config-modal-overlay">
+                    <div className="config-modal">
+                        <h3>¿Seguro que quieres cancelar?</h3>
+                        <p>Los cambios que has hecho no se guardarán.</p>
+                        <div className="config-modal-buttons">
+                            <button onClick={() => setShowDiscardConfirm(false)}>
+                                No, seguir editando
+                            </button>
+                            <button className="danger" onClick={handleDiscard}>
+                                Sí, cancelar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

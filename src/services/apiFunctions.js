@@ -58,6 +58,42 @@ export const fetchFromGroq = (messages, model = "llama-3.3-70b-versatile") => {
     });
 };
 
+export const fetchFromGemini = async (messages, model = "gemini-flash-latest") => {
+    const geminiMessages = messages.map(msg => ({
+        role: msg.role === "assistant" ? "model" : "user",
+        parts: [{ text: msg.content }]
+    }));
+
+    try {
+        const response = await fetch(
+            `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${import.meta.env.VITE_GEMINI_API_KEY}`, 
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    contents: geminiMessages
+                })
+            }
+        );
+
+        const data = await response.json();
+        if (!response.ok) {
+            console.error("Error de Google:", data.error);
+            return "Error en la conexión con la IA.";
+        }
+        if (data.candidates && data.candidates[0] && data.candidates[0].content) {
+            return data.candidates[0].content.parts[0].text;
+        } else {
+            return "No se pudo generar una respuesta.";
+        }
+
+    } catch (error) {
+        console.error("Error:", error);
+        return "Error al contactar con el servidor.";
+    }
+};
 // === FETCH DE OLLAMA (LOCAL) ===
 // Modelos: deepseek-v3.1:671b-cloud
 export const fetchFromOllama = (messages, model = "deepseek-v3.1:671b-cloud") => {
