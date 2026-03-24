@@ -69,42 +69,6 @@ export const fetchFromOllama = (messages, model = "deepseek-v3.1:671b-cloud") =>
     });
 };
 
-// === PRE-PROCESADO DE PROMPTS CON LLAMA3-VERSATILE ===
-/**
- * Envía el prompt del usuario a llama-3.3-70b-versatile para que lo evalúe y mejore
- * siguiendo la estructura CO-STAR, dejándolo listo para el modelo final.
- *
- * @param {string} userPrompt - El prompt original del usuario
- * @param {object} summaryInfo - Información del usuario (discapacidad, retos, herramientas, rol)
- * @returns {string} - El prompt mejorado y reestructurado
- */
-export const enhancePromptWithCoStar = async (userPrompt, summaryInfo = null) => {
-    const metaPrompt = `Reescribe este prompt para que sea más claro y preciso, sin cambiar su intención. \
-Devuelve SOLO el prompt mejorado, sin explicaciones. Mantén el idioma del mensaje. \
-Si es pregunta, mantén formato pregunta. Si es ambiguo, expándelo ligeramente.\
-${summaryInfo ? ` Usuario con: ${summaryInfo.discapacidad || 'no especificado'}, retos: ${summaryInfo.retos || 'no especificados'}.` : ''}
-
-"${userPrompt}"`;
-
-    try {
-        const enhanced = await fetchFromGroq(
-            [{ role: "user", content: metaPrompt }],
-            "llama-3.3-70b-versatile"
-        );
-
-        // Si la mejora falla o viene vacía, devolvemos el original
-        if (!enhanced || enhanced === "Error de conexión" || enhanced.startsWith("Error de servidor")) {
-            console.warn("Fallo en pre-procesado CO-STAR, usando prompt original.");
-            return userPrompt;
-        }
-
-        return enhanced.trim();
-    } catch (error) {
-        console.error("Error en enhancePromptWithCoStar:", error);
-        return userPrompt;
-    }
-};
-
 // === AQUÍ PUEDES IR AÑADIENDO MÁS ===
 // LUEGO EN LOS PROMPT, DEPENDIENDO DE CUAL QUEREMOS USAR, LLAMAMOS A UN FETCH O A OTRO
 /*POR EJEMPLO:

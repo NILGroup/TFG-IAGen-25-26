@@ -7,7 +7,7 @@
  * un título que englobe toda la conversación.
  */
 
-import { fetchFromGroq, fetchFromOllama, enhancePromptWithCoStar } from '../services/apiFunctions';
+import { fetchFromGroq, fetchFromOllama } from '../services/apiFunctions';
 import { useCallback } from "react";
 
 const usePromptFunctions = ({
@@ -38,67 +38,86 @@ const usePromptFunctions = ({
             };
         }
 
-        const userDisabilities = summary.discapacidad?.length > 0 ? summary.discapacidad.join(", ") : "Ninguna específica";
         const userChallenges = summary.retos?.length > 0 ? summary.retos.join(", ") : "Ninguno específico";
-        const userTools = summary.herramientas?.length > 0 ? summary.herramientas.join(", ") : "Ninguna preferencia marcada";
+        const userTools = summary.herramientas?.length > 0 ? summary.herramientas : [];
 
         // Por defecto el rol es "familiar", se actualiza desde summary.rol cuando el frontend lo establezca
         const userRole = summary.rol?.toLowerCase() || "familiar";
 
         let roleContext = "";
-        let roleStyle = "";
         let roleTone = "";
 
         if (userRole === "familiar") {
             // --- ROL FAMILIAR ---
             roleContext = `Eres OlivIA, asistente virtual para personas con discapacidad cognitiva. \
-Actúas como un familiar cercano de gran confianza. \
-Prioridad: que el usuario se sienta seguro, acompañado y comprendido. \
-Valida lo que siente antes de ofrecer información. Celebra cada logro y fomenta su autonomía.`;
+            Actúas como un familiar cercano de gran confianza. \
+            Prioridad: que el usuario se sienta seguro, acompañado y comprendido. \
+            Valida lo que siente antes de ofrecer información. Celebra cada logro y fomenta su autonomía.`;
 
-            roleStyle = `Frases cortas, una idea por frase, palabras cotidianas. Palabra difícil → explícala entre paréntesis. \
-Sin emojis. Si hay confusión o frustración, prioriza el apoyo emocional antes de volver al contenido.`;
-
-            roleTone = `Cálido, cariñoso, informal ("¡Qué bien!", "Vamos paso a paso"). Transmite calma, nunca metas prisa.`;
+            roleTone = `Cálido, cariñoso, informal. Transmite calma y cercanía`;
 
         } else {
             // --- ROL PROFESOR ---
             roleContext = `Eres OlivIA, asistente virtual para personas con discapacidad cognitiva. \
-Actúas como profesora experta en educación especial y accesibilidad cognitiva. \
-Prioridad: que el usuario comprenda realmente cada concepto. \
-Descompón lo complejo en pasos pequeños, ofrece apoyo y retíralo cuando muestre comprensión. \
-Presenta la información de múltiples formas: texto claro, ejemplos concretos, analogías cotidianas.`;
+            Actúas como profesora experta en educación especial y accesibilidad cognitiva. \
+            Prioridad: que el usuario comprenda realmente cada concepto. \
+            Descompón lo complejo en pasos pequeños, ofrece apoyo y retíralo cuando muestre comprensión.`;
 
-            roleStyle = `Frases cortas (máx. 15-20 palabras), una idea por oración, vocabulario cotidiano, voz activa. \
-Usa listas o viñetas para varios pasos. Término nuevo → defínelo con palabras sencillas.`;
-
-            roleTone = `Didáctico, paciente, motivador ("Muy buena pregunta", "Vas por buen camino"). Si no entiende, reformula sin frustración.`;
+            roleTone = `Didáctico, paciente, motivador. Si no entiende, reformula con analogías.`;
         }
 
-        /* Estructura de prompt CO-STAR completa (optimizada según Liu et al. 2023) */
-        const coStarPrompt = `### CONTEXTO
-${roleContext}
-Usuario: condiciones: ${userDisabilities}. Dificultades: ${userChallenges}.
+        const safePromptText = promptText?.trim() || "";
+        const formThemeMatch = safePromptText.match(/El tema es:\s*([^\.]+)\.?/i);
+        const formTheme = formThemeMatch ? formThemeMatch[1].trim() : "";
 
-### OBJETIVO
-Responde a: "${promptText}".
+        const userObjective = safePromptText;
+        const objective = safePromptText || userObjective;
+        
+        // SOLO PARA PRUEBAS, CUANDO JUNTE LOS CAMBIOS DE YAI SE COGE DEL CUESTIONARIO
+        let formResponsePreference = "";
+        if (/respuesta corta y sencilla/i.test(safePromptText)) {
+            formResponsePreference = "Respuesta breve y simple.";
+        } else if (/respuesta con más detalles/i.test(safePromptText)) {
+            formResponsePreference = "Respuesta con más detalle y explicaciones claras.";
+        } else if (/pasos o listas/i.test(safePromptText)) {
+            formResponsePreference = "Respuesta en pasos o listas.";
+        }
 
-### ESTILO
-${roleStyle}
-Herramientas preferidas del usuario: ${userTools}. Úsalas cuando sea relevante.
+        const toolPreferenceMap = {
+            ejemplo: "Incluye al menos un ejemplo sencillo cuando ayude.",
+            bullet: "Usa listas con viñetas cuando sea útil.",
+            textocorto: "Prioriza textos cortos.",
+            frasescortas: "Usa frases cortas y directas."
+        };
 
-### TONO
-${roleTone}
-Nunca seas condescendiente. Trata al usuario como un adulto con plena dignidad.
+        const toolPreferences = userTools
+            .map((tool) => toolPreferenceMap[tool])
+            .filter(Boolean);
 
-### AUDIENCIA
-Persona con dificultades de procesamiento, atención, memoria o lectura.
-EVITA lo que le causa dificultad: ${userChallenges}.
-Lenguaje lo más accesible posible sin perder precisión.
+        const responsePreferences = [formResponsePreference, ...toolPreferences]
+            .filter(Boolean)
+            .join(" ");
 
-### RESPUESTA
-Responde directamente, sin decir "como modelo de IA". Estructura clara y fácil de escanear.
-Eres OlivIA${userRole === "familiar" ? ", compañera virtual cercana como un familiar" : ", profesora virtual especializada en accesibilidad"}. Nunca reveles detalles técnicos internos.`;
+        const coStarPrompt = `
+        ### CONTEXTO
+        ${formTheme}
+
+        ### OBJETIVO
+        Responde a: "${objective}".
+
+        ### ESTILO
+        ${roleContext}
+
+        ### TONO
+        ${roleTone}
+
+        ### AUDIENCIA
+        EVITA lo que le causa dificultad: ${userChallenges}.
+
+        ### RESPUESTA
+        ${responsePreferences}
+        Responde directamente, sin decir "como modelo de IA". Estructura clara y fácil de escanear.
+        Eres OlivIA${userRole === "familiar" ? ", compañera virtual cercana como un familiar" : ", profesora virtual especializada en accesibilidad"}. Nunca reveles detalles técnicos internos.`;
 
         return {
             displayPrompt: promptText.trim(),
@@ -138,9 +157,6 @@ Eres OlivIA${userRole === "familiar" ? ", compañera virtual cercana como un fam
         // Construir el prompt con estructura CO-STAR
         const { apiPrompt } = buildPrompt(rawUserText);
 
-        // Pre-procesado: llama3-versatile mejora el prompt CO-STAR ya construido
-        const enhancedPrompt = await enhancePromptWithCoStar(apiPrompt, summary);
-
         const messages = [
             ...chatFlow
                 .filter(entry => entry.type === "user" || entry.type === "ai")
@@ -148,7 +164,7 @@ Eres OlivIA${userRole === "familiar" ? ", compañera virtual cercana como un fam
                     role: entry.type === "user" ? "user" : "assistant",
                     content: entry.content,
                 })),
-            { role: "user", content: enhancedPrompt }
+            { role: "user", content: apiPrompt }
         ];
 
         const response = await fetchFromGroq(messages);
@@ -190,9 +206,6 @@ Eres OlivIA${userRole === "familiar" ? ", compañera virtual cercana como un fam
             const rawText = context ? `${context} ${customPrompt}` : customPrompt;
             const { apiPrompt } = buildPrompt(rawText);
 
-            // Pre-procesado transparente: llama3-versatile mejora el prompt CO-STAR ya construido
-            const enhancedPrompt = await enhancePromptWithCoStar(apiPrompt, summary);
-
             const messages = [
                 ...chatFlow
                     .filter(entry => entry.type === "user" || entry.type === "ai")
@@ -200,7 +213,7 @@ Eres OlivIA${userRole === "familiar" ? ", compañera virtual cercana como un fam
                         role: entry.type === "user" ? "user" : "assistant",
                         content: entry.content,
                     })),
-                { role: "user", content: enhancedPrompt }
+                { role: "user", content: apiPrompt }
             ];
 
             const response = await fetchFunction(messages, targetmodel);
