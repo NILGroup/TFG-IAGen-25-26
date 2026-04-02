@@ -12,7 +12,8 @@ const ConfigPanel = ({
     setTempSummary,
     savedEffect,
     setSavedEffect,
-    setEditingField
+    setEditingField,
+    onSaveSummary
 }) => {
     const [showDiscardConfirm, setShowDiscardConfirm] = useState(false);
     const [activeSection, setActiveSection] = useState("sobre-ti");
@@ -20,14 +21,23 @@ const ConfigPanel = ({
     // Opciones para cada sección (sin emojis, Lectura Fácil)
     const sections = {
         "sobre-ti": {
-            title: "Sobre ti",
-            key: "discapacidad",
+            title: "¿Tienes discapacidad intelectual?",
             options: [
-                { id: "TEA", label: "Autismo (TEA)", description: "Me cuesta entender cómo piensan otros" },
-                { id: "TDAH", label: "Atención (TDAH)", description: "Me distraigo rápido o me muevo mucho" },
-                { id: "Dislexia", label: "Lectura (Dislexia)", description: "Las letras se mezclan o leo lento" },
-                { id: "Memoria", label: "Memoria", description: "Olvido lo que acabo de leer o hacer" },
-                { id: "Prefiero no responder", label: "Prefiero no decirlo", description: "" }
+                { id: "si", label: "Sí" },
+                { id: "no", label: "No" },
+                { id: "no_se", label: "No lo sé / No estoy segura(o)" },
+                { id: "prefiero_no", label: "Prefiero no decirlo" }
+            ]
+        },
+        "grado": {
+            title: "¿Sabes el grado de tu discapacidad?",
+            options: [
+                { id: "leve", label: "Leve" },
+                { id: "moderada", label: "Moderada" },
+                { id: "severa", label: "Severa" },
+                { id: "profunda", label: "Profunda" },
+                { id: "no_se", label: "No lo sé / No estoy segura(o)" },
+                { id: "prefiero_no", label: "Prefiero no decirlo" }
             ]
         },
         "retos": {
@@ -54,18 +64,48 @@ const ConfigPanel = ({
     };
 
     const toggleOption = (key, optionId) => {
-        const current = tempSummary[key] || [];
-        const updated = current.includes(optionId)
-            ? current.filter(o => o !== optionId)
-            : [...current, optionId];
-        setTempSummary({ ...tempSummary, [key]: updated });
+        if (key === "tieneDI") {
+            setTempSummary({ 
+                ...tempSummary, 
+                discapacidad: { 
+                    ...tempSummary.discapacidad, 
+                    tieneDI: optionId,
+                    grado: optionId !== "si" ? "" : tempSummary.discapacidad.grado // Reset grado si no es "sí"
+                } 
+            });
+        } else if (key === "grado") {
+            setTempSummary({ 
+                ...tempSummary, 
+                discapacidad: { 
+                    ...tempSummary.discapacidad, 
+                    grado: optionId 
+                } 
+            });
+        } else {
+            // Para retos y herramientas (arrays de checkboxes)
+            const current = tempSummary[key] || [];
+            const updated = current.includes(optionId)
+                ? current.filter(o => o !== optionId)
+                : [...current, optionId];
+            setTempSummary({ ...tempSummary, [key]: updated });
+        }
     };
 
     const handleSave = () => {
-        Object.keys(sections).forEach(sectionKey => {
-            const key = sections[sectionKey].key;
-            summary[key] = tempSummary[key];
-        });
+        const nextSummary = {
+            ...summary,
+            ...tempSummary
+        };
+
+        if (onSaveSummary) {
+            onSaveSummary(nextSummary);
+            return;
+        }
+
+        // Fallback para mantener compatibilidad con pantallas antiguas
+        summary.discapacidad = tempSummary.discapacidad;
+        summary.retos = tempSummary.retos;
+        summary.herramientas = tempSummary.herramientas;
         summary.nombre = tempSummary.nombre;
         setSavedEffect(true);
         setTimeout(() => setSavedEffect(false), 2000);
@@ -99,7 +139,13 @@ const ConfigPanel = ({
                     className={`config-tab ${activeSection === "sobre-ti" ? "active" : ""}`}
                     onClick={() => setActiveSection("sobre-ti")}
                 >
-                    Sobre ti
+                    Discapacidad
+                </button>
+                <button
+                    className={`config-tab ${activeSection === "grado" ? "active" : ""}`}
+                    onClick={() => setActiveSection("grado")}
+                >
+                    Grado
                 </button>
                 <button
                     className={`config-tab ${activeSection === "retos" ? "active" : ""}`}
@@ -131,6 +177,61 @@ const ConfigPanel = ({
                             onChange={(e) => setTempSummary({ ...tempSummary, nombre: e.target.value })}
                             placeholder="Escribe tu nombre..."
                         />
+                    </div>
+                ) : activeSection === "sobre-ti" ? (
+                    <div className="config-options-section">
+                        <h2>{sections["sobre-ti"].title}</h2>
+                        <div className="config-grid">
+                            {sections["sobre-ti"].options.map((option) => (
+                                <label
+                                    key={option.id}
+                                    className={`config-card ${tempSummary.discapacidad?.tieneDI === option.id ? 'checked' : ''}`}
+                                    htmlFor={`config-tieneDI-${option.id}`}
+                                >
+                                    <input
+                                        type="radio"
+                                        name="tieneDI"
+                                        id={`config-tieneDI-${option.id}`}
+                                        checked={tempSummary.discapacidad?.tieneDI === option.id || false}
+                                        onChange={() => toggleOption("tieneDI", option.id)}
+                                    />
+                                    <div className="config-card-text">
+                                        <span className="config-card-label">{option.label}</span>
+                                    </div>
+                                    <span className="config-card-indicator" aria-hidden="true">
+                                        {tempSummary.discapacidad?.tieneDI === option.id ? '✓' : ''}
+                                    </span>
+                                </label>
+                            ))}
+                        </div>
+                    </div>
+                ) : activeSection === "grado" ? (
+                    <div className="config-options-section">
+                        <h2>{sections["grado"].title}</h2>
+                        <p className="config-instruction">Esta pregunta solo aplica si respondiste "Sí" en la sección anterior.</p>
+                        <div className="config-grid">
+                            {sections["grado"].options.map((option) => (
+                                <label
+                                    key={option.id}
+                                    className={`config-card ${tempSummary.discapacidad?.grado === option.id ? 'checked' : ''}`}
+                                    htmlFor={`config-grado-${option.id}`}
+                                >
+                                    <input
+                                        type="radio"
+                                        name="grado"
+                                        id={`config-grado-${option.id}`}
+                                        checked={tempSummary.discapacidad?.grado === option.id || false}
+                                        onChange={() => toggleOption("grado", option.id)}
+                                    />
+                                    <div className="config-card-text">
+                                        <span className="config-card-label">{option.label}</span>
+                                    </div>
+                                    <span className="config-card-indicator" aria-hidden="true">
+                                        {tempSummary.discapacidad?.grado === option.id ? '✓' : ''}
+                                    </span>
+                                </label>
+                            ))}
+                        </div>
                     </div>
                 ) : (
                     <div className="config-options-section">

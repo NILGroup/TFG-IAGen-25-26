@@ -1,7 +1,7 @@
 /**
  * App.jsx
  *
- * Punto de entrada de la aplicación OlivIA, es decir, arranca todo lo visual
+ * Punto de entrada de la aplicación SofIA, es decir, arranca todo lo visual
  * Controla la navegación entre el cuestionario inicial (`Questionario`)
  * y la interfaz principal conversacional (`InterfazPrincipal`).
  *
@@ -70,7 +70,7 @@ export default function App() {
     <div className="app-wrapper">
       {/* Barra superior - solo para páginas sin header propio */}
       {!paginasConHeaderPropio && (
-        <div className="header-bar">OlivIA</div>
+        <div className="header-bar">SofIA</div>
       )}
 
       {/* Renderizado condicional según el paso */} 

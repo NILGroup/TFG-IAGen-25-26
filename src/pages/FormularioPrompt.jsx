@@ -62,7 +62,7 @@ export default function FormularioPrompt({ onComplete, onBack, summary }) {
     <div className="app-wrapper">
       {/* Header con logo y botones */}
       <div className="header-bar">
-        OlivIA
+        SofIA
 
         <button
           className={`history-btn ${showHistory ? "open" : "closed"}`}
@@ -114,7 +114,7 @@ export default function FormularioPrompt({ onComplete, onBack, summary }) {
         {/* Título */}
         <h1 className="formulario-title">Prepara tu pregunta</h1>
         <p className="formulario-subtitle">
-          Responde estas preguntas para que OlivIA te entienda mejor
+          Responde estas preguntas para que SofIA te entienda mejor
         </p>
 
         {/* PREGUNTA 1: Tema */}
@@ -137,7 +137,7 @@ export default function FormularioPrompt({ onComplete, onBack, summary }) {
         {/* PREGUNTA 2: Objetivo */}
         <div className="formulario-card">
           <label className="formulario-label">
-            2. ¿Qué quieres que haga OlivIA por ti?
+            2. ¿Qué quieres que haga SofIA por ti?
           </label>
           <p className="formulario-helper">
             Por ejemplo: Explícame, Ayúdame a entender, Cuéntame, Dame ejemplos de...

@@ -19,7 +19,7 @@ export default function PantallaEleccion({ onSelectOption, onBack }) {
                 </button>
 
                 <h1 className="eleccion-title">¿Cómo quieres empezar?</h1>
-                <p className="eleccion-subtitle">Elige la forma que prefieras para hablar con OlivIA</p>
+                <p className="eleccion-subtitle">Elige la forma que prefieras para hablar con SofIA</p>
 
                 <div className="eleccion-options">
                     {/* Tarjeta Con ayuda */}
@@ -42,7 +42,7 @@ export default function PantallaEleccion({ onSelectOption, onBack }) {
                     >
                         <span className="eleccion-card-title">Directa</span>
                         <span className="eleccion-card-desc">
-                            Escribe directamente lo que quieras preguntarle a OlivIA
+                            Escribe directamente lo que quieras preguntarle a SofIA
                         </span>
                     </button>
                 </div>
