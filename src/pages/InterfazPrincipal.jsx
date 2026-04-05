@@ -27,6 +27,7 @@ import ChatHistory from "../components/ChatHistory";
 import QuestionPromptPanel from "../components/QuestionPromptPanel";
 import ChatActivePanel from "../components/ChatActivePanel";
 import ResponseConfigPanel from "../components/ResponseConfigPanel";
+import PanelGlosario from "../components/PanelGlosario";
 
 export default function InterfazPrincipal({ summary, modoSeleccionado, promptInicial, flujoElegido, onBack }) {
     const {
@@ -82,11 +83,12 @@ export default function InterfazPrincipal({ summary, modoSeleccionado, promptIni
     const [showResponseConfig, setShowResponseConfig] = useState(false);
     const [responseConfig, setResponseConfig] = useState(["lectura-facil", "ejemplos"]);
 
-    // Función para aplicar cambios en la configuración de respuestas
+    // Estado para el panel de glosario
+    const [showGlosario, setShowGlosario] = useState(false);
+
     const handleApplyResponseConfig = (newConfig) => {
         setResponseConfig(newConfig);
         console.log("Nueva configuración de respuestas:", newConfig);
-        // TODO: Integrar con el sistema de prompts para aplicar la configuración
     };
     /** ================================
     *  ESTADOS PARA CARGAR A LOS PROMPTS
@@ -173,54 +175,48 @@ export default function InterfazPrincipal({ summary, modoSeleccionado, promptIni
 
         <div className="app-wrapper">
             <div className="header-bar">
-                SofIA
-
-                <button
-                    className={`history-btn ${showHistory ? "open" : "closed"}`}
-                    onClick={toggleHistory}
-                    aria-label={showHistory ? "Cerrar panel de historial de conversaciones" : `Abrir panel de historial de conversaciones. ${totalChats > 0 ? `Chat ${currentNumber} de ${totalChats}` : "Sin chats guardados"}`}
-                    aria-expanded={showHistory}
-                >
-                    {totalChats > 0 && currentNumber > 0 && (
-                        <span className="history-counter">{currentNumber}/{totalChats}</span>
+                <div className="header-bar-container">
+                    {!showGlosario && !showConfig && !showResponseConfig && (
+                        <button
+                            className="boton-diccionario"
+                            onClick={() => setShowGlosario(true)}
+                            aria-label="Abrir diccionario"
+                            aria-expanded={showGlosario}
+                        >
+                            Diccionario
+                        </button>
                     )}
-                    {showHistory ? "📁 Cerrar Historial" : "📂 Abrir Historial"}
-                </button>
 
-                <button
-                    className={`config-btn ${showConfig ? "open" : "closed"}`}
-                    onClick={() => setShowConfig(!showConfig)}
-                    aria-label={showConfig ? "Cerrar panel de configuración" : "Abrir panel de configuración"}
-                    aria-expanded={showConfig}
-                >
-                    {showConfig ? "⚙️ Cerrar Configuración" : "⚙️  Configuración"}
-                </button>
+                    <h1 className="header-bar-title">
+                        SofIA
+                    </h1>
 
-                {/* Botón para configuración de respuestas - Solo en flujo "con ayuda" */}
-                {flujoElegido === "formulario" && (
-                    <button
-                        className={`response-config-toggle-btn ${showResponseConfig ? "open" : "closed"}`}
-                        onClick={() => setShowResponseConfig(!showResponseConfig)}
-                        aria-label={showResponseConfig ? "Cerrar configuración de respuestas" : "Abrir configuración de respuestas"}
-                        aria-expanded={showResponseConfig}
-                    >
-                        {showResponseConfig ? "📝 Cerrar Respuestas" : "📝 ¿Cómo quieres que aparezca la respuesta?"}
-                    </button>
-                )}
+                    {!showGlosario && !showConfig && !showResponseConfig && (
+                        <div className="header-bar-right">
+                            <button
+                                className="boton-perfil"
+                                onClick={() => setShowConfig(true)}
+                                aria-label="Abrir perfil"
+                                aria-expanded={showConfig}
+                            >
+                                Perfil
+                            </button>
+                        </div>
+                    )}
 
-                {/*LÓGICA HISTORIAL*/}
-                <ChatHistory
-                    showHistory={showHistory}
-                    chatHistory={chatHistory}
-                    activeChat={activeChat}
-                    chatFlow={chatFlow}
-                    setActiveChat={setActiveChat}
-                    setChatFlow={setChatFlow}
-                    setShowChat={setShowChat}
-                    setShowHelpOptions={setShowHelpOptions}
-                    setChatHistory={setChatHistory}
-                />
-
+                    {/*LÓGICA HISTORIAL*/}
+                    <ChatHistory
+                        showHistory={showHistory}
+                        chatHistory={chatHistory}
+                        activeChat={activeChat}
+                        chatFlow={chatFlow}
+                        setActiveChat={setActiveChat}
+                        setChatFlow={setChatFlow}
+                        setShowChat={setShowChat}
+                        setShowHelpOptions={setShowHelpOptions}
+                        setChatHistory={setChatHistory}
+                    />
+                </div>
             </div>
             {/*LÓGICA CONFIGURACIÓN*/}
             {showConfig && (
@@ -285,6 +281,11 @@ export default function InterfazPrincipal({ summary, modoSeleccionado, promptIni
                     onApply={handleApplyResponseConfig}
                 />
             )}
+
+            <PanelGlosario
+                isOpen={showGlosario}
+                onClose={() => setShowGlosario(false)}
+            />
 
         </div>
     );
