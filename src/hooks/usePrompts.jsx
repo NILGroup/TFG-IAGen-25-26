@@ -53,8 +53,8 @@ const usePromptFunctions = ({
         // Mostrar inmediatamente el mensaje del usuario en el chat
         setChatFlow((prev) => [
             ...prev,
-            { type: "user", content: rawUserText },
-            { type: "loading", content: "⌛ Cargando..." },
+            { type: "user", content: rawUserText, timestamp: new Date().toISOString() },
+            { type: "loading", content: "⌛ Cargando...", timestamp: new Date().toISOString() },
         ]);
 
         // Construir el prompt con estructura CO-STAR
@@ -72,7 +72,7 @@ const usePromptFunctions = ({
 
         setChatFlow((prev) => [
             ...prev.filter((entry) => entry.type !== "loading"),
-            { type: "ai", content: response },
+            { type: "ai", content: response, timestamp: new Date().toISOString() },
         ]);
         
         setShowHelpOptions(true);
@@ -111,8 +111,8 @@ const usePromptFunctions = ({
             // Mostrar inmediatamente el mensaje del usuario en el chat
             setChatFlow((prev) => [
                 ...prev,
-                { type: "user", content: displayPrompt },
-                { type: "loading", content: "⌛ Cargando..." }
+                { type: "user", content: displayPrompt, timestamp: new Date().toISOString() },
+                { type: "loading", content: "⌛ Cargando...", timestamp: new Date().toISOString() }
             ]);
 
             // Construir el prompt con estructura CO-STAR
@@ -134,7 +134,7 @@ const usePromptFunctions = ({
 
             setChatFlow((prev) => [
                 ...prev.filter((entry) => entry.type !== "loading"),
-                { type: "ai", content: response },
+                { type: "ai", content: response, timestamp: new Date().toISOString() },
             ]);
 
             setShowHelpOptions(true);

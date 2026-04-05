@@ -24,6 +24,7 @@ export default function App() {
   const [summary, setSummary] = useState(null); // Resumen del cuestionario inicial
   const [modoSeleccionado, setModoSeleccionado] = useState(null); // "profesor" | "familiar"
   const [promptGenerado, setPromptGenerado] = useState(null); // Prompt del formulario
+  const [flujoElegido, setFlujoElegido] = useState(null); // "formulario" | "directa"
 
   // 1. Cuando termina el cuestionario inicial
   const handleQuestionnaireComplete = (data) => {
@@ -39,6 +40,7 @@ export default function App() {
 
   // 3. Cuando el usuario elige en la pantalla de elección
   const handleSelectOption = (opcion) => {
+    setFlujoElegido(opcion); // Guardar el flujo elegido
     if (opcion === "formulario") {
       setPaso("formulario"); // Ir al formulario guiado
     } else if (opcion === "directa") {
@@ -102,6 +104,7 @@ export default function App() {
           summary={summary}
           modoSeleccionado={modoSeleccionado}
           promptInicial={promptGenerado}
+          flujoElegido={flujoElegido}
           onBack={handleVolverAEleccion}
         />
       )}

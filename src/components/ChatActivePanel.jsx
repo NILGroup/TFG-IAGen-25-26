@@ -54,7 +54,11 @@ export default function ChatActivePanel({
             <div className="chat-container">
                 <div className="custom-followup-box">
                     <h4 className="custom-followup-title"><strong>¿Prefieres formular la pregunta desde cero?</strong></h4>
+                    <label htmlFor="followup-textarea" className="sr-only">
+                        Escribe tu siguiente pregunta para SofIA
+                    </label>
                     <textarea
+                        id="followup-textarea"
                         className="custom-followup-textarea"
                         placeholder="Escribe aquí tu pregunta..."
                         value={prompt}
@@ -65,8 +69,13 @@ export default function ChatActivePanel({
                                 submitFollowup();
                             }
                         }}
+                        aria-label="Campo de texto para escribir tu siguiente pregunta a SofIA"
                     ></textarea>
-                    <button className="custom-followup-btn" onClick={submitFollowup}>
+                    <button
+                        className="custom-followup-btn"
+                        onClick={submitFollowup}
+                        aria-label="Enviar pregunta a SofIA"
+                    >
                         🔍 ¡Descubrir Respuesta!
                     </button>
                 </div>

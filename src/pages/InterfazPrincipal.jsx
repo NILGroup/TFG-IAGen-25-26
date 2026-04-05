@@ -26,8 +26,9 @@ import ConfigPanel from "../components/ConfigPanel";
 import ChatHistory from "../components/ChatHistory";
 import QuestionPromptPanel from "../components/QuestionPromptPanel";
 import ChatActivePanel from "../components/ChatActivePanel";
+import ResponseConfigPanel from "../components/ResponseConfigPanel";
 
-export default function InterfazPrincipal({ summary, modoSeleccionado, promptInicial, onBack }) {
+export default function InterfazPrincipal({ summary, modoSeleccionado, promptInicial, flujoElegido, onBack }) {
     const {
         selectedOption,
         setSelectedOption,
@@ -76,6 +77,17 @@ export default function InterfazPrincipal({ summary, modoSeleccionado, promptIni
         setTempSummary,
         handleSaveSummary,
     } = useConfigController(summary);
+
+    // Estados para el panel de configuración de respuestas
+    const [showResponseConfig, setShowResponseConfig] = useState(false);
+    const [responseConfig, setResponseConfig] = useState(["lectura-facil", "ejemplos"]);
+
+    // Función para aplicar cambios en la configuración de respuestas
+    const handleApplyResponseConfig = (newConfig) => {
+        setResponseConfig(newConfig);
+        console.log("Nueva configuración de respuestas:", newConfig);
+        // TODO: Integrar con el sistema de prompts para aplicar la configuración
+    };
     /** ================================
     *  ESTADOS PARA CARGAR A LOS PROMPTS
     *  ================================
@@ -152,6 +164,11 @@ export default function InterfazPrincipal({ summary, modoSeleccionado, promptIni
      *  ================================
      */
 
+    // Calcular posición de la conversación actual en el historial
+    const currentChatIndex = activeChat ? chatHistory.findIndex(entry => entry === activeChat) : -1;
+    const currentNumber = currentChatIndex !== -1 ? currentChatIndex + 1 : 0;
+    const totalChats = chatHistory.length;
+
     return (
 
         <div className="app-wrapper">
@@ -161,16 +178,35 @@ export default function InterfazPrincipal({ summary, modoSeleccionado, promptIni
                 <button
                     className={`history-btn ${showHistory ? "open" : "closed"}`}
                     onClick={toggleHistory}
+                    aria-label={showHistory ? "Cerrar panel de historial de conversaciones" : `Abrir panel de historial de conversaciones. ${totalChats > 0 ? `Chat ${currentNumber} de ${totalChats}` : "Sin chats guardados"}`}
+                    aria-expanded={showHistory}
                 >
+                    {totalChats > 0 && currentNumber > 0 && (
+                        <span className="history-counter">{currentNumber}/{totalChats}</span>
+                    )}
                     {showHistory ? "📁 Cerrar Historial" : "📂 Abrir Historial"}
                 </button>
 
                 <button
                     className={`config-btn ${showConfig ? "open" : "closed"}`}
                     onClick={() => setShowConfig(!showConfig)}
+                    aria-label={showConfig ? "Cerrar panel de configuración" : "Abrir panel de configuración"}
+                    aria-expanded={showConfig}
                 >
                     {showConfig ? "⚙️ Cerrar Configuración" : "⚙️  Configuración"}
                 </button>
+
+                {/* Botón para configuración de respuestas - Solo en flujo "con ayuda" */}
+                {flujoElegido === "formulario" && (
+                    <button
+                        className={`response-config-toggle-btn ${showResponseConfig ? "open" : "closed"}`}
+                        onClick={() => setShowResponseConfig(!showResponseConfig)}
+                        aria-label={showResponseConfig ? "Cerrar configuración de respuestas" : "Abrir configuración de respuestas"}
+                        aria-expanded={showResponseConfig}
+                    >
+                        {showResponseConfig ? "📝 Cerrar Respuestas" : "📝 ¿Cómo quieres que aparezca la respuesta?"}
+                    </button>
+                )}
 
                 {/*LÓGICA HISTORIAL*/}
                 <ChatHistory
@@ -237,6 +273,16 @@ export default function InterfazPrincipal({ summary, modoSeleccionado, promptIni
                     prompt={prompt}
                     setPrompt={setPrompt}
                     sendCustomPrompt={sendCustomPrompt}
+                />
+            )}
+
+            {/* Panel de configuración de respuestas - Solo en flujo "con ayuda" */}
+            {flujoElegido === "formulario" && (
+                <ResponseConfigPanel
+                    isOpen={showResponseConfig}
+                    onClose={() => setShowResponseConfig(false)}
+                    currentConfig={responseConfig}
+                    onApply={handleApplyResponseConfig}
                 />
             )}
 
