@@ -187,7 +187,17 @@ export default function InterfazPrincipal({ summary, modoSeleccionado, promptIni
                         </button>
                     )}
 
-                    <h1 className="header-bar-title">
+                    <h1
+                        className="header-bar-title"
+                        onClick={onBack}
+                        role="button"
+                        tabIndex={0}
+                        onKeyPress={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                                onBack();
+                            }
+                        }}
+                    >
                         SofIA
                     </h1>
 

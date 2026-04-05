@@ -62,34 +62,50 @@ export default function FormularioPrompt({ onComplete, onBack, summary }) {
     <div className="app-wrapper">
       {/* Header con logo y botones */}
       <div className="header-bar">
-        SofIA
+        <div className="header-bar-container">
+          <h1
+            className="header-bar-title"
+            onClick={onBack}
+            role="button"
+            tabIndex={0}
+            onKeyPress={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                onBack();
+              }
+            }}
+          >
+            SofIA
+          </h1>
 
-        <button
-          className={`history-btn ${showHistory ? "open" : "closed"}`}
-          onClick={toggleHistory}
-        >
-          {showHistory ? "Cerrar Historial" : "Abrir Historial"}
-        </button>
+          <div className="header-bar-right">
+            <button
+              className={`history-btn ${showHistory ? "open" : "closed"}`}
+              onClick={toggleHistory}
+            >
+              {showHistory ? "Cerrar Historial" : "Abrir Historial"}
+            </button>
 
-        <button
-          className={`config-btn ${showConfig ? "open" : "closed"}`}
-          onClick={() => setShowConfig(!showConfig)}
-        >
-          {showConfig ? "Cerrar Configuración" : "Configuración"}
-        </button>
+            <button
+              className={`config-btn ${showConfig ? "open" : "closed"}`}
+              onClick={() => setShowConfig(!showConfig)}
+            >
+              {showConfig ? "Cerrar Configuración" : "Configuración"}
+            </button>
+          </div>
 
-        {/* Panel de historial */}
-        <ChatHistory
-          showHistory={showHistory}
-          chatHistory={chatHistory}
-          activeChat={activeChat}
-          chatFlow={chatFlow}
-          setActiveChat={setActiveChat}
-          setChatFlow={setChatFlow}
-          setShowChat={setShowChat}
-          setShowHelpOptions={setShowHelpOptions}
-          setChatHistory={setChatHistory}
-        />
+          {/* Panel de historial */}
+          <ChatHistory
+            showHistory={showHistory}
+            chatHistory={chatHistory}
+            activeChat={activeChat}
+            chatFlow={chatFlow}
+            setActiveChat={setActiveChat}
+            setChatFlow={setChatFlow}
+            setShowChat={setShowChat}
+            setShowHelpOptions={setShowHelpOptions}
+            setChatHistory={setChatHistory}
+          />
+        </div>
       </div>
 
       {/* Panel de configuración */}

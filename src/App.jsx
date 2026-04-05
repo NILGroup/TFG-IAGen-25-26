@@ -72,7 +72,13 @@ export default function App() {
     <div className="app-wrapper">
       {/* Barra superior - solo para páginas sin header propio */}
       {!paginasConHeaderPropio && (
-        <div className="header-bar">SofIA</div>
+        <div className="header-bar">
+          <div className="header-bar-container">
+            <h1 className="header-bar-title">
+              SofIA
+            </h1>
+          </div>
+        </div>
       )}
 
       {/* Renderizado condicional según el paso */} 

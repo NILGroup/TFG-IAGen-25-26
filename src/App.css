@@ -97,19 +97,39 @@ body {
 .header-bar-title {
   position: absolute;
   left: 50%;
-  top: 23.5px;
-  transform: translateX(-50%);
-  font-size: 32px;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 32px !important;
   font-weight: bold;
   color: white;
   white-space: nowrap;
   margin: 0;
-  cursor: pointer;
+  padding: 0;
   transition: color 0.2s;
+  line-height: 1;
+  z-index: 10;
+  pointer-events: auto;
+  user-select: none;
 }
 
-.header-bar-title:hover {
+.header-bar-title[role="button"] {
+  cursor: pointer;
+}
+
+.header-bar-title[role="button"]:hover {
   color: #4caf50;
+}
+
+@media (max-width: 768px) {
+  .header-bar-title {
+    font-size: 28px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-bar-title {
+    font-size: 24px !important;
+  }
 }
 
 .header-bar-right {
