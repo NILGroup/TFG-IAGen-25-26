@@ -28,6 +28,7 @@ import QuestionPromptPanel from "../components/QuestionPromptPanel";
 import ChatActivePanel from "../components/ChatActivePanel";
 import ResponseConfigPanel from "../components/ResponseConfigPanel";
 import PanelGlosario from "../components/PanelGlosario";
+import ProfilePanel from "../components/ProfilePanel";
 
 export default function InterfazPrincipal({ summary, modoSeleccionado, promptInicial, flujoElegido, onBack }) {
     const {
@@ -85,6 +86,9 @@ export default function InterfazPrincipal({ summary, modoSeleccionado, promptIni
 
     // Estado para el panel de glosario
     const [showGlosario, setShowGlosario] = useState(false);
+
+    // Estado para el panel de perfil
+    const [showProfile, setShowProfile] = useState(false);
 
     const handleApplyResponseConfig = (newConfig) => {
         setResponseConfig(newConfig);
@@ -176,7 +180,7 @@ export default function InterfazPrincipal({ summary, modoSeleccionado, promptIni
         <div className="app-wrapper">
             <div className="header-bar">
                 <div className="header-bar-container">
-                    {!showGlosario && !showConfig && !showResponseConfig && (
+                    {!showGlosario && !showConfig && !showResponseConfig && !showProfile && (
                         <button
                             className="boton-diccionario"
                             onClick={() => setShowGlosario(true)}
@@ -201,13 +205,13 @@ export default function InterfazPrincipal({ summary, modoSeleccionado, promptIni
                         SofIA
                     </h1>
 
-                    {!showGlosario && !showConfig && !showResponseConfig && (
+                    {!showGlosario && !showConfig && !showResponseConfig && !showProfile && (
                         <div className="header-bar-right">
                             <button
                                 className="boton-perfil"
-                                onClick={() => setShowConfig(true)}
+                                onClick={() => setShowProfile(true)}
                                 aria-label="Abrir perfil"
-                                aria-expanded={showConfig}
+                                aria-expanded={showProfile}
                             >
                                 Perfil
                             </button>
@@ -295,6 +299,13 @@ export default function InterfazPrincipal({ summary, modoSeleccionado, promptIni
             <PanelGlosario
                 isOpen={showGlosario}
                 onClose={() => setShowGlosario(false)}
+            />
+
+            <ProfilePanel
+                isOpen={showProfile}
+                onClose={() => setShowProfile(false)}
+                summary={userSummary}
+                onSave={handleSaveSummary}
             />
 
         </div>

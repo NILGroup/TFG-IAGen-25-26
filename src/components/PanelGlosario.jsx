@@ -90,7 +90,6 @@ export default function PanelGlosario({ isOpen, onClose }) {
       aria-label="Panel de glosario"
     >
       <div className="panel-glosario-header">
-        <h2 className="panel-glosario-titulo">Diccionario</h2>
         <button
           onClick={onClose}
           className="panel-glosario-cerrar"
@@ -98,6 +97,7 @@ export default function PanelGlosario({ isOpen, onClose }) {
         >
           ←
         </button>
+        <h2 className="panel-glosario-titulo">Diccionario</h2>
       </div>
 
       <div className="panel-glosario-busqueda-contenedor">

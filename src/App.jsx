@@ -16,6 +16,7 @@ import PantallaRol from "./pages/PantallaRol";
 import PantallaEleccion from "./pages/PantallaEleccion";
 import FormularioPrompt from "./pages/FormularioPrompt";
 import InterfazPrincipal from "./pages/InterfazPrincipal";
+import ProfilePanel from "./components/ProfilePanel";
 import "./App.css";
 
 export default function App() {
@@ -25,6 +26,7 @@ export default function App() {
   const [modoSeleccionado, setModoSeleccionado] = useState(null); // "profesor" | "familiar"
   const [promptGenerado, setPromptGenerado] = useState(null); // Prompt del formulario
   const [flujoElegido, setFlujoElegido] = useState(null); // "formulario" | "directa"
+  const [showProfile, setShowProfile] = useState(false); // Panel de perfil
 
   // 1. Cuando termina el cuestionario inicial
   const handleQuestionnaireComplete = (data) => {
@@ -65,6 +67,11 @@ export default function App() {
     setPaso("modo");
   };
 
+  // 7. Para guardar cambios en el perfil
+  const handleSaveProfile = (updatedSummary) => {
+    setSummary(updatedSummary);
+  };
+
   // Las páginas formulario y chat tienen su propio header con botones
   const paginasConHeaderPropio = paso === "formulario" || paso === "chat";
 
@@ -77,6 +84,20 @@ export default function App() {
             <h1 className="header-bar-title">
               SofIA
             </h1>
+
+            {/* Botón Perfil - solo si ya existe un perfil */}
+            {summary && !showProfile && (
+              <div className="header-bar-right">
+                <button
+                  className="boton-perfil"
+                  onClick={() => setShowProfile(true)}
+                  aria-label="Abrir perfil"
+                  aria-expanded={showProfile}
+                >
+                  Perfil
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -112,6 +133,16 @@ export default function App() {
           promptInicial={promptGenerado}
           flujoElegido={flujoElegido}
           onBack={handleVolverAEleccion}
+        />
+      )}
+
+      {/* Panel de perfil - disponible cuando existe un perfil */}
+      {summary && (
+        <ProfilePanel
+          isOpen={showProfile}
+          onClose={() => setShowProfile(false)}
+          summary={summary}
+          onSave={handleSaveProfile}
         />
       )}
     </div>
