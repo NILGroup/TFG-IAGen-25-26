@@ -168,7 +168,7 @@ export default function PaginaPerfil({ summary, onSave, onBack }) {
           </button>
 
           {/* Título */}
-          <h1 className="formulario-title">Mi Configuración</h1>
+          <h1 className="formulario-title">Mi Perfil</h1>
           <p className="formulario-subtitle">
             Edita tu información y preferencias
           </p>

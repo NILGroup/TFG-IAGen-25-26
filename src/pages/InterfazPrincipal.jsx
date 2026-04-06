@@ -140,10 +140,11 @@ export default function InterfazPrincipal({ summary, modoSeleccionado, promptIni
         // Si hay un promptInicial y no se ha enviado todavía
         if (promptInicial && !promptInicialEnviado.current) {
             promptInicialEnviado.current = true;
-            setPrompt(promptInicial);
             setShowChat(true);
             // Enviar el prompt automáticamente como pregunta personalizada
             sendCustomPrompt(promptInicial);
+            // Dejar el input vacío para la siguiente pregunta
+            setPrompt("");
         }
     }, [promptInicial]); // Solo se ejecuta cuando cambia promptInicial
 

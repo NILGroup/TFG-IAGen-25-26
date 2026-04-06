@@ -14,6 +14,26 @@ export default function FormularioPrompt({ onComplete, onBack, summary }) {
   // Estados para las 2 preguntas
   const [tema, setTema] = useState("");
   const [objetivo, setObjetivo] = useState("");
+  const [objetivoPersonalizado, setObjetivoPersonalizado] = useState(false);
+
+  const opcionesObjetivo = [
+    { id: "explicame", texto: "Explícame", descripcion: "Quiero entender algo" },
+    { id: "ayudame", texto: "Ayúdame con...", descripcion: "Necesito hacer algo" },
+    { id: "busca", texto: "Busca información", descripcion: "Quiero saber más" },
+    { id: "ejemplos", texto: "Dame ejemplos", descripcion: "Quiero ver casos" },
+  ];
+
+  // Seleccionar una opción predefinida
+  const seleccionarObjetivo = (texto) => {
+    setObjetivo(texto);
+    setObjetivoPersonalizado(false);
+  };
+
+  // Activar modo personalizado
+  const activarPersonalizado = () => {
+    setObjetivoPersonalizado(true);
+    setObjetivo("");
+  };
 
   // Estado para glosario
   const [showGlosario, setShowGlosario] = useState(false);
@@ -86,18 +106,63 @@ export default function FormularioPrompt({ onComplete, onBack, summary }) {
         </button>
 
         {/* Título */}
-        <h1 className="formulario-title">Prepara tu pregunta</h1>
+        <h1 className="formulario-title">Vamos a crear tu pregunta</h1>
         <p className="formulario-subtitle">
-          Responde estas preguntas para que SofIA te entienda mejor
+          Contesta estas dos preguntas
         </p>
 
-        {/* PREGUNTA 1: Tema */}
+        {/* PREGUNTA 1: Objetivo (PRIMERO) */}
         <div className="formulario-card">
           <label className="formulario-label">
-            1. ¿Sobre qué tema quieres hablar?
+            1. ¿Qué quieres saber?
           </label>
           <p className="formulario-helper">
-            Por ejemplo: Animales, Cocina, Historia, Deportes...
+            Elige una opción o escribe tú
+          </p>
+
+          {/* Botones predefinidos */}
+          <div className="formulario-opciones-grid">
+            {opcionesObjetivo.map((opcion) => (
+              <button
+                key={opcion.id}
+                type="button"
+                className={`formulario-opcion-btn ${objetivo === opcion.texto && !objetivoPersonalizado ? 'selected' : ''}`}
+                onClick={() => seleccionarObjetivo(opcion.texto)}
+              >
+                <span className="formulario-opcion-texto">{opcion.texto}</span>
+                <span className="formulario-opcion-desc">{opcion.descripcion}</span>
+              </button>
+            ))}
+          </div>
+
+          {/* Opción de escribir personalizado */}
+          <button
+            type="button"
+            className={`formulario-personalizado-btn ${objetivoPersonalizado ? 'active' : ''}`}
+            onClick={activarPersonalizado}
+          >
+            Otra cosa (escribir yo)
+          </button>
+
+          {objetivoPersonalizado && (
+            <textarea
+              className="formulario-textarea"
+              value={objetivo}
+              onChange={(e) => setObjetivo(e.target.value)}
+              placeholder="Escribe aquí lo que quieres saber..."
+              rows={2}
+            />
+          )}
+        </div>
+
+        {/* PREGUNTA 2: Tema (SEGUNDO) */}
+        {/* Ejemplos basados en: PMC9543174, Plena Inclusión Murcia, Opportunity Village */}
+        <div className="formulario-card">
+          <label className="formulario-label">
+            2. ¿Sobre qué tema?
+          </label>
+          <p className="formulario-helper">
+            Por ejemplo: animales, música, deportes, cocina, películas, videojuegos
           </p>
           <input
             type="text"
@@ -108,35 +173,18 @@ export default function FormularioPrompt({ onComplete, onBack, summary }) {
           />
         </div>
 
-        {/* PREGUNTA 2: Objetivo */}
-        <div className="formulario-card">
-          <label className="formulario-label">
-            2. ¿Qué quieres que haga SofIA por ti?
-          </label>
-          <p className="formulario-helper">
-            Por ejemplo: Explícame, Ayúdame a entender, Cuéntame, Dame ejemplos de...
-          </p>
-          <textarea
-            className="formulario-textarea"
-            value={objetivo}
-            onChange={(e) => setObjetivo(e.target.value)}
-            placeholder="Escribe aquí lo que necesitas..."
-            rows={3}
-          />
-        </div>
-
-        {/* Botón de continuar */}
+        {/* Botón de enviar */}
         <button
           className={`formulario-submit-btn ${!esFormularioValido ? "disabled" : ""}`}
           onClick={handleSubmit}
           disabled={!esFormularioValido}
         >
-          Continuar al chat
+          Enviar pregunta
         </button>
 
         {!esFormularioValido && (
           <p className="formulario-validation">
-            Completa las dos preguntas para continuar
+            Escribe en las dos cajas para continuar
           </p>
         )}
         </div>
