@@ -408,125 +408,7 @@
 }
 
 /* ============================================================================
- * FORMULARIO - Botones de opciones predefinidas (Lectura Fácil)
- * Grid de 4 botones: Explícame, Dame ejemplos, Ayúdame, Cuéntame
- * ============================================================================ */
-
-/* Lista vertical de opciones (coherente con Questionario.jsx) */
-.formulario-opciones-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-bottom: 12px;
-  width: 100%;
-}
-
-/* Botón de opción - estilo tarjeta horizontal */
-.formulario-opcion-btn {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 16px 20px;
-  background: white;
-  border: 3px solid #e0e0e0;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  font-family: inherit;
-  width: 100%;
-  text-align: left;
-}
-
-.formulario-opcion-btn:hover {
-  border-color: #90caf9;
-  background: #f0f7ff;
-}
-
-.formulario-opcion-btn:focus-visible {
-  outline: 3px solid #2196f3;
-  outline-offset: 2px;
-}
-
-.formulario-opcion-btn.selected {
-  border-color: #1f4189;
-  background: #e3f2fd;
-}
-
-/* Indicador de selección (checkmark) */
-.formulario-opcion-btn.selected::after {
-  content: "✓";
-  font-size: 1.2rem;
-  font-weight: bold;
-  color: #1f4189;
-}
-
-.formulario-opcion-texto {
-  font-size: clamp(1.1rem, 2.5vw, 1.2rem);
-  font-weight: bold;
-  color: #1a1a2e;
-}
-
-.formulario-opcion-desc {
-  font-size: clamp(0.9rem, 2vw, 1rem);
-  color: #666;
-  flex: 1;
-  text-align: right;
-}
-
-/* Botón "Quiero escribir yo" - Mismo estilo que las opciones */
-.formulario-personalizado-btn {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  width: 100%;
-  padding: 16px 20px;
-  font-size: clamp(1rem, 2.5vw, 1.1rem);
-  font-weight: 600;
-  color: #1a1a2e;
-  background: white;
-  border: 3px solid #e0e0e0;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  font-family: inherit;
-  margin-top: 4px;
-}
-
-
-.formulario-personalizado-btn:hover {
-  border-color: #90caf9;
-  background: #f0f7ff;
-}
-
-.formulario-personalizado-btn:focus-visible {
-  outline: 3px solid #2196f3;
-  outline-offset: 2px;
-}
-
-.formulario-personalizado-btn.active {
-  border-color: #1f4189;
-  background: #e3f2fd;
-  color: #1f4189;
-  font-weight: 600;
-}
-
-/* Checkmark cuando está activo */
-.formulario-personalizado-btn.active::after {
-  content: "✓";
-  font-size: 1.2rem;
-  font-weight: bold;
-  color: #1f4189;
-  margin-left: auto;
-}
-
-
-/* ============================================================================
  * RESPONSIVE
-
  * ============================================================================ */
 
 @media (max-width: 768px) {
@@ -579,11 +461,6 @@
 
   .formulario-submit-btn {
     padding: 16px;
-  }
-
-  /* Botones de opciones en móvil */
-  .formulario-opcion-btn {
-    padding: 14px 16px;
   }
 }
 
