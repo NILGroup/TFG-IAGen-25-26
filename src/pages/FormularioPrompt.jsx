@@ -14,26 +14,6 @@ export default function FormularioPrompt({ onComplete, onBack, summary }) {
   // Estados para las 2 preguntas
   const [tema, setTema] = useState("");
   const [objetivo, setObjetivo] = useState("");
-  const [objetivoPersonalizado, setObjetivoPersonalizado] = useState(false);
-
-  const opcionesObjetivo = [
-    { id: "explicame", texto: "Explícame", descripcion: "Quiero entender algo" },
-    { id: "ayudame", texto: "Ayúdame con...", descripcion: "Necesito hacer algo" },
-    { id: "busca", texto: "Busca información", descripcion: "Quiero saber más" },
-    { id: "ejemplos", texto: "Dame ejemplos", descripcion: "Quiero ver casos" },
-  ];
-
-  // Seleccionar una opción predefinida
-  const seleccionarObjetivo = (texto) => {
-    setObjetivo(texto);
-    setObjetivoPersonalizado(false);
-  };
-
-  // Activar modo personalizado
-  const activarPersonalizado = () => {
-    setObjetivoPersonalizado(true);
-    setObjetivo("");
-  };
 
   // Estado para glosario
   const [showGlosario, setShowGlosario] = useState(false);
@@ -117,42 +97,15 @@ export default function FormularioPrompt({ onComplete, onBack, summary }) {
             1. ¿Qué quieres saber?
           </label>
           <p className="formulario-helper">
-            Elige una opción o escribe tú
+            Por ejemplo: Explícame, Ayúdame con, Busca información, Dame ejemplos
           </p>
-
-          {/* Botones predefinidos */}
-          <div className="formulario-opciones-grid">
-            {opcionesObjetivo.map((opcion) => (
-              <button
-                key={opcion.id}
-                type="button"
-                className={`formulario-opcion-btn ${objetivo === opcion.texto && !objetivoPersonalizado ? 'selected' : ''}`}
-                onClick={() => seleccionarObjetivo(opcion.texto)}
-              >
-                <span className="formulario-opcion-texto">{opcion.texto}</span>
-                <span className="formulario-opcion-desc">{opcion.descripcion}</span>
-              </button>
-            ))}
-          </div>
-
-          {/* Opción de escribir personalizado */}
-          <button
-            type="button"
-            className={`formulario-personalizado-btn ${objetivoPersonalizado ? 'active' : ''}`}
-            onClick={activarPersonalizado}
-          >
-            Otra cosa (escribir yo)
-          </button>
-
-          {objetivoPersonalizado && (
-            <textarea
-              className="formulario-textarea"
-              value={objetivo}
-              onChange={(e) => setObjetivo(e.target.value)}
-              placeholder="Escribe aquí lo que quieres saber..."
-              rows={2}
-            />
-          )}
+          <input
+            type="text"
+            className="formulario-input"
+            value={objetivo}
+            onChange={(e) => setObjetivo(e.target.value)}
+            placeholder="Escribe aquí lo que quieres..."
+          />
         </div>
 
         {/* PREGUNTA 2: Tema (SEGUNDO) */}
