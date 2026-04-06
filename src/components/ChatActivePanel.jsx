@@ -44,11 +44,6 @@ export default function ChatActivePanel({
 
     // Gestión del historial
     saveChatToHistory,           // Guarda la conversación actual en el historial
-
-    // Botones de ayuda (Diccionario y Ajustes)
-    onToggleDiccionario,         // Abre/cierra el panel de diccionario
-    onToggleAjustes,             // Abre/cierra el panel de ajustes
-    mostrarAjustes = false,      // Si mostrar el botón de ajustes (solo en flujo "con ayuda")
 }) {
     /**
      * Envía una pregunta de seguimiento al chat.

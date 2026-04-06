@@ -2027,59 +2027,60 @@ body {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 12px 24px;
-  background-color: white;
-  border: 2px solid #1f4189;
+  padding: 14px 24px;
+  background-color: #f8fbff;
+  border: 3px solid #e0e0e0;
   border-radius: 12px;
-  font-size: 18px;
-  font-weight: bold;
-  color: #1f4189;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1a1a2e;
   cursor: pointer;
   transition: all 0.2s;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  font-family: inherit;
 }
 
 .historial-dropdown-btn:hover {
-  background-color: #e8edf1;
-  border-color: #2a5497;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  background-color: #e3f2fd;
+  border-color: #90caf9;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
 }
 
-.historial-dropdown-btn:focus {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(31, 65, 137, 0.3);
+.historial-dropdown-btn:focus-visible {
+  outline: 3px solid #2196f3;
+  outline-offset: 2px;
+}
+
+.historial-dropdown-btn:active {
+  transform: scale(0.98);
 }
 
 .historial-dropdown-contador {
-  font-size: 20px;
-  font-weight: bold;
+  font-size: 18px;
+  font-weight: 700;
   color: #1f4189;
 }
 
 .historial-dropdown-separador {
-  font-size: 20px;
-  color: #999;
+  font-size: 18px;
+  color: #ccc;
   font-weight: normal;
 }
 
 .historial-dropdown-texto {
-  font-size: 18px;
-  font-weight: bold;
-  color: #1f4189;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1a1a2e;
 }
 
+/* Icono oculto - según estudios, el ▼ es confuso */
 .historial-dropdown-icono {
-  font-size: 14px;
-  color: #1f4189;
-  transition: transform 0.2s;
-}
-
-.historial-dropdown-btn[aria-expanded="true"] .historial-dropdown-icono {
-  transform: rotate(180deg);
+  display: none;
 }
 
 /*==================================
 *    BOTÓN DROPDOWN DE CONFIGURACIÓN DE AYUDA
+*    Diseño coherente con formulario
 * ==================================*/
 
 .config-ayuda-dropdown-container {
@@ -2093,48 +2094,49 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 12px 20px;
-  background-color: white;
-  border: 2px solid #4caf50;
+  padding: 14px 24px;
+  background-color: #f8fbff;
+  border: 3px solid #e0e0e0;
   border-radius: 12px;
   font-size: 16px;
-  font-weight: bold;
-  color: #4caf50;
+  font-weight: 600;
+  color: #1a1a2e;
   cursor: pointer;
   transition: all 0.2s;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   white-space: nowrap;
+  font-family: inherit;
 }
 
 .config-ayuda-dropdown-btn:hover {
-  background-color: #e8f5e9;
-  border-color: #45a049;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  background-color: #e3f2fd;
+  border-color: #90caf9;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
 }
 
-.config-ayuda-dropdown-btn:focus {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.3);
+.config-ayuda-dropdown-btn:focus-visible {
+  outline: 3px solid #2196f3;
+  outline-offset: 2px;
+}
+
+.config-ayuda-dropdown-btn:active {
+  transform: scale(0.98);
 }
 
 .config-ayuda-dropdown-texto {
   font-size: 16px;
-  font-weight: bold;
-  color: #4caf50;
+  font-weight: 600;
+  color: #1a1a2e;
 }
 
+/* Icono oculto - según estudios, el ▼ es confuso */
 .config-ayuda-dropdown-icono {
-  font-size: 14px;
-  color: #4caf50;
-  transition: transform 0.2s;
-}
-
-.config-ayuda-dropdown-btn[aria-expanded="true"] .config-ayuda-dropdown-icono {
-  transform: rotate(180deg);
+  display: none;
 }
 
 /*==================================
 *    BOTÓN DROPDOWN DE DICCIONARIO
+*    Diseño coherente con formulario
 * ==================================*/
 
 .diccionario-dropdown-container {
@@ -2148,44 +2150,44 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 12px 20px;
-  background-color: white;
-  border: 2px solid #ff9800;
+  padding: 14px 24px;
+  background-color: #f8fbff;
+  border: 3px solid #e0e0e0;
   border-radius: 12px;
   font-size: 16px;
-  font-weight: bold;
-  color: #ff9800;
+  font-weight: 600;
+  color: #1a1a2e;
   cursor: pointer;
   transition: all 0.2s;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   white-space: nowrap;
+  font-family: inherit;
 }
 
 .diccionario-dropdown-btn:hover {
-  background-color: #fff3e0;
-  border-color: #f57c00;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  background-color: #e3f2fd;
+  border-color: #90caf9;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
 }
 
-.diccionario-dropdown-btn:focus {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(255, 152, 0, 0.3);
+.diccionario-dropdown-btn:focus-visible {
+  outline: 3px solid #2196f3;
+  outline-offset: 2px;
+}
+
+.diccionario-dropdown-btn:active {
+  transform: scale(0.98);
 }
 
 .diccionario-dropdown-texto {
   font-size: 16px;
-  font-weight: bold;
-  color: #ff9800;
+  font-weight: 600;
+  color: #1a1a2e;
 }
 
+/* Icono oculto - según estudios, el ▼ es confuso */
 .diccionario-dropdown-icono {
-  font-size: 14px;
-  color: #ff9800;
-  transition: transform 0.2s;
-}
-
-.diccionario-dropdown-btn[aria-expanded="true"] .diccionario-dropdown-icono {
-  transform: rotate(180deg);
+  display: none;
 }
 
 /*==================================
