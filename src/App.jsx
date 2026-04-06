@@ -102,6 +102,15 @@ export default function App() {
     setPaso("chat");
   };
 
+  // 5d. Para eliminar una conversación del historial
+  const handleDeleteChat = (entryToDelete) => {
+    setChatHistory(prev => prev.filter(entry => entry !== entryToDelete));
+    // Si el chat eliminado era el que se iba a retomar, limpiar
+    if (chatToResume === entryToDelete) {
+      setChatToResume(null);
+    }
+  };
+
   // 6. Para volver a la pantalla de rol
   const handleVolverARol = () => {
     setPaso("modo");
@@ -208,6 +217,7 @@ export default function App() {
         chatHistory={chatHistory}
         activeChat={chatToResume}
         onSelectChat={handleSelectChatFromHistory}
+        onDeleteChat={handleDeleteChat}
       />
     </div>
   );

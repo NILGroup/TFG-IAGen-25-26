@@ -360,6 +360,17 @@ export default function InterfazPrincipal({
                     setShowChat(true);
                     setShowHelpOptions(true);
                 }}
+                onDeleteChat={(entryToDelete) => {
+                    setChatHistory(prev => prev.filter(entry => entry !== entryToDelete));
+                    // Si eliminamos el chat activo, limpiar
+                    if (activeChat === entryToDelete) {
+                        setActiveChat(null);
+                    }
+                    // Sincronizar con el historial global
+                    if (setChatHistoryGlobal) {
+                        setChatHistoryGlobal(prev => prev.filter(entry => entry !== entryToDelete));
+                    }
+                }}
             />
 
         </div>
