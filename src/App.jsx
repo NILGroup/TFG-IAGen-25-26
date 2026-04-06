@@ -17,6 +17,7 @@ import PantallaEleccion from "./pages/PantallaEleccion";
 import FormularioPrompt from "./pages/FormularioPrompt";
 import InterfazPrincipal from "./pages/InterfazPrincipal";
 import PaginaPerfil from "./pages/PaginaPerfil";
+import HistoryModal from "./components/HistoryModal";
 import "./App.css";
 
 export default function App() {
@@ -27,6 +28,11 @@ export default function App() {
   const [promptGenerado, setPromptGenerado] = useState(null); // Prompt del formulario
   const [flujoElegido, setFlujoElegido] = useState(null); // "formulario" | "directa"
   const [pasoAnterior, setPasoAnterior] = useState(null); // Para volver desde el perfil
+
+  // Estado del historial (elevado desde InterfazPrincipal para acceso global)
+  const [chatHistory, setChatHistory] = useState([]);
+  const [showHistoryModal, setShowHistoryModal] = useState(false);
+  const [chatToResume, setChatToResume] = useState(null); // Chat seleccionado del historial
 
   // 1. Cuando termina el cuestionario inicial
   const handleQuestionnaireComplete = (data) => {
@@ -59,7 +65,41 @@ export default function App() {
   // 5. Para volver a la pantalla de elección
   const handleVolverAEleccion = () => {
     setPromptGenerado(null); // Limpiar el prompt generado
+    setChatToResume(null); // Limpiar chat a retomar
     setPaso("eleccion");
+  };
+
+  // 5b. Cuando se finaliza una conversación desde el chat
+  const handleFinalizarConversacion = (chatEntry, originalChat = null) => {
+    if (chatEntry) {
+      if (originalChat) {
+        // Actualizar el chat existente en lugar de crear uno nuevo
+        setChatHistory(prev =>
+          prev.map(entry =>
+            entry === originalChat
+              ? { ...chatEntry, isNew: false }
+              : { ...entry, isNew: false }
+          )
+        );
+      } else {
+        // Añadir nuevo chat al historial
+        setChatHistory(prev => [
+          ...prev.map(entry => ({ ...entry, isNew: false })),
+          { ...chatEntry, isNew: true }
+        ]);
+      }
+    }
+    setPromptGenerado(null);
+    setChatToResume(null);
+    setPaso("eleccion"); // Volver a la pantalla de elección
+  };
+
+  // 5c. Para seleccionar un chat del historial y retomarlo
+  const handleSelectChatFromHistory = (entry) => {
+    setChatToResume(entry);
+    setShowHistoryModal(false);
+    setFlujoElegido("directa"); // Retomar siempre en modo directo
+    setPaso("chat");
   };
 
   // 6. Para volver a la pantalla de rol
@@ -125,6 +165,8 @@ export default function App() {
         <PantallaEleccion
           onSelectOption={handleSelectOption}
           onBack={handleVolverARol}
+          historialCount={chatHistory.length}
+          onOpenHistorial={() => setShowHistoryModal(true)}
         />
       )}
 
@@ -144,6 +186,10 @@ export default function App() {
           flujoElegido={flujoElegido}
           onBack={handleVolverAEleccion}
           onIrAPerfil={handleIrAPerfil}
+          chatHistoryGlobal={chatHistory}
+          setChatHistoryGlobal={setChatHistory}
+          chatToResume={chatToResume}
+          onFinalizarConversacion={handleFinalizarConversacion}
         />
       )}
 
@@ -154,6 +200,15 @@ export default function App() {
           onBack={handleVolverDesdePerfil}
         />
       )}
+
+      {/* Modal de Historial - Accesible desde cualquier pantalla */}
+      <HistoryModal
+        isOpen={showHistoryModal}
+        onClose={() => setShowHistoryModal(false)}
+        chatHistory={chatHistory}
+        activeChat={chatToResume}
+        onSelectChat={handleSelectChatFromHistory}
+      />
     </div>
   );
 }

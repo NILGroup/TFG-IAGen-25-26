@@ -5,13 +5,37 @@
  * Muestra dos opciones al usuario:
  * 1. "Con ayuda" - Le guía con un formulario para crear un buen prompt
  * 2. "Directa" - Le permite escribir libremente sin ayuda
+ *
+ * También muestra el botón de historial si hay conversaciones guardadas.
  */
 
 import "../styles/Pantallas.css";
 
-export default function PantallaEleccion({ onSelectOption, onBack }) {
+export default function PantallaEleccion({
+    onSelectOption,
+    onBack,
+    historialCount = 0,
+    onOpenHistorial
+}) {
     return (
         <div className="eleccion-container">
+            {/* Botón de Historial - Solo si hay conversaciones */}
+            {historialCount > 0 && (
+                <div className="historial-dropdown-container">
+                    <button
+                        className="historial-dropdown-btn"
+                        onClick={onOpenHistorial}
+                        aria-label="Abrir historial de conversaciones"
+                    >
+                        <span className="historial-dropdown-contador">
+                            {historialCount}
+                        </span>
+                        <span className="historial-dropdown-separador">|</span>
+                        <span className="historial-dropdown-texto">Historial</span>
+                    </button>
+                </div>
+            )}
+
             <div className="eleccion-content">
                 {/* Botón volver */}
                 <button className="pantalla-back-btn" onClick={onBack}>

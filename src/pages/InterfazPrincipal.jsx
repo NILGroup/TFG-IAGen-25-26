@@ -27,7 +27,18 @@ import ChatActivePanel from "../components/ChatActivePanel";
 import ResponseConfigPanel from "../components/ResponseConfigPanel";
 import PanelGlosario from "../components/PanelGlosario";
 
-export default function InterfazPrincipal({ summary, modoSeleccionado, promptInicial, flujoElegido, onBack, onIrAPerfil }) {
+export default function InterfazPrincipal({
+    summary,
+    modoSeleccionado,
+    promptInicial,
+    flujoElegido,
+    onBack,
+    onIrAPerfil,
+    chatHistoryGlobal = [],
+    setChatHistoryGlobal,
+    chatToResume = null,
+    onFinalizarConversacion
+}) {
     const {
         selectedOption,
         setSelectedOption,
@@ -128,7 +139,33 @@ export default function InterfazPrincipal({ summary, modoSeleccionado, promptIni
         setSelectedOption,
         setShowUsefulQuestion,
         generateTitleFromChat,
+        initialHistory: chatHistoryGlobal, // Usar historial global
     });
+
+    // Función personalizada para finalizar y volver a elección
+    const handleFinalizarYVolver = async () => {
+        if (chatFlow.length === 0) {
+            onFinalizarConversacion(null, null);
+            return;
+        }
+
+        // Generar título para el chat (solo si es nuevo, no al retomar)
+        const aiGeneratedTitle = chatToResume
+            ? chatToResume.title
+            : await generateTitleFromChat();
+
+        // Crear entrada del historial
+        const chatEntry = {
+            title: aiGeneratedTitle,
+            flow: [...chatFlow],
+            timestamp: new Date().toLocaleString(),
+            isNew: !chatToResume, // Solo es nuevo si no estamos retomando
+        };
+
+        // Llamar a la función de App.jsx para guardar y volver a elección
+        // Pasamos el chat original si estamos retomando para poder actualizarlo
+        onFinalizarConversacion(chatEntry, chatToResume);
+    };
 
     /** =============================================
      *  EFECTO PARA CARGAR PROMPT INICIAL
@@ -147,6 +184,23 @@ export default function InterfazPrincipal({ summary, modoSeleccionado, promptIni
             setPrompt("");
         }
     }, [promptInicial]); // Solo se ejecuta cuando cambia promptInicial
+
+    /** =============================================
+     *  EFECTO PARA RETOMAR CONVERSACIÓN DEL HISTORIAL
+     *  =============================================
+     */
+    const lastResumedChat = useRef(null);
+
+    useEffect(() => {
+        // Si hay un chat a retomar y es diferente al último procesado
+        if (chatToResume && chatToResume !== lastResumedChat.current) {
+            lastResumedChat.current = chatToResume;
+            setChatFlow([...chatToResume.flow]);
+            setActiveChat(chatToResume);
+            setShowChat(true);
+            setShowHelpOptions(true);
+        }
+    }, [chatToResume, setChatFlow, setActiveChat, setShowChat, setShowHelpOptions]);
 
     /** ================================
      *     RETORNO DE LA INTERFAZ
@@ -275,7 +329,7 @@ export default function InterfazPrincipal({ summary, modoSeleccionado, promptIni
                     prompt={prompt}
                     setPrompt={setPrompt}
                     sendCustomPrompt={sendCustomPrompt}
-                    saveChatToHistory={saveChatToHistory}
+                    saveChatToHistory={handleFinalizarYVolver}
                 />
             )}
 

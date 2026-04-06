@@ -13,8 +13,9 @@ export default function useChatHistoryController({
   setSelectedOption,
   setShowUsefulQuestion,
   generateTitleFromChat,
+  initialHistory = [], // Historial inicial desde App.jsx
 }) {
-  const [chatHistory, setChatHistory] = useState([]);
+  const [chatHistory, setChatHistory] = useState(initialHistory);
   const [showHistory, setShowHistory] = useState(false);
   const [activeChat, setActiveChat] = useState(null);
   const [isSavingChat, setIsSavingChat] = useState(false);
