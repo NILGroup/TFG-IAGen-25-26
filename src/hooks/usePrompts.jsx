@@ -112,7 +112,7 @@ const usePromptFunctions = ({
             setChatFlow((prev) => [
                 ...prev,
                 { type: "user", content: displayPrompt, timestamp: new Date().toISOString() },
-                { type: "loading", content: "⌛ Cargando...", timestamp: new Date().toISOString() }
+                { type: "loading", content: "Cargando...", timestamp: new Date().toISOString() }
             ]);
 
             // Construir el prompt con estructura CO-STAR

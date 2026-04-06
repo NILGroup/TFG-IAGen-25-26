@@ -72,6 +72,16 @@ export default function Chat({
                             </div>
                         ) : (
                             <>
+                                {/* Timestamp del mensaje */}
+                                {entry.timestamp && (
+                                    <p className="message-timestamp">
+                                        {new Date(entry.timestamp).toLocaleTimeString("es-ES", {
+                                            hour: "2-digit",
+                                            minute: "2-digit",
+                                        })}
+                                    </p>
+                                )}
+                                
                                 {/* Muestra el contenido del mensaje en formato Markdown */}
                                 <ReactMarkdown
                                     remarkPlugins={[remarkGfm]}
@@ -82,15 +92,7 @@ export default function Chat({
                                         : entry.content.slice(0, 1000) + "…"}
                                 </ReactMarkdown>
 
-                                {/* Timestamp del mensaje */}
-                                {entry.timestamp && (
-                                    <p className="message-timestamp">
-                                        {new Date(entry.timestamp).toLocaleTimeString("es-ES", {
-                                            hour: "2-digit",
-                                            minute: "2-digit",
-                                        })}
-                                    </p>
-                                )}
+                                
                             </>
                         )}
 

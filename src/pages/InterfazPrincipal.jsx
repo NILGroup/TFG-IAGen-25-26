@@ -17,20 +17,17 @@ import { useState, useEffect, useRef } from "react";
 
 import usePromptFunctions from "../hooks/usePrompts";
 import useChatHistoryController from "../hooks/useChatHistoryController";
-import useConfigController from "../hooks/useConfigController";
 import useChatInputController from "../hooks/useChatInputController";
 import useSpeechController from "../hooks/useSpeechController";
 import useHelpOptionsController from "../hooks/useHelpOptionsController";
 import useTooltipController from "../hooks/useTooltipController";
-import ConfigPanel from "../components/ConfigPanel";
-import ChatHistory from "../components/ChatHistory";
+import HistoryModal from "../components/HistoryModal";
 import QuestionPromptPanel from "../components/QuestionPromptPanel";
 import ChatActivePanel from "../components/ChatActivePanel";
 import ResponseConfigPanel from "../components/ResponseConfigPanel";
 import PanelGlosario from "../components/PanelGlosario";
-import ProfilePanel from "../components/ProfilePanel";
 
-export default function InterfazPrincipal({ summary, modoSeleccionado, promptInicial, flujoElegido, onBack }) {
+export default function InterfazPrincipal({ summary, modoSeleccionado, promptInicial, flujoElegido, onBack, onIrAPerfil }) {
     const {
         selectedOption,
         setSelectedOption,
@@ -68,27 +65,12 @@ export default function InterfazPrincipal({ summary, modoSeleccionado, promptIni
         }));
     };
 
-    const {
-        showConfig,
-        setShowConfig,
-        savedEffect,
-        setSavedEffect,
-        setEditingField,
-        userSummary,
-        tempSummary,
-        setTempSummary,
-        handleSaveSummary,
-    } = useConfigController(summary);
-
     // Estados para el panel de configuración de respuestas
     const [showResponseConfig, setShowResponseConfig] = useState(false);
     const [responseConfig, setResponseConfig] = useState(["lectura-facil", "ejemplos"]);
 
     // Estado para el panel de glosario
     const [showGlosario, setShowGlosario] = useState(false);
-
-    // Estado para el panel de perfil
-    const [showProfile, setShowProfile] = useState(false);
 
     const handleApplyResponseConfig = (newConfig) => {
         setResponseConfig(newConfig);
@@ -104,7 +86,7 @@ export default function InterfazPrincipal({ summary, modoSeleccionado, promptIni
         sendCustomPrompt,
         generateTitleFromChat,
     } = usePromptFunctions({
-        summary: userSummary,
+        summary: summary,
         chatFlow,
         setChatFlow,
         setPrompt,
@@ -180,17 +162,6 @@ export default function InterfazPrincipal({ summary, modoSeleccionado, promptIni
         <div className="app-wrapper">
             <div className="header-bar">
                 <div className="header-bar-container">
-                    {!showGlosario && !showConfig && !showResponseConfig && !showProfile && (
-                        <button
-                            className="boton-diccionario"
-                            onClick={() => setShowGlosario(true)}
-                            aria-label="Abrir diccionario"
-                            aria-expanded={showGlosario}
-                        >
-                            Diccionario
-                        </button>
-                    )}
-
                     <h1
                         className="header-bar-title"
                         onClick={onBack}
@@ -205,44 +176,64 @@ export default function InterfazPrincipal({ summary, modoSeleccionado, promptIni
                         SofIA
                     </h1>
 
-                    {!showGlosario && !showConfig && !showResponseConfig && !showProfile && (
-                        <div className="header-bar-right">
-                            <button
-                                className="boton-perfil"
-                                onClick={() => setShowProfile(true)}
-                                aria-label="Abrir perfil"
-                                aria-expanded={showProfile}
-                            >
-                                Perfil
-                            </button>
-                        </div>
-                    )}
+                    <div className="header-bar-right">
+                        <button
+                            className="boton-perfil"
+                            onClick={onIrAPerfil}
+                            aria-label="Ir a mi perfil"
+                        >
+                            Perfil
+                        </button>
+                    </div>
 
-                    {/*LÓGICA HISTORIAL*/}
-                    <ChatHistory
-                        showHistory={showHistory}
-                        chatHistory={chatHistory}
-                        activeChat={activeChat}
-                        chatFlow={chatFlow}
-                        setActiveChat={setActiveChat}
-                        setChatFlow={setChatFlow}
-                        setShowChat={setShowChat}
-                        setShowHelpOptions={setShowHelpOptions}
-                        setChatHistory={setChatHistory}
-                    />
                 </div>
             </div>
-            {/*LÓGICA CONFIGURACIÓN*/}
-            {showConfig && (
-                <ConfigPanel
-                    summary={userSummary}
-                    onSaveSummary={handleSaveSummary}
-                    tempSummary={tempSummary}
-                    setTempSummary={setTempSummary}
-                    savedEffect={savedEffect}
-                    setSavedEffect={setSavedEffect}
-                    setEditingField={setEditingField}
-                />
+
+            {/* Botón de Diccionario tipo dropdown - izquierda */}
+            <div className="diccionario-dropdown-container">
+                <button
+                    className="diccionario-dropdown-btn"
+                    onClick={() => setShowGlosario(!showGlosario)}
+                    aria-label="Abrir diccionario"
+                    aria-expanded={showGlosario}
+                >
+                    <span className="diccionario-dropdown-texto">Diccionario</span>
+                    <span className="diccionario-dropdown-icono">▼</span>
+                </button>
+            </div>
+
+            {/* Botón de Historial tipo dropdown - centrado debajo de SofIA */}
+            {chatHistory.length > 0 && (
+                <div className="historial-dropdown-container">
+                    <button
+                        className="historial-dropdown-btn"
+                        onClick={toggleHistory}
+                        aria-label={`Abrir historial de conversaciones. Chat ${currentNumber} de ${totalChats}`}
+                        aria-expanded={showHistory}
+                    >
+                        <span className="historial-dropdown-contador">
+                            {currentNumber}/{totalChats}
+                        </span>
+                        <span className="historial-dropdown-separador">|</span>
+                        <span className="historial-dropdown-texto">Historial</span>
+                        <span className="historial-dropdown-icono">▼</span>
+                    </button>
+                </div>
+            )}
+
+            {/* Botón de Configuración de Ayuda - derecha debajo de Perfil */}
+            {flujoElegido === "formulario" && (
+                <div className="config-ayuda-dropdown-container">
+                    <button
+                        className="config-ayuda-dropdown-btn"
+                        onClick={() => setShowResponseConfig(!showResponseConfig)}
+                        aria-label="Configurar cómo quieres que aparezcan las respuestas"
+                        aria-expanded={showResponseConfig}
+                    >
+                        <span className="config-ayuda-dropdown-texto">Cómo quieres que aparezcan las respuestas</span>
+                        <span className="config-ayuda-dropdown-icono">▼</span>
+                    </button>
+                </div>
             )}
             {activeChat && (
                 <div className="chat-wrapper">
@@ -261,7 +252,7 @@ export default function InterfazPrincipal({ summary, modoSeleccionado, promptIni
             {!showChat ? (
                 <QuestionPromptPanel
                     onBack={onBack}
-                    userName={userSummary?.nombre}
+                    userName={summary?.nombre}
                     selectedOption={selectedOption}
                     prompt={prompt}
                     setPrompt={setPrompt}
@@ -283,6 +274,7 @@ export default function InterfazPrincipal({ summary, modoSeleccionado, promptIni
                     prompt={prompt}
                     setPrompt={setPrompt}
                     sendCustomPrompt={sendCustomPrompt}
+                    saveChatToHistory={saveChatToHistory}
                 />
             )}
 
@@ -301,11 +293,18 @@ export default function InterfazPrincipal({ summary, modoSeleccionado, promptIni
                 onClose={() => setShowGlosario(false)}
             />
 
-            <ProfilePanel
-                isOpen={showProfile}
-                onClose={() => setShowProfile(false)}
-                summary={userSummary}
-                onSave={handleSaveSummary}
+            {/* Modal de Historial */}
+            <HistoryModal
+                isOpen={showHistory}
+                onClose={toggleHistory}
+                chatHistory={chatHistory}
+                activeChat={activeChat}
+                onSelectChat={(entry) => {
+                    setActiveChat(entry);
+                    setChatFlow([...entry.flow]);
+                    setShowChat(true);
+                    setShowHelpOptions(true);
+                }}
             />
 
         </div>

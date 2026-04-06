@@ -16,17 +16,17 @@ import PantallaRol from "./pages/PantallaRol";
 import PantallaEleccion from "./pages/PantallaEleccion";
 import FormularioPrompt from "./pages/FormularioPrompt";
 import InterfazPrincipal from "./pages/InterfazPrincipal";
-import ProfilePanel from "./components/ProfilePanel";
+import PaginaPerfil from "./pages/PaginaPerfil";
 import "./App.css";
 
 export default function App() {
   // Estados para controlar la navegación
-  const [paso, setPaso] = useState("cuestionario"); // cuestionario, modo, eleccion, formulario, chat
+  const [paso, setPaso] = useState("cuestionario"); // cuestionario, modo, eleccion, formulario, chat, perfil
   const [summary, setSummary] = useState(null); // Resumen del cuestionario inicial
   const [modoSeleccionado, setModoSeleccionado] = useState(null); // "profesor" | "familiar"
   const [promptGenerado, setPromptGenerado] = useState(null); // Prompt del formulario
   const [flujoElegido, setFlujoElegido] = useState(null); // "formulario" | "directa"
-  const [showProfile, setShowProfile] = useState(false); // Panel de perfil
+  const [pasoAnterior, setPasoAnterior] = useState(null); // Para volver desde el perfil
 
   // 1. Cuando termina el cuestionario inicial
   const handleQuestionnaireComplete = (data) => {
@@ -67,13 +67,24 @@ export default function App() {
     setPaso("modo");
   };
 
-  // 7. Para guardar cambios en el perfil
+  // 7. Para ir a la página de perfil
+  const handleIrAPerfil = () => {
+    setPasoAnterior(paso); // Guardar el paso actual para poder volver
+    setPaso("perfil");
+  };
+
+  // 8. Para volver desde la página de perfil
+  const handleVolverDesdePerfil = () => {
+    setPaso(pasoAnterior || "eleccion"); // Volver al paso anterior
+  };
+
+  // 9. Para guardar cambios en el perfil
   const handleSaveProfile = (updatedSummary) => {
     setSummary(updatedSummary);
   };
 
-  // Las páginas formulario y chat tienen su propio header con botones
-  const paginasConHeaderPropio = paso === "formulario" || paso === "chat";
+  // Las páginas formulario, chat y perfil tienen su propio header con botones
+  const paginasConHeaderPropio = paso === "formulario" || paso === "chat" || paso === "perfil";
 
   return (
     <div className="app-wrapper">
@@ -86,13 +97,12 @@ export default function App() {
             </h1>
 
             {/* Botón Perfil - solo si ya existe un perfil */}
-            {summary && !showProfile && (
+            {summary && (
               <div className="header-bar-right">
                 <button
                   className="boton-perfil"
-                  onClick={() => setShowProfile(true)}
-                  aria-label="Abrir perfil"
-                  aria-expanded={showProfile}
+                  onClick={handleIrAPerfil}
+                  aria-label="Ir a mi perfil"
                 >
                   Perfil
                 </button>
@@ -133,16 +143,15 @@ export default function App() {
           promptInicial={promptGenerado}
           flujoElegido={flujoElegido}
           onBack={handleVolverAEleccion}
+          onIrAPerfil={handleIrAPerfil}
         />
       )}
 
-      {/* Panel de perfil - disponible cuando existe un perfil */}
-      {summary && (
-        <ProfilePanel
-          isOpen={showProfile}
-          onClose={() => setShowProfile(false)}
+      {paso === "perfil" && (
+        <PaginaPerfil
           summary={summary}
           onSave={handleSaveProfile}
+          onBack={handleVolverDesdePerfil}
         />
       )}
     </div>

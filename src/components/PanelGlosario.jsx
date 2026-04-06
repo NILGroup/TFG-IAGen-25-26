@@ -102,7 +102,6 @@ export default function PanelGlosario({ isOpen, onClose }) {
 
       <div className="panel-glosario-busqueda-contenedor">
         <div className="panel-glosario-busqueda">
-          <span className="panel-glosario-busqueda-icono">🔍</span>
           <input
             type="text"
             value={busqueda}

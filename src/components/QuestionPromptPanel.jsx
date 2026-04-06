@@ -18,8 +18,8 @@ export default function QuestionPromptPanel({
     return (
         <div className="principal-container">
             {onBack && (
-                <button className="back-to-choice-btn" onClick={onBack}>
-                    ← Volver a elegir modo
+                <button className="pantalla-back-btn" onClick={onBack}>
+                    Volver
                 </button>
             )}
 

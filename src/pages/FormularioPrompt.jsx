@@ -8,29 +8,15 @@
 
 import "../styles/Pantallas.css";
 import { useState } from "react";
-import ConfigPanel from "../components/ConfigPanel";
-import ChatHistory from "../components/ChatHistory";
+import PanelGlosario from "../components/PanelGlosario";
 
 export default function FormularioPrompt({ onComplete, onBack, summary }) {
   // Estados para las 2 preguntas
   const [tema, setTema] = useState("");
   const [objetivo, setObjetivo] = useState("");
 
-  // Estados para configuración
-  const [showConfig, setShowConfig] = useState(false);
-  const [savedEffect, setSavedEffect] = useState(false);
-  const [tempSummary, setTempSummary] = useState({ ...summary });
-  const [editingField, setEditingField] = useState(null);
-
-  // Estados para historial
-  const [showHistory, setShowHistory] = useState(false);
-  const [chatHistory, setChatHistory] = useState([]);
-  const [activeChat, setActiveChat] = useState(null);
-  const [chatFlow, setChatFlow] = useState([]);
-  const [showChat, setShowChat] = useState(false);
-  const [showHelpOptions, setShowHelpOptions] = useState(false);
-
-  const toggleHistory = () => setShowHistory(!showHistory);
+  // Estado para glosario
+  const [showGlosario, setShowGlosario] = useState(false);
 
   // Función para generar el prompt
   const generarPrompt = () => {
@@ -76,49 +62,21 @@ export default function FormularioPrompt({ onComplete, onBack, summary }) {
           >
             SofIA
           </h1>
-
-          <div className="header-bar-right">
-            <button
-              className={`history-btn ${showHistory ? "open" : "closed"}`}
-              onClick={toggleHistory}
-            >
-              {showHistory ? "Cerrar Historial" : "Abrir Historial"}
-            </button>
-
-            <button
-              className={`config-btn ${showConfig ? "open" : "closed"}`}
-              onClick={() => setShowConfig(!showConfig)}
-            >
-              {showConfig ? "Cerrar Configuración" : "Configuración"}
-            </button>
-          </div>
-
-          {/* Panel de historial */}
-          <ChatHistory
-            showHistory={showHistory}
-            chatHistory={chatHistory}
-            activeChat={activeChat}
-            chatFlow={chatFlow}
-            setActiveChat={setActiveChat}
-            setChatFlow={setChatFlow}
-            setShowChat={setShowChat}
-            setShowHelpOptions={setShowHelpOptions}
-            setChatHistory={setChatHistory}
-          />
         </div>
       </div>
 
-      {/* Panel de configuración */}
-      {showConfig && (
-        <ConfigPanel
-          summary={summary}
-          tempSummary={tempSummary}
-          setTempSummary={setTempSummary}
-          savedEffect={savedEffect}
-          setSavedEffect={setSavedEffect}
-          setEditingField={setEditingField}
-        />
-      )}
+      {/* Botón de Diccionario tipo dropdown - izquierda */}
+      <div className="diccionario-dropdown-container">
+        <button
+          className="diccionario-dropdown-btn"
+          onClick={() => setShowGlosario(!showGlosario)}
+          aria-label="Abrir diccionario"
+          aria-expanded={showGlosario}
+        >
+          <span className="diccionario-dropdown-texto">Diccionario</span>
+          <span className="diccionario-dropdown-icono">▼</span>
+        </button>
+      </div>
 
       <div className="formulario-container">
         <div className="formulario-content">
@@ -183,6 +141,12 @@ export default function FormularioPrompt({ onComplete, onBack, summary }) {
         )}
         </div>
       </div>
+
+      {/* Panel de Glosario */}
+      <PanelGlosario
+        isOpen={showGlosario}
+        onClose={() => setShowGlosario(false)}
+      />
     </div>
   );
 }

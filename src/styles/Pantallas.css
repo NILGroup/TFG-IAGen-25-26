@@ -179,8 +179,16 @@
   border-color: #bbb;
 }
 
+/* Botón volver - cuando se pulsa */
+.pantalla-back-btn:active {
+  background-color: #d1d5db;
+  border-color: #999;
+  transform: scale(0.98);
+}
+
+/* Botón volver - focus (teclado) */
 .pantalla-back-btn:focus-visible {
-  outline: 3px solid #2196f3;
+  outline: 3px solid #10b981;
   outline-offset: 2px;
 }
 
@@ -455,6 +463,33 @@
 
   .formulario-submit-btn {
     padding: 16px;
+  }
+}
+
+
+/* ============================================================================
+ * PÁGINA PERFIL - Estilos específicos
+ * Solo para PaginaPerfil.jsx (editar perfil del usuario)
+ * ============================================================================ */
+
+/* Cuadro blanco más grande para el perfil */
+.perfil-content {
+  max-width: 1000px;
+}
+
+/* Animación para el campo de grado (aparece suavemente) */
+.perfil-card-animada {
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 

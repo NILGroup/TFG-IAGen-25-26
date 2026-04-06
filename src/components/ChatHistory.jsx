@@ -1,5 +1,5 @@
 /**
- * ChatHistory.jsx
+ * ChatHistory.jsx antiguo
  *
  * Este componente muestra el historial de conversaciones guardadas del usuario.
  * Permite al usuario abrir un chat anterior, visualizar sus mensajes, y reanudar
