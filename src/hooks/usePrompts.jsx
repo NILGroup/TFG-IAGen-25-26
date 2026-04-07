@@ -207,7 +207,7 @@ Eres OlivIA${userRole === "familiar" ? ", compañera virtual cercana como un fam
 
                 let refinedResponse1 = "";
                 try{
-                    refinedResponse1 = await fetchFromGemini(refinementMessages1); 
+                    refinedResponse1 = await fetchFromOllama(refinementMessages1); 
                 }
                 catch(errorGemini){
                     console.log("Falló Gemini, usamos Groq");

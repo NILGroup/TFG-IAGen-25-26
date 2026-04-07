@@ -79,21 +79,24 @@ export const fetchFromGemini = async (messages, model = "gemini-flash-latest") =
         );
 
         const data = await response.json();
+        
         if (!response.ok) {
             console.error("Error de Google:", data.error);
-            return "Error en la conexión con la IA.";
+            throw new Error(`Error en la conexión con la IA. Código: ${response.status}`);
         }
+        
         if (data.candidates && data.candidates[0] && data.candidates[0].content) {
             return data.candidates[0].content.parts[0].text;
         } else {
-            return "No se pudo generar una respuesta.";
+            throw new Error("No se pudo generar una respuesta válida de Gemini.");
         }
 
     } catch (error) {
         console.error("Error:", error);
-        return "Error al contactar con el servidor.";
+        throw error;
     }
 };
+
 // === FETCH DE OLLAMA (LOCAL) ===
 // Modelos: deepseek-v3.1:671b-cloud
 export const fetchFromOllama = (messages, model = "deepseek-v3.1:671b-cloud") => {
