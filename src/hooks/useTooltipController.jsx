@@ -64,7 +64,7 @@ export default function useTooltipController({ chatFlow, setChatFlow }) {
     }
   }, []);
 
-  const handleButtonClick = useCallback(
+  const handleButtonClick = useCallback( // Al pulsar alguna opcion del bocadillo
     async (accion) => {
       setTooltipInfo((prev) => ({ ...prev, loading: true }));
 

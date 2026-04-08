@@ -1880,7 +1880,7 @@ body {
 }
 
 .panel-glosario-vacio {
-  text-align: center;
+  text-align: left;
   color: #666;
   font-size: 16px;
   padding: 32px;

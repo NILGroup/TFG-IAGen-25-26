@@ -113,6 +113,7 @@ export default function InterfazPrincipal({
 
     const {
         tooltipInfo,
+        glossary,
         handleTextSelection,
         handleButtonClick,
         handleReplaceText,
@@ -346,6 +347,7 @@ export default function InterfazPrincipal({
             <PanelGlosario
                 isOpen={showGlosario}
                 onClose={() => setShowGlosario(false)}
+                glossary={glossary}
             />
 
             {/* Modal de Historial */}

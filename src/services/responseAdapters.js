@@ -5,7 +5,7 @@
  */
 
 import { promptLF1, promptLF2 } from "../utils/promptLF";
-import { fetchFromGroq, fetchFromGemini } from "./apiFunctions";
+import { fetchFromGroq, fetchFromGemini, fetchFromOllama } from "./apiFunctions";
 
 export const adaptToLecturaFacil = async ({
     response,
@@ -31,9 +31,9 @@ export const adaptToLecturaFacil = async ({
     let refinedResponse1 = "";
     try {
         refinedResponse1 = await fetchFromGemini(refinementMessages1);
-    } catch (errorGemini) {
-        console.log("Falló Gemini, usamos Groq");
-        refinedResponse1 = await fetchFromGroq(refinementMessages1);
+    } catch (error) {
+        console.log("Falló Gemini, usamos Ollama");*/
+        refinedResponse1 = await fetchFromOllama(refinementMessages1);
     }
 
     const refinementMessages2 = [

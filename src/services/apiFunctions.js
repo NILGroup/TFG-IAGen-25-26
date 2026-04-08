@@ -59,42 +59,21 @@ export const fetchFromGroq = (messages, model = "llama-3.3-70b-versatile") => {
 };
 
 export const fetchFromGemini = async (messages, model = "gemini-flash-latest") => {
-    const geminiMessages = messages.map(msg => ({
-        role: msg.role === "assistant" ? "model" : "user",
-        parts: [{ text: msg.content }]
-    }));
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${import.meta.env.VITE_GEMINI_API_KEY}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            contents: messages.map(msg => ({
+                role: msg.role === "assistant" ? "model" : "user",
+                parts: [{ text: msg.content }]
+            }))
+        })
+    });
 
-    try {
-        const response = await fetch(
-            `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${import.meta.env.VITE_GEMINI_API_KEY}`, 
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    contents: geminiMessages
-                })
-            }
-        );
-
-        const data = await response.json();
-        
-        if (!response.ok) {
-            console.error("Error de Google:", data.error);
-            throw new Error(`Error en la conexión con la IA. Código: ${response.status}`);
-        }
-        
-        if (data.candidates && data.candidates[0] && data.candidates[0].content) {
-            return data.candidates[0].content.parts[0].text;
-        } else {
-            throw new Error("No se pudo generar una respuesta válida de Gemini.");
-        }
-
-    } catch (error) {
-        console.error("Error:", error);
-        throw error;
-    }
+    if (!response.ok) throw new Error();
+    
+    const data = await response.json();
+    return data.candidates[0].content.parts[0].text;
 };
 
 // === FETCH DE OLLAMA (LOCAL) ===
