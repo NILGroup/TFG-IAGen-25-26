@@ -2,12 +2,12 @@
  * Chat.jsx
  *
  *  Este componente se encarga de renderizar todo el flujo de conversación
- *  que ha ocurrido en el chat. Muestra tanto los mensajes del usuario como 
- *  las respuestas de la IA, permitiendo expandir textos largos y reproducir las 
+ *  que ha ocurrido en el chat. Muestra tanto los mensajes del usuario como
+ *  las respuestas de la IA, permitiendo expandir textos largos y reproducir las
  *  respuestas en voz alta.
  */
 
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm"; // Para tablas, tachados, listas de tareas, etc.
 import rehypeRaw from "rehype-raw"; // Para renderizar HTML directo (como <br>, <center>...)
@@ -28,33 +28,73 @@ export default function Chat({
     avatarMode           // Modo seleccionado: "profesor" | "familiar"
 }) {
     const avatarSrc = avatarMode ? AVATAR_IMAGES[avatarMode] : null;
+    const messagesEndRef = useRef(null);
+
+    // Scroll automático cuando se añaden nuevos mensajes
+    useEffect(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, [chatFlow]);
 
     return (
-        <div className="chat-wrapper" aria-live="polite" aria-relevant="additions">
+        <div
+            className="chat-wrapper"
+            role="log"
+            aria-live="polite"
+            aria-relevant="additions"
+            aria-label="Historial de conversación con SofIA"
+        >
             {chatFlow.map((entry, index) => (
                 <div
                     key={index}
-                    className={`chat-container ${entry.type === "user" ? "user-container" : "ai-container"}`}
+                    className={`chat-container ${entry.type === "user" ? "user-container" : entry.type === "loading" ? "ai-container" : "ai-container"}`}
+                    role="article"
+                    aria-label={entry.type === "user" ? "Tu pregunta" : entry.type === "loading" ? "SofIA está escribiendo" : "Respuesta de SofIA"}
                 >
-                    {/* Avatar junto a respuestas de la IA */}
-                    {entry.type === "ai" && avatarSrc && (
+                    {/* Avatar junto a respuestas de la IA y estado de carga */}
+                    {(entry.type === "ai" || entry.type === "loading") && avatarSrc && (
                         <img
                             src={avatarSrc}
                             alt={avatarMode === "profesor" ? "Profesor" : "Familia"}
                             className="chat-avatar"
                         />
                     )}
-                    <div className={`chat-message ${entry.type === "user" ? "user-message" : "ai-message"}`}>
+                    <div className={`chat-message ${entry.type === "user" ? "user-message" : entry.type === "loading" ? "loading-message" : "ai-message"}`}>
 
-                        {/* Muestra el contenido del mensaje en formato Markdown */}
-                        <ReactMarkdown 
-                            remarkPlugins={[remarkGfm]} 
-                            rehypePlugins={[rehypeRaw]}
-                        >
-                            {expandedResponses[index] || entry.content.length <= 1000
-                                ? entry.content
-                                : entry.content.slice(0, 1000) + "…"}
-                        </ReactMarkdown>
+                        {/* Indicador de carga con puntos animados */}
+                        {entry.type === "loading" ? (
+                            <div className="typing-indicator">
+                                <span className="typing-label">SofIA está escribiendo</span>
+                                <div className="typing-dots">
+                                    <span className="typing-dot"></span>
+                                    <span className="typing-dot"></span>
+                                    <span className="typing-dot"></span>
+                                </div>
+                            </div>
+                        ) : (
+                            <>
+                                {/* Timestamp del mensaje */}
+                                {entry.timestamp && (
+                                    <p className="message-timestamp">
+                                        {new Date(entry.timestamp).toLocaleTimeString("es-ES", {
+                                            hour: "2-digit",
+                                            minute: "2-digit",
+                                        })}
+                                    </p>
+                                )}
+                                
+                                {/* Muestra el contenido del mensaje en formato Markdown */}
+                                <ReactMarkdown
+                                    remarkPlugins={[remarkGfm]}
+                                    rehypePlugins={[rehypeRaw]}
+                                >
+                                    {expandedResponses[index] || entry.content.length <= 1000
+                                        ? entry.content
+                                        : entry.content.slice(0, 1000) + "…"}
+                                </ReactMarkdown>
+
+                                
+                            </>
+                        )}
 
                         {/* Si el mensaje es de la IA, muestra botones de interacción */}
                         {entry.type === "ai" && (
@@ -64,6 +104,8 @@ export default function Chat({
                                     <button
                                         className="see-more-btn"
                                         onClick={() => toggleExpanded(index)}
+                                        aria-expanded={expandedResponses[index] ? "true" : "false"}
+                                        aria-label={expandedResponses[index] ? "Mostrar menos contenido de la respuesta" : "Mostrar más contenido de la respuesta"}
                                     >
                                         {expandedResponses[index] ? "Ver menos" : "Ver más"}
                                     </button>
@@ -101,6 +143,8 @@ export default function Chat({
                     </div>
                 </div>
             ))}
+            {/* Elemento invisible para scroll automático */}
+            <div ref={messagesEndRef} />
         </div>
     );
 }

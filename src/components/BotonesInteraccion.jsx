@@ -1,6 +1,8 @@
 /**
  *  BotonesInteraccion.jsx
- *
+ * 
+ *  No se usa, se eliminará posteriormente!! 
+ * 
  *  Este componente representa la parte interactiva después de que se ha generado una respuesta por la IA.
  *  Muestra botones de ayuda como: "Explícame con un ejemplo", "Dame un resumen", o reformular en 
  *  lenguaje sencillo. También gestiona los inputs personalizados para dudas y sinónimos,
@@ -137,7 +139,7 @@ export default function BotonesInteraccion({
             {/*LÓGICA BOTÓN DE SIMPLIFICACIÓN*/}
             {showSimplificationOptions && (
                 <>
-                    +                    <div className="chat-container">
+                    <div className="chat-container">
                         <div className="robot-bubble">
                             <img src={robotLogo} alt="AventurIA" className="robot-icon" />
                             <p>¿Cómo quieres que te ayude?</p>

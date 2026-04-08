@@ -8,29 +8,15 @@
 
 import "../styles/Pantallas.css";
 import { useState } from "react";
-import ConfigPanel from "../components/ConfigPanel";
-import ChatHistory from "../components/ChatHistory";
+import PanelGlosario from "../components/PanelGlosario";
 
 export default function FormularioPrompt({ onComplete, onBack, summary }) {
   // Estados para las 2 preguntas
   const [tema, setTema] = useState("");
   const [objetivo, setObjetivo] = useState("");
 
-  // Estados para configuración
-  const [showConfig, setShowConfig] = useState(false);
-  const [savedEffect, setSavedEffect] = useState(false);
-  const [tempSummary, setTempSummary] = useState({ ...summary });
-  const [editingField, setEditingField] = useState(null);
-
-  // Estados para historial
-  const [showHistory, setShowHistory] = useState(false);
-  const [chatHistory, setChatHistory] = useState([]);
-  const [activeChat, setActiveChat] = useState(null);
-  const [chatFlow, setChatFlow] = useState([]);
-  const [showChat, setShowChat] = useState(false);
-  const [showHelpOptions, setShowHelpOptions] = useState(false);
-
-  const toggleHistory = () => setShowHistory(!showHistory);
+  // Estado para glosario
+  const [showGlosario, setShowGlosario] = useState(false);
 
   // Función para generar el prompt
   const generarPrompt = () => {
@@ -62,47 +48,35 @@ export default function FormularioPrompt({ onComplete, onBack, summary }) {
     <div className="app-wrapper">
       {/* Header con logo y botones */}
       <div className="header-bar">
-        OlivIA
-
-        <button
-          className={`history-btn ${showHistory ? "open" : "closed"}`}
-          onClick={toggleHistory}
-        >
-          {showHistory ? "Cerrar Historial" : "Abrir Historial"}
-        </button>
-
-        <button
-          className={`config-btn ${showConfig ? "open" : "closed"}`}
-          onClick={() => setShowConfig(!showConfig)}
-        >
-          {showConfig ? "Cerrar Configuración" : "Configuración"}
-        </button>
-
-        {/* Panel de historial */}
-        <ChatHistory
-          showHistory={showHistory}
-          chatHistory={chatHistory}
-          activeChat={activeChat}
-          chatFlow={chatFlow}
-          setActiveChat={setActiveChat}
-          setChatFlow={setChatFlow}
-          setShowChat={setShowChat}
-          setShowHelpOptions={setShowHelpOptions}
-          setChatHistory={setChatHistory}
-        />
+        <div className="header-bar-container">
+          <h1
+            className="header-bar-title"
+            onClick={onBack}
+            role="button"
+            tabIndex={0}
+            onKeyPress={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                onBack();
+              }
+            }}
+          >
+            SofIA
+          </h1>
+        </div>
       </div>
 
-      {/* Panel de configuración */}
-      {showConfig && (
-        <ConfigPanel
-          summary={summary}
-          tempSummary={tempSummary}
-          setTempSummary={setTempSummary}
-          savedEffect={savedEffect}
-          setSavedEffect={setSavedEffect}
-          setEditingField={setEditingField}
-        />
-      )}
+      {/* Botón de Diccionario tipo dropdown - izquierda */}
+      <div className="diccionario-dropdown-container">
+        <button
+          className="diccionario-dropdown-btn"
+          onClick={() => setShowGlosario(!showGlosario)}
+          aria-label="Abrir diccionario"
+          aria-expanded={showGlosario}
+        >
+          <span className="diccionario-dropdown-texto">Diccionario</span>
+          <span className="diccionario-dropdown-icono">▼</span>
+        </button>
+      </div>
 
       <div className="formulario-container">
         <div className="formulario-content">
@@ -112,18 +86,36 @@ export default function FormularioPrompt({ onComplete, onBack, summary }) {
         </button>
 
         {/* Título */}
-        <h1 className="formulario-title">Prepara tu pregunta</h1>
+        <h1 className="formulario-title">Vamos a crear tu pregunta</h1>
         <p className="formulario-subtitle">
-          Responde estas preguntas para que OlivIA te entienda mejor
+          Contesta estas dos preguntas
         </p>
 
-        {/* PREGUNTA 1: Tema */}
+        {/* PREGUNTA 1: Objetivo (PRIMERO) */}
         <div className="formulario-card">
           <label className="formulario-label">
-            1. ¿Sobre qué tema quieres hablar?
+            1. ¿Qué quieres saber?
           </label>
           <p className="formulario-helper">
-            Por ejemplo: Animales, Cocina, Historia, Deportes...
+            Por ejemplo: Explícame, Ayúdame con, Busca información, Dame ejemplos
+          </p>
+          <input
+            type="text"
+            className="formulario-input"
+            value={objetivo}
+            onChange={(e) => setObjetivo(e.target.value)}
+            placeholder="Escribe aquí lo que quieres..."
+          />
+        </div>
+
+        {/* PREGUNTA 2: Tema (SEGUNDO) */}
+        {/* Ejemplos basados en: PMC9543174, Plena Inclusión Murcia, Opportunity Village */}
+        <div className="formulario-card">
+          <label className="formulario-label">
+            2. ¿Sobre qué tema?
+          </label>
+          <p className="formulario-helper">
+            Por ejemplo: animales, música, deportes, cocina, películas, videojuegos
           </p>
           <input
             type="text"
@@ -134,39 +126,28 @@ export default function FormularioPrompt({ onComplete, onBack, summary }) {
           />
         </div>
 
-        {/* PREGUNTA 2: Objetivo */}
-        <div className="formulario-card">
-          <label className="formulario-label">
-            2. ¿Qué quieres que haga OlivIA por ti?
-          </label>
-          <p className="formulario-helper">
-            Por ejemplo: Explícame, Ayúdame a entender, Cuéntame, Dame ejemplos de...
-          </p>
-          <textarea
-            className="formulario-textarea"
-            value={objetivo}
-            onChange={(e) => setObjetivo(e.target.value)}
-            placeholder="Escribe aquí lo que necesitas..."
-            rows={3}
-          />
-        </div>
-
-        {/* Botón de continuar */}
+        {/* Botón de enviar */}
         <button
           className={`formulario-submit-btn ${!esFormularioValido ? "disabled" : ""}`}
           onClick={handleSubmit}
           disabled={!esFormularioValido}
         >
-          Continuar al chat
+          Enviar pregunta
         </button>
 
         {!esFormularioValido && (
           <p className="formulario-validation">
-            Completa las dos preguntas para continuar
+            Escribe en las dos cajas para continuar
           </p>
         )}
         </div>
       </div>
+
+      {/* Panel de Glosario */}
+      <PanelGlosario
+        isOpen={showGlosario}
+        onClose={() => setShowGlosario(false)}
+      />
     </div>
   );
 }

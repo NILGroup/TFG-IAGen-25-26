@@ -7,7 +7,7 @@
  * - Centrado en las principales dificultades: leer-entender-escribir.
  * - Qué herramientas le resultan más útiles para ayudarle 
  * 
- * Con la finalidad de personalizar al máximo su experiencia usando OlivIA.
+ * Con la finalidad de personalizar al máximo su experiencia usando SofIA.
  *
  * A medida que el usuario avanza, se guarda la información en un resumen (`summary`),
  * que luego se utiliza para adaptar la experiencia conversacional.
@@ -107,16 +107,16 @@ export default function Questionario({ onComplete }) {
      *  ============================================
      */
     const [summary, setSummary] = useState({
-        nombre: "",            // Para el caso 1
-        discapacidad: {        // Para el caso 2
-            tieneDI: "",       // "si", "no", "no_se", "prefiero_no"
-            grado: ""          // "leve", "moderada", "severa", "profunda", "no_se", "prefiero_no"
+        nombre: "",                              // string: nombre del usuario
+        discapacidad: {                          // objeto interno para el flujo del cuestionario
+            tieneDI: "",                         // "si" | "no" | "no_se" | "prefiero_no"
+            grado: ""                            // "leve" | "moderada" | "severa" | "profunda" | "no_se" | "prefiero_no"
         },
-        retos: [],             // Para el caso 3
-        herramientas: [],      // Para el caso 4
-        mostrarPorPartes: false, // Para la opción "Mostrar por partes"
-        lecturaFacil: true, // de momento true por defecto
-        rol: "profesor"        // Rol de OlivIA: "profesor" o "familiar" (configurable desde frontend)
+        retos: [],                               // array: dificultades seleccionadas
+        herramientas: [],                        // array: herramientas de ayuda preferidas
+        mostrarPorPartes: false,                 // boolean: dividir respuestas largas
+        lecturaFacil: true,                      // boolean: usar lenguaje simplificado por defecto
+        rol: "profesor"                          // string: rol de Olivía
     });
 
     // PASO 1 - Nombre
@@ -297,9 +297,9 @@ export default function Questionario({ onComplete }) {
                 return (
                     <div className="question-page">
                         <div className="icon-container">
-                            <img src={robotLogo} alt="Robot OlivIA" className="robot-logo" />
+                            <img src={robotLogo} alt="Robot SofIA" className="robot-logo" />
                         </div>
-                        <h2>¡Hola! Soy OlivIA</h2>
+                        <h2>¡Hola! Soy SofIA</h2>
                         <p>Te ayudaré a aprender y resolver dudas.</p>
                         <label htmlFor="user-name" className="question-label">
                             <strong>¿Cómo te llamas?</strong>
@@ -393,7 +393,7 @@ export default function Questionario({ onComplete }) {
             case 3:
                 return (
                     <div className="question-page">
-                        <h2 id="titulo-dificultades">OlivIA se adapta a ti</h2>
+                        <h2 id="titulo-dificultades">SofIA se adapta a ti</h2>
                         <p className="instruction">
                             <strong>Tú eliges lo que te cuesta.</strong>
                         </p>
@@ -480,7 +480,7 @@ export default function Questionario({ onComplete }) {
                         {generateSummary()}
 
                         <div className="robot-container">
-                            <img src={robotLogoCuerpo} alt="OlivIA está lista" className="robot-img" />
+                            <img src={robotLogoCuerpo} alt="SofIA está lista" className="robot-img" />
                         </div>
                     </div>
                 );
