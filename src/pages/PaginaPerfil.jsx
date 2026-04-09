@@ -100,6 +100,12 @@ export default function PaginaPerfil({ summary, onSave, onBack }) {
   // Lista de herramientas (igual que en el cuestionario)
   const tools = [
     {
+      id: "lecturaFacil",
+      label: "Lectura Fácil",
+      description: "Texto adaptado para una lectura más sencilla",
+      ejemplo: "Un planeta es un cuerpo celeste. Un planeta orbita alrededor del Sol, es grande y tiene forma de bola.",
+    },
+    {
       id: "ejemplo",
       label: "Con ejemplos",
       description: "Te explico con casos de la vida real",

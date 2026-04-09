@@ -79,7 +79,7 @@ export default function useTooltipController({ chatFlow, setChatFlow }) {
       if (accion === "definicion") {
         promptFinal += `define de forma muy breve (maximo 2 lineas), sencilla y en Lectura Facil este termino: "${tooltipInfo.text}". Devuelve SOLO la definicion.`;
       } else if (accion === "sinonimo") {
-        promptFinal += `escribe 2 o 3 sinonimos muy faciles de entender para: "${tooltipInfo.text}". Devuelve SOLO los sinonimos separados por comas.`;
+        promptFinal += `escribe 2 o 3 sinonimos muy faciles de entender para: "${tooltipInfo.text}". Devuelve SOLO los sinonimos en formato bullet (-) con el título: "Palabras parecidas"`;
       } else if (accion === "reformular") {
         promptFinal += `reescribe esta oracion de la forma mas sencilla, facil de entender y directa posible, en Lectura Facil: "${tooltipInfo.text}". Devuelve SOLO la oracion reformulada.`;
       }

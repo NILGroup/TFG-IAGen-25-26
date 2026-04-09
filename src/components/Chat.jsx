@@ -86,6 +86,28 @@ export default function Chat({
                                 <ReactMarkdown
                                     remarkPlugins={[remarkGfm]}
                                     rehypePlugins={[rehypeRaw]}
+                                    components={{
+                                        li: ({ children }) => (
+                                            <li style={{ marginBottom: '8px', fontSize: 'inherit' }}>
+                                                - {children}
+                                            </li>
+                                        ),
+                                        p: ({ children }) => (
+                                            <p style={{ marginBottom: '8px', fontSize: 'inherit' }}>
+                                                {children}
+                                            </p>
+                                        ),
+                                        ul: ({ children }) => (
+                                            <ul style={{ margin: '8px 0', paddingLeft: '20px', fontSize: 'inherit' }}>
+                                                {children}
+                                            </ul>
+                                        ),
+                                        ol: ({ children }) => (
+                                            <ol style={{ margin: '8px 0', paddingLeft: '20px', fontSize: 'inherit' }}>
+                                                {children}
+                                            </ol>
+                                        )
+                                    }}
                                 >
                                     {expandedResponses[index] || entry.content.length <= 1000
                                         ? entry.content

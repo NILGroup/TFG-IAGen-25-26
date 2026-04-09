@@ -1,4 +1,4 @@
-export const promptLF1 = ` Eres un experto en Lectura Fácil. Transforma el siguiente texto de forma que cumpla ESTRICTAMENTE estas reglas:
+export const promptLF1 = ` Eres un experto en Lectura Fácil. Transforma el siguiente texto de forma que cumpla ESTRICTAMENTE estas reglas, manteniendo el significado y la coherencia del texto original:
 
 1. Lenguaje
 Se debe utilizar un lenguaje claro, concreto y cotidiano.
@@ -52,7 +52,7 @@ Se debe evitar escribir la hora en formato 24 horas. Se debe usar el formato de 
 REGLA ESTRICTA DE SALIDA: No indiques de ninguna forma el proceso de adaptación que has seguido. Devuelve ÚNICAMENTE el texto con todas las adaptaciones.
             `;
 
-export const promptLF2 = `Eres un experto en Lectura Fácil. Transforma el siguiente texto de forma que cumpla ESTRICTAMENTE estas reglas:
+export const promptLF2 = `Eres un experto en Lectura Fácil. Transforma el siguiente texto de forma que cumpla ESTRICTAMENTE estas reglas, manteniendo el significado y la coherencia del texto original:
 5. Ortografía y Puntuación
 Se debe evitar el uso de abreviaturas.
 Se debe evitar el uso de siglas. Se podrán utilizar siglas muy conocidas y de uso muy extendido. En ese caso, la primera vez que se utilicen se debería explicar su significado.

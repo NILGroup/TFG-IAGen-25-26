@@ -12,7 +12,7 @@ export const adaptToLecturaFacil = async ({
     summary,
     setChatFlow,
 }) => {
-    if (!summary || summary.lecturaFacil !== true) {
+    if (!summary || !summary.herramientas?.includes("lecturaFacil")) {
         return response;
     }
 
@@ -32,7 +32,7 @@ export const adaptToLecturaFacil = async ({
     try {
         refinedResponse1 = await fetchFromGemini(refinementMessages1);
     } catch (error) {
-        console.log("Falló Gemini, usamos Ollama");*/
+        console.log("Falló Gemini, usamos Ollama");
         refinedResponse1 = await fetchFromOllama(refinementMessages1);
     }
 

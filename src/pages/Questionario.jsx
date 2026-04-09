@@ -115,7 +115,6 @@ export default function Questionario({ onComplete }) {
         retos: [],                               // array: dificultades seleccionadas
         herramientas: [],                        // array: herramientas de ayuda preferidas
         mostrarPorPartes: false,                 // boolean: dividir respuestas largas
-        lecturaFacil: true,                      // boolean: usar lenguaje simplificado por defecto
         rol: "profesor"                          // string: rol de Olivía
     });
 
@@ -190,6 +189,7 @@ export default function Questionario({ onComplete }) {
         "pensar_palabras": "Pensar palabras para escribir",
         "escribir_largo": "Escribir frases largas",
         // Herramientas
+        "lecturaFacil": "Lectura Fácil",
         "ejemplo": "Con ejemplos",
         "bullet": "Con listas",
         "textocorto": "Respuestas cortas",
@@ -259,6 +259,12 @@ export default function Questionario({ onComplete }) {
 
     // Lista de herramientas disponibles (Lectura Fácil: sin anglicismos, sin emojis)
     const tools = [
+        {
+            id: "lecturaFacil",
+            label: "Lectura Fácil",
+            description: "Te explico todo de forma sencilla",
+            ejemplo: "Un planeta es un cuerpo celeste. Un planeta orbita alrededor del Sol, es grande y tiene forma de bola."
+        },
         {
             id: "ejemplo",
             label: "Con ejemplos",

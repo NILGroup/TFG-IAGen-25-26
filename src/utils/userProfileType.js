@@ -22,7 +22,7 @@ export const UserProfileSchema = {
     retos: [],                               // string[]: dificultades seleccionadas
     herramientas: [],                        // string[]: herramientas de ayuda preferidas
     mostrarPorPartes: false,                 // boolean: dividir respuestas largas
-    lecturaFacil: true,                      // boolean: usar lenguaje simplificado por defecto
+
     rol: "profesor"                          // "profesor" | "familiar": rol de Olivía
 };
 
