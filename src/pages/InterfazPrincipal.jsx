@@ -218,6 +218,25 @@ export default function InterfazPrincipal({
         <div className="app-wrapper">
             <div className="header-bar">
                 <div className="header-bar-container">
+
+                    {/* Izquierda: botón Historial */}
+                    <div className="header-bar-left">
+                        {chatHistory.length > 0 && (
+                            <button
+                                className="header-historial-btn"
+                                onClick={toggleHistory}
+                                aria-label={`Abrir historial de conversaciones. Chat ${currentNumber} de ${totalChats}`}
+                                aria-expanded={showHistory}
+                            >
+                                {currentNumber > 0 && (
+                                    <span className="header-historial-contador">{currentNumber}/{totalChats}</span>
+                                )}
+                                <span className="header-historial-texto">Historial</span>
+                            </button>
+                        )}
+                    </div>
+
+                    {/* Centro: título SofIA */}
                     <h1
                         className="header-bar-title"
                         onClick={onBack}
@@ -232,6 +251,7 @@ export default function InterfazPrincipal({
                         SofIA
                     </h1>
 
+                    {/* Derecha: botón Perfil */}
                     <div className="header-bar-right">
                         <button
                             className="boton-perfil"
@@ -257,25 +277,6 @@ export default function InterfazPrincipal({
                     <span className="diccionario-dropdown-icono">▼</span>
                 </button>
             </div>
-
-            {/* Botón de Historial tipo dropdown - centrado debajo de SofIA */}
-            {chatHistory.length > 0 && (
-                <div className="historial-dropdown-container">
-                    <button
-                        className="historial-dropdown-btn"
-                        onClick={toggleHistory}
-                        aria-label={`Abrir historial de conversaciones. Chat ${currentNumber} de ${totalChats}`}
-                        aria-expanded={showHistory}
-                    >
-                        <span className="historial-dropdown-contador">
-                            {currentNumber}/{totalChats}
-                        </span>
-                        <span className="historial-dropdown-separador">|</span>
-                        <span className="historial-dropdown-texto">Historial</span>
-                        <span className="historial-dropdown-icono">▼</span>
-                    </button>
-                </div>
-            )}
 
             {/* Botón de Configuración de Ayuda - derecha debajo de Perfil */}
             {flujoElegido === "formulario" && (

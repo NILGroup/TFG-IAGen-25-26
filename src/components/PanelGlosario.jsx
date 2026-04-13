@@ -47,7 +47,7 @@ export default function PanelGlosario({ isOpen, onClose, glossary = [] }) {
       role="complementary"
       aria-label="Panel de glosario"
     >
-      <div className="panel-glosario-header">
+      <div className="panel-glosario-top">
         <button
           onClick={onClose}
           className="panel-glosario-cerrar"
@@ -55,7 +55,6 @@ export default function PanelGlosario({ isOpen, onClose, glossary = [] }) {
         >
           ←
         </button>
-        <h2 className="panel-glosario-titulo">Diccionario</h2>
       </div>
 
       <div className="panel-glosario-busqueda-contenedor">

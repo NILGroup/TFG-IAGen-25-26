@@ -132,12 +132,61 @@ body {
   }
 }
 
+.header-bar-left {
+  position: absolute;
+  left: 30px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+}
+
 .header-bar-right {
   position: absolute;
   right: 30px;
-  top: 23.5px;
+  top: 50%;
+  transform: translateY(-50%);
   display: flex;
   gap: 16px;
+  align-items: center;
+}
+
+/* Botón Historial dentro del header - mismo estilo que Perfil */
+.header-historial-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #1f4189;
+  color: white;
+  border: none;
+  font-size: 23px;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 0 24px;
+  height: 44px;
+  transition: background-color 0.2s;
+  border-radius: 8px;
+  white-space: nowrap;
+  font-family: inherit;
+}
+
+.header-historial-btn:hover {
+  background-color: #2a5497;
+}
+
+.header-historial-btn:focus-visible {
+  outline: 3px solid white;
+  outline-offset: 2px;
+}
+
+.header-historial-contador {
+  font-size: 16px;
+  font-weight: 700;
+  opacity: 0.8;
+}
+
+.header-historial-texto {
+  font-size: 23px;
 }
 
 /* Contenedor general */
@@ -1795,8 +1844,8 @@ body {
 .panel-glosario {
   position: fixed;
   left: 0;
-  top: 0;
-  height: 100vh;
+  top: 91px;
+  height: calc(100vh - 91px);
   width: 400px;
   background-color: white;
   box-shadow: 5px 0 15px rgba(0, 0, 0, 0.1);
@@ -1814,34 +1863,28 @@ body {
   transform: translateX(-100%);
 }
 
-.panel-glosario-header {
-  background-color: #ff9800;
-  padding: 20px 24px;
+.panel-glosario-top {
+  padding: 12px 16px;
+  border-bottom: 1px solid #e0e0e0;
   display: flex;
   align-items: center;
-  gap: 12px;
-}
-
-.panel-glosario-titulo {
-  color: white;
-  font-size: 24px;
-  font-weight: bold;
-  margin: 0;
 }
 
 .panel-glosario-cerrar {
   background-color: transparent;
-  border: none;
-  color: white;
-  font-size: 24px;
+  border: 2px solid #e0e0e0;
+  color: #333;
+  font-size: 20px;
   cursor: pointer;
-  padding: 8px;
+  padding: 6px 14px;
   border-radius: 8px;
-  transition: background-color 0.2s;
+  transition: all 0.2s;
+  line-height: 1;
 }
 
 .panel-glosario-cerrar:hover {
-  background-color: #2a5497;
+  background-color: #f0f0f0;
+  border-color: #bbb;
 }
 
 .panel-glosario-busqueda-contenedor {

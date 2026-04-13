@@ -14,7 +14,7 @@
 
 import { useState, useEffect } from "react";
 import "../styles/Pantallas.css";
-import PanelGlosario from "../components/PanelGlosario";
+
 
 export default function PaginaPerfil({ summary, onSave, onBack }) {
   // Estados para todos los campos del perfil
@@ -24,9 +24,6 @@ export default function PaginaPerfil({ summary, onSave, onBack }) {
   const [retos, setRetos] = useState(summary?.retos || []);
   const [herramientas, setHerramientas] = useState(summary?.herramientas || []);
   const [rol, setRol] = useState(summary?.rol || "profesor");
-
-  // Estado para el panel de glosario
-  const [showGlosario, setShowGlosario] = useState(false);
 
   // Actualizar estados cuando cambie el summary
   useEffect(() => {
@@ -152,18 +149,6 @@ export default function PaginaPerfil({ summary, onSave, onBack }) {
         </div>
       </div>
 
-      {/* Botón de Diccionario tipo dropdown - izquierda */}
-      <div className="diccionario-dropdown-container">
-        <button
-          className="diccionario-dropdown-btn"
-          onClick={() => setShowGlosario(!showGlosario)}
-          aria-label="Abrir diccionario"
-          aria-expanded={showGlosario}
-        >
-          <span className="diccionario-dropdown-texto">Diccionario</span>
-          <span className="diccionario-dropdown-icono">▼</span>
-        </button>
-      </div>
 
       {/* Contenedor principal del perfil */}
       <div className="formulario-container perfil-container">
@@ -418,8 +403,6 @@ export default function PaginaPerfil({ summary, onSave, onBack }) {
         </div>
       </div>
 
-      {/* Panel de Glosario */}
-      <PanelGlosario isOpen={showGlosario} onClose={() => setShowGlosario(false)} />
     </div>
   );
 }
