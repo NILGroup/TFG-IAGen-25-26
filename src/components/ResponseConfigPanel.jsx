@@ -85,16 +85,15 @@ export default function ResponseConfigPanel({
       role="complementary"
       aria-label="Panel de configuración de respuestas"
     >
-      {/* Header */}
+      {/* Header - solo botón de cerrar */}
       <div className="response-config-header">
         <button
           onClick={onClose}
           className="response-config-close-btn"
-          aria-label="Ocultar configuración"
+          aria-label="Cerrar configuración de respuestas"
         >
-          ←
+          →
         </button>
-        <h2 className="response-config-title">Respuestas</h2>
       </div>
 
       {/* Warning Message */}

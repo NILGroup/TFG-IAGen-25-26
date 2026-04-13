@@ -31,7 +31,6 @@ export default function InterfazPrincipal({
     summary,
     modoSeleccionado,
     promptInicial,
-    flujoElegido,
     onBack,
     onIrAPerfil,
     chatHistoryGlobal = [],
@@ -215,7 +214,7 @@ export default function InterfazPrincipal({
 
     return (
 
-        <div className="app-wrapper">
+        <div className={`app-wrapper${showGlosario ? " glosario-abierto" : ""}${showResponseConfig ? " config-abierto" : ""}`}>
             <div className="header-bar">
                 <div className="header-bar-container">
 
@@ -265,116 +264,119 @@ export default function InterfazPrincipal({
                 </div>
             </div>
 
-            {/* Botón de Diccionario tipo dropdown - izquierda */}
-            <div className="diccionario-dropdown-container">
-                <button
-                    className="diccionario-dropdown-btn"
-                    onClick={() => setShowGlosario(!showGlosario)}
-                    aria-label="Abrir diccionario"
-                    aria-expanded={showGlosario}
-                >
-                    <span className="diccionario-dropdown-texto">Diccionario</span>
-                    <span className="diccionario-dropdown-icono">▼</span>
-                </button>
-            </div>
-
-            {/* Botón de Configuración de Ayuda - derecha debajo de Perfil */}
-            {flujoElegido === "formulario" && (
-                <div className="config-ayuda-dropdown-container">
-                    <button
-                        className="config-ayuda-dropdown-btn"
-                        onClick={() => setShowResponseConfig(!showResponseConfig)}
-                        aria-label="Configurar cómo quieres que aparezcan las respuestas"
-                        aria-expanded={showResponseConfig}
-                    >
-                        <span className="config-ayuda-dropdown-texto">Cómo quieres que aparezcan las respuestas</span>
-                        <span className="config-ayuda-dropdown-icono">▼</span>
-                    </button>
-                </div>
-            )}
-            {activeChat && (
-                <div className="chat-wrapper">
-                    <div className="chat-container">
-                        <div className="chat-message user-message">
-                            {activeChat.prompt}
-                        </div>
-                        <div className="chat-message ai-message">
-                            {activeChat.response}
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {/*GENERADOR/SELECCIONADOR DE PREGUNTA*/}
-            {!showChat ? (
-                <QuestionPromptPanel
-                    onBack={onBack}
-                    userName={summary?.nombre}
-                    selectedOption={selectedOption}
-                    prompt={prompt}
-                    setPrompt={setPrompt}
-                    sendPrompt={sendPrompt}
-                />
-            ) : (
-                <ChatActivePanel
-                    chatFlow={chatFlow}
-                    expandedResponses={expandedResponses}
-                    toggleExpanded={toggleExpanded}
-                    toggleSpeech={toggleSpeech}
-                    activeSpeechId={activeSpeechId}
-                    speechState={speechState}
-                    avatarMode={modoSeleccionado}
-                    tooltipInfo={tooltipInfo}
-                    handleTextSelection={handleTextSelection}
-                    handleButtonClick={handleButtonClick}
-                    handleReplaceText={handleReplaceText}
-                    prompt={prompt}
-                    setPrompt={setPrompt}
-                    sendCustomPrompt={sendCustomPrompt}
-                    saveChatToHistory={handleFinalizarYVolver}
-                />
-            )}
-
-            {/* Panel de configuración de respuestas - Solo en flujo "con ayuda" */}
-            {flujoElegido === "formulario" && (
-                <ResponseConfigPanel
-                    isOpen={showResponseConfig}
-                    onClose={() => setShowResponseConfig(false)}
-                    currentConfig={responseConfig}
-                    onApply={handleApplyResponseConfig}
-                />
-            )}
-
+            {/* Panel del Diccionario - fuera del main-content para no desplazarse */}
             <PanelGlosario
                 isOpen={showGlosario}
                 onClose={() => setShowGlosario(false)}
                 glossary={glossary}
             />
 
-            {/* Modal de Historial */}
-            <HistoryModal
-                isOpen={showHistory}
-                onClose={toggleHistory}
-                chatHistory={chatHistory}
-                activeChat={activeChat}
-                onSelectChat={(entry) => {
-                    setActiveChat(entry);
-                    setChatFlow([...entry.flow]);
-                    setShowChat(true);
-                    setShowHelpOptions(true);
-                }}
-                onDeleteChat={(entryToDelete) => {
-                    setChatHistory(prev => prev.filter(entry => entry !== entryToDelete));
-                    // Si eliminamos el chat activo, limpiar
-                    if (activeChat === entryToDelete) {
-                        setActiveChat(null);
-                    }
-                    // Sincronizar con el historial global
-                    if (setChatHistoryGlobal) {
-                        setChatHistoryGlobal(prev => prev.filter(entry => entry !== entryToDelete));
-                    }
-                }}
-            />
+            {/* Contenido principal: se desplaza cuando el diccionario está abierto */}
+            <main className="main-content" id="main-content" aria-label="Contenido principal">
+
+                {/* Botón de Diccionario tipo dropdown - izquierda */}
+                <div className="diccionario-dropdown-container">
+                    <button
+                        className="diccionario-dropdown-btn"
+                        onClick={() => setShowGlosario(!showGlosario)}
+                        aria-label={showGlosario ? "Cerrar diccionario" : "Abrir diccionario"}
+                        aria-expanded={showGlosario}
+                        aria-controls="panel-glosario"
+                    >
+                        <span className="diccionario-dropdown-texto">Diccionario</span>
+                        <span className="diccionario-dropdown-icono">▼</span>
+                    </button>
+                </div>
+
+                {/* Botón de Configuración de Ayuda - derecha*/}
+                <div className="config-ayuda-dropdown-container">
+                    <button
+                        className="config-ayuda-dropdown-btn"
+                        onClick={() => setShowResponseConfig(!showResponseConfig)}
+                        aria-label={showResponseConfig ? "Cerrar configuración de respuestas" : "Configurar cómo quieres que aparezcan las respuestas"}
+                        aria-expanded={showResponseConfig}
+                        aria-controls="response-config-panel"
+                    >
+                        <span className="config-ayuda-dropdown-texto">Cómo quieres que aparezcan las respuestas</span>
+                        <span className="config-ayuda-dropdown-icono">▼</span>
+                    </button>
+                </div>
+
+                {activeChat && (
+                    <div className="chat-wrapper">
+                        <div className="chat-container">
+                            <div className="chat-message user-message">
+                                {activeChat.prompt}
+                            </div>
+                            <div className="chat-message ai-message">
+                                {activeChat.response}
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/*GENERADOR/SELECCIONADOR DE PREGUNTA*/}
+                {!showChat ? (
+                    <QuestionPromptPanel
+                        onBack={onBack}
+                        userName={summary?.nombre}
+                        selectedOption={selectedOption}
+                        prompt={prompt}
+                        setPrompt={setPrompt}
+                        sendPrompt={sendPrompt}
+                    />
+                ) : (
+                    <ChatActivePanel
+                        chatFlow={chatFlow}
+                        expandedResponses={expandedResponses}
+                        toggleExpanded={toggleExpanded}
+                        toggleSpeech={toggleSpeech}
+                        activeSpeechId={activeSpeechId}
+                        speechState={speechState}
+                        avatarMode={modoSeleccionado}
+                        tooltipInfo={tooltipInfo}
+                        handleTextSelection={handleTextSelection}
+                        handleButtonClick={handleButtonClick}
+                        handleReplaceText={handleReplaceText}
+                        prompt={prompt}
+                        setPrompt={setPrompt}
+                        sendCustomPrompt={sendCustomPrompt}
+                        saveChatToHistory={handleFinalizarYVolver}
+                    />
+                )}
+
+                {/* Panel de configuración de respuestas - visible en todos los modos */}
+                <ResponseConfigPanel
+                    isOpen={showResponseConfig}
+                    onClose={() => setShowResponseConfig(false)}
+                    currentConfig={responseConfig}
+                    onApply={handleApplyResponseConfig}
+                />
+
+                {/* Modal de Historial */}
+                <HistoryModal
+                    isOpen={showHistory}
+                    onClose={toggleHistory}
+                    chatHistory={chatHistory}
+                    activeChat={activeChat}
+                    onSelectChat={(entry) => {
+                        setActiveChat(entry);
+                        setChatFlow([...entry.flow]);
+                        setShowChat(true);
+                        setShowHelpOptions(true);
+                    }}
+                    onDeleteChat={(entryToDelete) => {
+                        setChatHistory(prev => prev.filter(entry => entry !== entryToDelete));
+                        if (activeChat === entryToDelete) {
+                            setActiveChat(null);
+                        }
+                        if (setChatHistoryGlobal) {
+                            setChatHistoryGlobal(prev => prev.filter(entry => entry !== entryToDelete));
+                        }
+                    }}
+                />
+
+            </main>
 
         </div>
     );
