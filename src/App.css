@@ -2189,10 +2189,6 @@ body {
   color: #1a1a2e;
 }
 
-/* Icono oculto - según estudios, el ▼ es confuso */
-.historial-dropdown-icono {
-  display: none;
-}
 
 /*==================================
 *    BOTÓN DROPDOWN DE CONFIGURACIÓN DE AYUDA
@@ -2245,10 +2241,6 @@ body {
   color: #1a1a2e;
 }
 
-/* Icono oculto - según estudios, el ▼ es confuso */
-.config-ayuda-dropdown-icono {
-  display: none;
-}
 
 /*==================================
 *    BOTÓN DROPDOWN DE DICCIONARIO
@@ -2301,10 +2293,6 @@ body {
   color: #1a1a2e;
 }
 
-/* Icono oculto - según estudios, el ▼ es confuso */
-.diccionario-dropdown-icono {
-  display: none;
-}
 
 /*==================================
 *    MODAL DE HISTORIAL
@@ -2658,6 +2646,123 @@ body {
   padding: 16px 20px;
   display: flex;
   justify-content: center;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* Toast de confirmación de guardado */
+.guardar-toast {
+  position: absolute;
+  top: -44px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #1f4189;
+  color: white;
+  padding: 8px 20px;
+  border-radius: 20px;
+  font-size: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+  animation: fadeInOut 2.5s ease forwards;
+  pointer-events: none;
+}
+
+.guardar-toast.already {
+  background-color: #666;
+}
+
+@keyframes fadeInOut {
+  0%   { opacity: 0; transform: translateX(-50%) translateY(4px); }
+  15%  { opacity: 1; transform: translateX(-50%) translateY(0); }
+  75%  { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* Botón Guardar favorito */
+.guardar-favorito-btn {
+  padding: 14px 32px;
+  background-color: #1f4189;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background-color 0.2s;
+}
+
+.guardar-favorito-btn:hover {
+  background-color: #2a5497;
+}
+
+.guardar-favorito-btn:focus-visible {
+  outline: 3px solid #1f4189;
+  outline-offset: 3px;
+}
+
+/* Botón favoritos - centrado debajo del logo, mismo patrón que Historial */
+.favoritos-btn-container {
+  position: fixed;
+  top: 110px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 500;
+}
+
+.favoritos-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #1f4189;
+  color: white;
+  border: none;
+  font-size: 23px;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 0 24px;
+  height: 44px;
+  transition: background-color 0.2s;
+  border-radius: 8px;
+  white-space: nowrap;
+  font-family: inherit;
+}
+
+.favoritos-btn:hover {
+  background-color: #2a5497;
+}
+
+.favoritos-btn:focus-visible {
+  outline: 3px solid white;
+  outline-offset: 2px;
+}
+
+.favoritos-btn-contador {
+  font-size: 16px;
+  font-weight: 700;
+  opacity: 0.8;
+}
+
+.favoritos-btn-separador {
+  opacity: 0.5;
+}
+
+.favoritos-btn-texto {
+  font-size: 23px;
+}
+
+/* Respuesta dentro del modal de favoritos */
+.favorito-respuesta p {
+  font-size: 15px;
+  color: #555;
+  line-height: 1.5;
+  margin: 6px 0 0 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .finalizar-conversacion-btn-bottom {

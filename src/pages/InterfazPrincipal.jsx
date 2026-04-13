@@ -22,6 +22,7 @@ import useSpeechController from "../hooks/useSpeechController";
 import useHelpOptionsController from "../hooks/useHelpOptionsController";
 import useTooltipController from "../hooks/useTooltipController";
 import HistoryModal from "../components/HistoryModal";
+import FavoritosModal from "../components/FavoritosModal";
 import QuestionPromptPanel from "../components/QuestionPromptPanel";
 import ChatActivePanel from "../components/ChatActivePanel";
 import ResponseConfigPanel from "../components/ResponseConfigPanel";
@@ -142,6 +143,40 @@ export default function InterfazPrincipal({
         initialHistory: chatHistoryGlobal, // Usar historial global
     });
 
+    // Estado de favoritos (pares pregunta-respuesta guardados)
+    const [favorites, setFavorites] = useState([]);
+    const [showFavoritos, setShowFavoritos] = useState(false);
+    const [savedToast, setSavedToast] = useState(null); // null | "saved" | "already"
+
+    const handleGuardarFavorito = () => {
+        // Obtener el último par user + ai del chatFlow
+        const reversed = [...chatFlow].reverse();
+        const lastAi = reversed.find(m => m.type === "ai");
+        const lastUser = reversed.find(m => m.type === "user");
+
+        if (!lastAi || !lastUser) return;
+
+        // Comprobar si ya está guardado
+        const yaGuardado = favorites.some(
+            f => f.question === lastUser.content && f.answer === lastAi.content
+        );
+
+        if (yaGuardado) {
+            setSavedToast("already");
+            setTimeout(() => setSavedToast(null), 2500);
+            return;
+        }
+
+        setFavorites(prev => [...prev, {
+            id: Date.now(),
+            question: lastUser.content,
+            answer: lastAi.content,
+            timestamp: new Date().toLocaleString(),
+        }]);
+        setSavedToast("saved");
+        setTimeout(() => setSavedToast(null), 2500);
+    };
+
     // Función personalizada para finalizar y volver a elección
     const handleFinalizarYVolver = async () => {
         if (chatFlow.length === 0) {
@@ -227,9 +262,6 @@ export default function InterfazPrincipal({
                                 aria-label={`Abrir historial de conversaciones. Chat ${currentNumber} de ${totalChats}`}
                                 aria-expanded={showHistory}
                             >
-                                {currentNumber > 0 && (
-                                    <span className="header-historial-contador">{currentNumber}/{totalChats}</span>
-                                )}
                                 <span className="header-historial-texto">Historial</span>
                             </button>
                         )}
@@ -264,6 +296,21 @@ export default function InterfazPrincipal({
                 </div>
             </div>
 
+            {/* Botón de favoritos - centrado debajo del logo SofIA */}
+            {favorites.length > 0 && (
+                <div className="favoritos-btn-container">
+                    <button
+                        className="favoritos-btn"
+                        onClick={() => setShowFavoritos(true)}
+                        aria-label={`Abrir favoritos. ${favorites.length} guardados`}
+                    >
+                        <span className="favoritos-btn-contador">{favorites.length}</span>
+                        <span className="favoritos-btn-separador">|</span>
+                        <span className="favoritos-btn-texto">Favoritos</span>
+                    </button>
+                </div>
+            )}
+
             {/* Panel del Diccionario - fuera del main-content para no desplazarse */}
             <PanelGlosario
                 isOpen={showGlosario}
@@ -284,7 +331,6 @@ export default function InterfazPrincipal({
                         aria-controls="panel-glosario"
                     >
                         <span className="diccionario-dropdown-texto">Diccionario</span>
-                        <span className="diccionario-dropdown-icono">▼</span>
                     </button>
                 </div>
 
@@ -298,7 +344,6 @@ export default function InterfazPrincipal({
                         aria-controls="response-config-panel"
                     >
                         <span className="config-ayuda-dropdown-texto">Cómo quieres que aparezcan las respuestas</span>
-                        <span className="config-ayuda-dropdown-icono">▼</span>
                     </button>
                 </div>
 
@@ -342,6 +387,8 @@ export default function InterfazPrincipal({
                         setPrompt={setPrompt}
                         sendCustomPrompt={sendCustomPrompt}
                         saveChatToHistory={handleFinalizarYVolver}
+                        onGuardarFavorito={handleGuardarFavorito}
+                        savedToast={savedToast}
                     />
                 )}
 
@@ -374,6 +421,14 @@ export default function InterfazPrincipal({
                             setChatHistoryGlobal(prev => prev.filter(entry => entry !== entryToDelete));
                         }
                     }}
+                />
+
+                {/* Modal de Favoritos */}
+                <FavoritosModal
+                    isOpen={showFavoritos}
+                    onClose={() => setShowFavoritos(false)}
+                    favorites={favorites}
+                    onDelete={(id) => setFavorites(prev => prev.filter(f => f.id !== id))}
                 />
 
             </main>

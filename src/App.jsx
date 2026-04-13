@@ -141,11 +141,23 @@ export default function App() {
       {!paginasConHeaderPropio && (
         <div className="header-bar">
           <div className="header-bar-container">
-            <h1 className="header-bar-title">
-              SofIA
-            </h1>
 
-            {/* Botón Perfil - solo si ya existe un perfil */}
+            {/* Izquierda: botón Historial - solo si hay conversaciones guardadas */}
+            {chatHistory.length > 0 && (
+              <div className="header-bar-left">
+                <button
+                  className="header-historial-btn"
+                  onClick={() => setShowHistoryModal(true)}
+                  aria-label={`Abrir historial. ${chatHistory.length} conversaciones guardadas`}
+                >
+                  <span className="header-historial-texto">Historial</span>
+                </button>
+              </div>
+            )}
+
+            <h1 className="header-bar-title">SofIA</h1>
+
+            {/* Derecha: botón Perfil - solo si ya existe un perfil */}
             {summary && (
               <div className="header-bar-right">
                 <button
@@ -174,8 +186,6 @@ export default function App() {
         <PantallaEleccion
           onSelectOption={handleSelectOption}
           onBack={handleVolverARol}
-          historialCount={chatHistory.length}
-          onOpenHistorial={() => setShowHistoryModal(true)}
         />
       )}
 

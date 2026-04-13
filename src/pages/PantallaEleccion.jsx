@@ -11,30 +11,9 @@
 
 import "../styles/Pantallas.css";
 
-export default function PantallaEleccion({
-    onSelectOption,
-    onBack,
-    historialCount = 0,
-    onOpenHistorial
-}) {
+export default function PantallaEleccion({ onSelectOption, onBack }) {
     return (
         <div className="eleccion-container">
-            {/* Botón de Historial - Solo si hay conversaciones */}
-            {historialCount > 0 && (
-                <div className="historial-dropdown-container">
-                    <button
-                        className="historial-dropdown-btn"
-                        onClick={onOpenHistorial}
-                        aria-label="Abrir historial de conversaciones"
-                    >
-                        <span className="historial-dropdown-contador">
-                            {historialCount}
-                        </span>
-                        <span className="historial-dropdown-separador">|</span>
-                        <span className="historial-dropdown-texto">Historial</span>
-                    </button>
-                </div>
-            )}
 
             <div className="eleccion-content">
                 {/* Botón volver */}
