@@ -247,6 +247,7 @@ export default function PaginaPerfil({ summary, onSave, onBack }) {
                 </legend>
 
                 {[
+                  { id: "limite", label: "Límite" },
                   { id: "leve", label: "Leve" },
                   { id: "moderada", label: "Moderada" },
                   { id: "severa", label: "Severa" },

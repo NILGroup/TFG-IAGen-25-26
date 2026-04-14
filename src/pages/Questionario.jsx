@@ -110,7 +110,7 @@ export default function Questionario({ onComplete }) {
         nombre: "",                              // string: nombre del usuario
         discapacidad: {                          // objeto interno para el flujo del cuestionario
             tieneDI: "",                         // "si" | "no" | "no_se" | "prefiero_no"
-            grado: ""                            // "leve" | "moderada" | "severa" | "profunda" | "no_se" | "prefiero_no"
+            grado: ""                            // "limite" | "leve" | "moderada" | "severa" | "profunda" | "no_se" | "prefiero_no"
         },
         retos: [],                               // array: dificultades seleccionadas
         herramientas: [],                        // array: herramientas de ayuda preferidas
@@ -177,6 +177,7 @@ export default function Questionario({ onComplete }) {
         "no_se": "No lo sé",
         "prefiero_no": "Prefiero no decirlo",
         // Grados
+        "limite": "Grado límite",
         "leve": "Grado leve",
         "moderada": "Grado moderado",
         "severa": "Grado severo",
@@ -366,6 +367,7 @@ export default function Questionario({ onComplete }) {
                                 </legend>
 
                                 {[
+                                    { id: "limite", label: "Límite" },
                                     { id: "leve", label: "Leve" },
                                     { id: "moderada", label: "Moderada" },
                                     { id: "severa", label: "Severa" },
