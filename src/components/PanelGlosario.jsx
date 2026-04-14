@@ -1,6 +1,23 @@
 import { useState } from "react";
 
-const ITEMS_POR_PAGINA = 4;
+const ITEMS_POR_PAGINA = 2;
+
+const formatSynonyms = (text) => {
+  if (!text) return "";
+  const normalized = text.replace(/\r\n/g, "\n").trim();
+  const withoutTitle = normalized.replace(/^(?:\s*#{1,6})?\s*Palabras parecidas\s*:?\s*/i, "").trim();
+
+  const lines = withoutTitle
+    .split("\n")
+    .map((line) => line.replace(/^\s*[-*•]+\s*/, "").trim())
+    .filter(Boolean);
+
+  const items = lines.flatMap((line) =>
+    line.split(",").map((item) => item.trim()).filter(Boolean)
+  );
+
+  return [...new Set(items)].join(", ");
+};
 
 export default function PanelGlosario({ isOpen, onClose, glossary = [] }) {
   const [busqueda, setBusqueda] = useState("");
@@ -64,7 +81,7 @@ export default function PanelGlosario({ isOpen, onClose, glossary = [] }) {
             type="text"
             value={busqueda}
             onChange={(e) => handleBusqueda(e.target.value)}
-            placeholder="Buscar palabra..."
+            placeholder="Busca palabras..."
             className="panel-glosario-busqueda-input"
             aria-label="Buscar en el diccionario"
           />
@@ -74,7 +91,7 @@ export default function PanelGlosario({ isOpen, onClose, glossary = [] }) {
       <div className="panel-glosario-lista">
         {palabrasActuales.length === 0 ? (
           <p className="panel-glosario-vacio">
-            ¡Selecciona palabras del texto para que se guarden aquí!
+            ¡Selecciona palabras del texto  y aparecerán aquí!
           </p>
         ) : (
           palabrasActuales.map((palabra) => (
@@ -98,7 +115,7 @@ export default function PanelGlosario({ isOpen, onClose, glossary = [] }) {
               
               {palabra.sinonimo && (
                 <p className="panel-glosario-palabra-sinonimo">
-                  <strong>Palabras parecidas:</strong> {palabra.sinonimo}
+                  <strong>Palabras parecidas:</strong> {formatSynonyms(palabra.sinonimo)}
                 </p>
               )}
             </div>
