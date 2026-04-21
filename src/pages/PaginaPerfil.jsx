@@ -22,6 +22,7 @@ export default function PaginaPerfil({ summary, onSave, onBack }) {
   const [tieneDI, setTieneDI] = useState(summary?.discapacidad?.tieneDI || "");
   const [grado, setGrado] = useState(summary?.discapacidad?.grado || "");
   const [retos, setRetos] = useState(summary?.retos || []);
+  const [retoOtro, setRetoOtro] = useState(summary?.retoOtro || "");
   const [herramientas, setHerramientas] = useState(summary?.herramientas || []);
   const [rol, setRol] = useState(summary?.rol || "profesor");
 
@@ -31,6 +32,7 @@ export default function PaginaPerfil({ summary, onSave, onBack }) {
     setTieneDI(summary?.discapacidad?.tieneDI || "");
     setGrado(summary?.discapacidad?.grado || "");
     setRetos(summary?.retos || []);
+    setRetoOtro(summary?.retoOtro || "");
     setHerramientas(summary?.herramientas || []);
     setRol(summary?.rol || "profesor");
   }, [summary]);
@@ -49,10 +51,18 @@ export default function PaginaPerfil({ summary, onSave, onBack }) {
   /**
    * Toggle para dificultades (retos) - múltiple selección
    */
-  const toggleReto = (id) => {
-    setRetos((prev) =>
-      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
-    );
+  const toggleReto = (id, borrarTexto = false) => {
+    setRetos((prev) => {
+      const newRetos = prev.includes(id)
+        ? prev.filter((item) => item !== id)
+        : [...prev, id];
+
+      // Si deselecciona "otra" y se indica borrar texto
+      if (id === "otra" && prev.includes(id) && borrarTexto) {
+        setRetoOtro("");
+      }
+      return newRetos;
+    });
   };
 
   /**
@@ -76,6 +86,7 @@ export default function PaginaPerfil({ summary, onSave, onBack }) {
         grado: tieneDI === "si" ? grado : "",
       },
       retos,
+      retoOtro,
       herramientas,
       rol,
     };
@@ -91,6 +102,7 @@ export default function PaginaPerfil({ summary, onSave, onBack }) {
     tieneDI !== (summary?.discapacidad?.tieneDI || "") ||
     grado !== (summary?.discapacidad?.grado || "") ||
     JSON.stringify(retos) !== JSON.stringify(summary?.retos || []) ||
+    retoOtro !== (summary?.retoOtro || "") ||
     JSON.stringify(herramientas) !== JSON.stringify(summary?.herramientas || []) ||
     rol !== (summary?.rol || "profesor");
 
@@ -98,14 +110,14 @@ export default function PaginaPerfil({ summary, onSave, onBack }) {
   const tools = [
     {
       id: "lecturaFacil",
-      label: "Lectura Fácil",
-      description: "Texto adaptado para una lectura más sencilla",
-      ejemplo: "Un planeta es un cuerpo celeste. Un planeta orbita alrededor del Sol, es grande y tiene forma de bola.",
+      label: "Texto fácil de leer",
+      description: "Te explico todo con palabras sencillas",
+      ejemplo: "Un planeta es una bola muy grande. Está en el cielo. Da vueltas alrededor del Sol.",
     },
     {
       id: "ejemplo",
       label: "Con ejemplos",
-      description: "Te explico con casos de la vida real",
+      description: "Te lo explico con cosas que conoces",
       ejemplo: "Un planeta es como una pelota grande que da vueltas al Sol.",
     },
     {
@@ -116,14 +128,14 @@ export default function PaginaPerfil({ summary, onSave, onBack }) {
     },
     {
       id: "textocorto",
-      label: "Textos cortos",
+      label: "Respuestas cortas",
       description: "Te lo cuento en pocas palabras",
       ejemplo: "Un planeta es una bola grande que gira alrededor del Sol.",
     },
     {
       id: "frasescortas",
-      label: "Frases sencillas",
-      description: "Uso palabras fáciles de entender",
+      label: "Frases cortas",
+      description: "Cada idea en una frase",
       ejemplo: "Es una bola. Es muy grande. Da vueltas al Sol.",
     },
   ];
@@ -311,6 +323,18 @@ export default function PaginaPerfil({ summary, onSave, onBack }) {
                   </span>
                 </label>
               ))}
+
+              {/* Opción "Otra" - input directo sin tick */}
+              <div className={`checkbox-card-otra-directa ${retoOtro.trim() ? "activa" : ""}`}>
+                <span className="otra-opcion-label">Me cuesta otra cosa:</span>
+                <input
+                  type="text"
+                  className="otra-opcion-input-directa"
+                  placeholder="Escribe aquí..."
+                  value={retoOtro}
+                  onChange={(e) => setRetoOtro(e.target.value)}
+                />
+              </div>
             </fieldset>
           </div>
 

@@ -415,6 +415,76 @@ body {
 }
 
 /*==================================
+*    INPUT "OTRA OPCIÓN" (Paso 3 - Dificultades)
+* ==================================*/
+
+/* Tarjeta con input directo - sin tick, solo color */
+.checkbox-card-otra-directa {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 16px 20px;
+  border: 2px dashed #d0d0d0;
+  border-radius: 12px;
+  background: #fafafa;
+  transition: all 0.2s ease;
+}
+
+.checkbox-card-otra-directa:focus-within {
+  border-color: #2196f3;
+  background: #f0f7ff;
+}
+
+/* Estado activo: cuando hay texto */
+.checkbox-card-otra-directa.activa {
+  border-style: solid;
+  border-color: #43a047;
+  border-width: 3px;
+  background: #e8f5e9;
+}
+
+/* Etiqueta */
+.otra-opcion-label {
+  font-size: 16px;
+  font-weight: 500;
+  color: #666;
+}
+
+.checkbox-card-otra-directa.activa .otra-opcion-label {
+  color: #2e7d32;
+  font-weight: 600;
+}
+
+/* Input */
+.otra-opcion-input-directa {
+  width: 100%;
+  padding: 12px 16px;
+  font-size: 16px;
+  font-family: inherit;
+  color: #1a1a2e;
+  background-color: white;
+  border: 2px solid #d0d0d0;
+  border-radius: 8px;
+  box-sizing: border-box;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.otra-opcion-input-directa:focus {
+  outline: none;
+  border-color: #2196f3;
+  box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.15);
+}
+
+.otra-opcion-input-directa::placeholder {
+  color: #999;
+}
+
+.checkbox-card-otra-directa.activa .otra-opcion-input-directa {
+  border-color: #43a047;
+}
+
+/*==================================
 *    LISTA CON EJEMPLOS (Paso 4 - Herramientas)
 * ==================================*/
 
