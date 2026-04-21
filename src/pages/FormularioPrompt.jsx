@@ -74,7 +74,6 @@ export default function FormularioPrompt({ onComplete, onBack, summary }) {
           aria-expanded={showGlosario}
         >
           <span className="diccionario-dropdown-texto">Diccionario</span>
-          <span className="diccionario-dropdown-icono">▼</span>
         </button>
       </div>
 

@@ -16,7 +16,7 @@
   min-height: calc(100vh - 91px);
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: left;
   background-color: var(--color-bg, #f5f9fa);
   padding: 2rem;
   box-sizing: border-box;
@@ -147,7 +147,7 @@
   font-weight: bold;
   color: #1a1a2e;
   margin: 0;
-  text-align: center;
+  text-align: left;
 }
 
 /* Botón "← Volver" - usado en PantallaEleccion y FormularioPrompt
@@ -264,13 +264,13 @@
 .eleccion-card {
   padding: 2.5rem 2rem;
   min-height: 180px;
-  justify-content: center;
+  justify-content: left;
 }
 
 .eleccion-card-desc {
   font-size: clamp(0.95rem, 2vw, 1.1rem);
   color: #555;
-  text-align: center;
+  text-align: left;
   margin: 0;
   line-height: 1.5;
 }

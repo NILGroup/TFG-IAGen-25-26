@@ -2614,7 +2614,7 @@ body {
   max-width: 2200px;
   width: 98%;
   margin: 160px auto 0;
-  height: calc(100vh - 160px);
+  height: calc(100vh - 251px); /* 91px header + 160px margin */
   overflow: hidden;
   /* Sin scroll externo - solo scroll interno en el cuadro */
 }
@@ -2631,8 +2631,8 @@ body {
   margin: 0 auto 20px;
   flex: 1;
   /* Ocupa el espacio disponible menos los controles */
-  height: calc(100vh - 360px);
-  /* 160px header + 140px controles + 60px margen */
+  height: calc(100vh - 451px);
+  /* 91px app-wrapper + 160px margin + 140px controles + 60px margen */
 }
 
 /* Barra de acciones - fuera del cuadro, fija */
