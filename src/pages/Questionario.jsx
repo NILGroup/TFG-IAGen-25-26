@@ -3,11 +3,11 @@
  *
  * Este componente representa un cuestionario que recopila información sobre:
  * - El nombre del usuario
- * - Con qué condiciones o discapacidades se identifica
- * - Qué retos tiene al aprender o entender información
- * - Qué herramientas le resultan más útiles para ayudarle con los retos
+ * - Si tiene discapacidad intelectual y su grado (si aplica)
+ * - Centrado en las principales dificultades: leer-entender-escribir.
+ * - Qué herramientas le resultan más útiles para ayudarle 
  * 
- * Con la finalidad de personalizar al máximo su experiencia usando OlivIA.
+ * Con la finalidad de personalizar al máximo su experiencia usando SofIA.
  *
  * A medida que el usuario avanza, se guarda la información en un resumen (`summary`),
  * que luego se utiliza para adaptar la experiencia conversacional.
@@ -28,20 +28,22 @@ import robotLogoCuerpo from "../assets/AventurIA_robotCuerposinfondo.png";
  */
 
 const stepLabels = [
-    { number: 1, label: "Tu nombre" },
-    { number: 2, label: "Identidad" },
-    { number: 3, label: "Retos" },
-    { number: 4, label: "Herramientas" },
+    { number: 1, label: "Nombre" },
+    { number: 2, label: "Perfil" },
+    { number: 3, label: "Dificultades" },
+    { number: 4, label: "Ayuda" },
     { number: 5, label: "Resumen" }
 ];
 
 function ProgressStepper({ currentStep }) {
     const totalSteps = stepLabels.length;
 
+    const currentLabel = stepLabels.find(s => s.number === currentStep)?.label || "";
+
     return (
         <div className="progress-stepper" role="navigation" aria-label="Progreso del cuestionario">
             <p className="progress-text" aria-live="polite">
-                Paso {currentStep} de {totalSteps}
+                Paso {currentStep} de {totalSteps} – {currentLabel}
             </p>
             <div className="stepper-bar">
                 {stepLabels.map((step) => {
@@ -73,26 +75,11 @@ function ProgressStepper({ currentStep }) {
 export default function Questionario({ onComplete }) {
 
     /** ===================================
-     *  ESTADOS DEL CUESTIONARIO (useState)
+     *  ESTADOS DEL CUESTIONARIO
      *  ===================================
      */
 
-    // Control de la página actual del cuestionario
     const [page, setPage] = useState(1);
-
-    // Selección del usuario en la pregunta 2 ( solo una opcion )
-    // const [userSelection, setUserSelection] = useState("");
-
-    // Múltiples selecciones del usuario en preguntas tipo checkbox
-    const [userSelections, setUserSelections] = useState([]);
-
-    // Estado para el campo "Otra opción"
-    const [otraSeleccionada, setOtraSeleccionada] = useState(false);
-    const [otraData, setOtraData] = useState({
-        caso2: { seleccionada: false, respuesta: "", guardada: false },
-        caso3: { seleccionada: false, respuesta: "", guardada: false }
-    });
-
 
     /** =========================
       *  NAVEGACIÓN ENTRE PÁGINAS
@@ -120,14 +107,18 @@ export default function Questionario({ onComplete }) {
      *  ============================================
      */
     const [summary, setSummary] = useState({
-        nombre: "",            // Para el caso 1
-        discapacidad: [],      // Para el caso 2
-        retos: [],             // Para el caso 3
-        herramientas: [],      // Para el caso 4
-        mostrarPorPartes: false // Para la opción "Mostrar por partes"
+        nombre: "",                              // string: nombre del usuario
+        discapacidad: {                          // objeto interno para el flujo del cuestionario
+            tieneDI: "",                         // "si" | "no" | "no_se" | "prefiero_no"
+            grado: ""                            // "limite" | "leve" | "moderada" | "severa" | "profunda" | "no_se" | "prefiero_no"
+        },
+        retos: [],                               // array: dificultades seleccionadas
+        herramientas: [],                        // array: herramientas de ayuda preferidas
+        mostrarPorPartes: false,                 // boolean: dividir respuestas largas
+        rol: "profesor"                          // string: rol de Olivía
     });
 
-    // PÁGINA 1
+    // PASO 1 - Nombre
     const handleNameChange = (e) => {
         setSummary(prevSummary => ({
             ...prevSummary,
@@ -135,57 +126,35 @@ export default function Questionario({ onComplete }) {
         }));
     };
 
-    // PÁGINA 2
-    const togglediscapacidad = (id) => {
-        if (id == "Otra") {
-            setOtraSeleccionada(!otraSeleccionada);
-
-            if (!otraSeleccionada && otraRespuesta.trim()) {
-                setSummary(prevSummary => ({
-                    ...prevSummary,
-                    discapacidad: [...prevSummary.discapacidad, `Otra - ${otraRespuesta}`]
-                }));
-            } else {
-                setSummary(prevSummary => ({
-                    ...prevSummary,
-                    discapacidad: prevSummary.discapacidad.filter(item => !item.startsWith("Otra - "))
-                }));
+    // PASO 2 - Selección Perfil - discapacidad intelectual
+    const handleTieneDI = (valor) => {
+        setSummary(prev => ({ //actualiza el estado de discapacidad, reseteando el grado si no es "sí"
+            ...prev,    // copia todo el estado anterior (nombre, retos, herramientas, etc.)
+            discapacidad: {
+                tieneDI: valor, // guarda la nueva respuesta sobre si tiene discapacidad intelectual
+                grado: valor === "si" ? prev.discapacidad.grado : "" // Reset grado si no es "sí"
             }
-        } else {
-            setSummary(prevSummary => ({
-                ...prevSummary,
-                discapacidad: prevSummary.discapacidad.includes(id)
-                    ? prevSummary.discapacidad.filter((item) => item !== id)
-                    : [...prevSummary.discapacidad, id]
-            }));
-        }
+        }));
     };
 
-
-    // PÁGINA 3
-    const toggleReto = (id) => {
-        if (id === "Otra") {
-            setOtraSeleccionada(!otraSeleccionada);
-
-            if (!otraSeleccionada && otraRespuesta.trim()) {
-                setSummary(prevSummary => ({
-                    ...prevSummary,
-                    retos: [...prevSummary.retos, `Otra - ${otraRespuesta}`]
-                }));
-            } else {
-                setSummary(prevSummary => ({
-                    ...prevSummary,
-                    retos: prevSummary.retos.filter(item => !item.startsWith("Otra - "))
-                }));
+    const handleGradoDI = (valor) => {
+        setSummary(prev => ({
+            ...prev,
+            discapacidad: {
+                ...prev.discapacidad,
+                grado: valor
             }
-        } else {
-            setSummary(prevSummary => ({
-                ...prevSummary,
-                retos: prevSummary.retos.includes(id)
-                    ? prevSummary.retos.filter((item) => item !== id)
-                    : [...prevSummary.retos, id]
-            }));
-        }
+        }));
+    };
+
+    // PÁGINA 3 - Dificultades - retos
+    const toggleReto = (id) => {
+        setSummary(prev => ({
+            ...prev,
+            retos: prev.retos.includes(id)
+                ? prev.retos.filter(item => item !== id)
+                : [...prev.retos, id]
+        }));
     };
 
 
@@ -200,55 +169,82 @@ export default function Questionario({ onComplete }) {
 
     };
 
-    // PÁGINA 5
-    const generateSummary = () => (
-        <div className="summary-box-horizontal">
-            <h3>Resumen de tu nueva compañera virtual:</h3>
+    // Mapeo de IDs a etiquetas legibles (Lectura Fácil)
+    const labelMap = {
+        // Discapacidad intelectual
+        "si": "Sí, tengo discapacidad intelectual",
+        "no": "No tengo discapacidad intelectual",
+        "no_se": "No lo sé",
+        "prefiero_no": "Prefiero no decirlo",
+        // Grados
+        "limite": "Grado límite",
+        "leve": "Grado leve",
+        "moderada": "Grado moderado",
+        "severa": "Grado severo",
+        "profunda": "Grado profundo",
+        // Retos
+        "frases_largas": "Leer frases largas",
+        "palabras_dificiles": "Entender palabras difíciles",
+        "muchas_cosas": "Muchas cosas seguidas",
+        "recordar": "Recordar cosas",
+        "pensar_palabras": "Pensar palabras para escribir",
+        "escribir_largo": "Escribir frases largas",
+        // Herramientas
+        "lecturaFacil": "Lectura Fácil",
+        "ejemplo": "Con ejemplos",
+        "bullet": "Con listas",
+        "textocorto": "Respuestas cortas",
+        "frasescortas": "Frases fáciles"
+    };
 
-            {/* Nombre (PÁGINA 1)*/}
+    // PÁGINA 5 - Resumen con etiquetas claras
+    const generateSummary = () => (
+        <div className="summary-box-horizontal" role="region" aria-label="Resumen de tu configuración">
+            <h3>Resumen:</h3>
+
             <div className="summary-row">
-                <span className="summary-title">🧑 Tu nombre:</span>
+                <span className="summary-title">Nombre:</span>
                 <span className="summary-data">{summary.nombre || "No indicado"}</span>
             </div>
 
-            {/* Identificación (PÁGINA 2)*/}
             <div className="summary-row">
-                <span className="summary-title">⭐ Te identificas con:</span>
+                <span className="summary-title">Perfil:</span>
                 <ul className="summary-bubbles">
-                    {summary.discapacidad.length > 0 ? (
-                        summary.discapacidad.map((item) => <li key={item}>{item}</li>)
+                    {summary.discapacidad.tieneDI ? (
+                        <>
+                            <li>{labelMap[summary.discapacidad.tieneDI] || summary.discapacidad.tieneDI}</li>
+                            {summary.discapacidad.grado && (
+                                <li>{labelMap[summary.discapacidad.grado] || summary.discapacidad.grado}</li>
+                            )}
+                        </>
                     ) : (
-                        <li>No seleccionado</li>
+                        <li>No indicado</li>
                     )}
                 </ul>
             </div>
 
-            {/* Retos (PÁGINA 3)*/}
             <div className="summary-row">
-                <span className="summary-title">📌 Te cuesta:</span>
+                <span className="summary-title">Dificultades:</span>
                 <ul className="summary-bubbles">
                     {summary.retos.length > 0 ? (
-                        summary.retos.map((item) => <li key={item}>{item}</li>)
+                        summary.retos.map((item) => (
+                            <li key={item}>{labelMap[item] || item}</li>
+                        ))
                     ) : (
                         <li>No seleccionado</li>
                     )}
                 </ul>
             </div>
 
-            {/* Herramientas (PÁGINA 4)*/}
             <div className="summary-row">
-                <span className="summary-title">🧠 Te ayudará usando:</span>
+                <span className="summary-title">Ayuda:</span>
                 <ul className="summary-bubbles">
                     {summary.herramientas.length > 0 ? (
-                        summary.herramientas.map((toolId) => {
-                            if (toolId === "mostrarPorPartes") {
-                                return <li key={toolId}>📚 Mostrar por partes</li>;
-                            }
-                            const tool = tools.find((t) => t.id === toolId);
-                            return <li key={toolId}>{tool?.label || toolId}</li>;
-                        })
+                        summary.herramientas.map((toolId) => (
+                            <li key={toolId}>{labelMap[toolId] || toolId}</li>
+                        ))
                     ) : (
-                        <li>No se seleccionó ninguna herramienta</li>
+                        <li>Ninguna seleccionada</li>
                     )}
                 </ul>
             </div>
@@ -262,12 +258,38 @@ export default function Questionario({ onComplete }) {
      *  ==============
      */
 
-    // Lista de herramientas disponibles
+    // Lista de herramientas disponibles (Lectura Fácil: sin anglicismos, sin emojis)
     const tools = [
-        { id: "ejemplo", label: "🖋️ Usar ejemplos", color: "green" },
-        { id: "bullet", label: "📒 Respuestas en bullets", color: "purple" },
-        { id: "textocorto", label: "📃 Texto Corto", color: "blue" },
-        { id: "frasescortas", label: "✂️ Frases cortas", color: "yellow" }
+        {
+            id: "lecturaFacil",
+            label: "Lectura Fácil",
+            description: "Te explico todo de forma sencilla",
+            ejemplo: "Un planeta es un cuerpo celeste. Un planeta orbita alrededor del Sol, es grande y tiene forma de bola."
+        },
+        {
+            id: "ejemplo",
+            label: "Con ejemplos",
+            description: "Te explico con casos de la vida real",
+            ejemplo: "Un planeta es como una pelota grande que da vueltas al Sol."
+        },
+        {
+            id: "bullet",
+            label: "Con listas",
+            description: "Te lo cuento punto por punto",
+            ejemplo: "• Es muy grande\n• Da vueltas al Sol\n• Tiene forma de bola"
+        },
+        {
+            id: "textocorto",
+            label: "Textos cortos",
+            description: "Te lo cuento en pocas palabras",
+            ejemplo: "Un planeta es una bola grande que gira alrededor del Sol."
+        },
+        {
+            id: "frasescortas",
+            label: "Frases sencillas",
+            description: "Uso palabras fáciles de entender",
+            ejemplo: "Es una bola. Es muy grande. Da vueltas al Sol."
+        }
     ];
 
 
@@ -281,16 +303,20 @@ export default function Questionario({ onComplete }) {
             case 1:
                 return (
                     <div className="question-page">
-                        <img src={robotLogo} alt="AventurIA Logo" className="robot-logo" />
-                        <h2> ¡Vamos a crear a tu Compañero Digital de Inteligencia Artifical!</h2>
-                        <p>¡Bienvenido! Hoy vas a diseñar a OlivIA, tu compañera digital única, hecho a tu medida.
-                            <br />                            Ella te ayudará a aprender, resolver dudas y acompañarte en tu día a día.
-                        </p>
-                        <h3>¿Cómo te llamas?</h3>
+                        <div className="icon-container">
+                            <img src={robotLogo} alt="Robot SofIA" className="robot-logo" />
+                        </div>
+                        <h2>¡Hola! Soy SofIA</h2>
+                        <p>Te ayudaré a aprender y resolver dudas.</p>
+                        <label htmlFor="user-name" className="question-label">
+                            <strong>¿Cómo te llamas?</strong>
+                        </label>
                         <input
+                            id="user-name"
                             type="text"
-                            placeholder="Escribe tu nombre aquí..."
+                            placeholder="Escribe tu nombre..."      
                             className="custom-input"
+                            autoComplete="name"
                             value={summary.nombre}
                             onChange={handleNameChange}
                         />
@@ -299,269 +325,170 @@ export default function Questionario({ onComplete }) {
             case 2:
                 return (
                     <div className="question-page">
-                        <h2>⭐ Paso 1: Cada persona es única</h2>
-                        <p>Para que OlivIA pueda ayudarte mejor, quiere conocerte un poquito más.</p>
-                        <h3>¿Con qué te sientes más identificado?</h3>
+                        <h2 id="titulo-sobre-ti">Sobre ti</h2>
 
-                        <div className="toggle-options-container">
+                        {/* Pregunta 1: ¿Tienes discapacidad intelectual? */}
+                        <fieldset className="radio-group" aria-labelledby="pregunta-di">
+                            <legend id="pregunta-di" className="question-label">
+                                <strong>¿Tienes discapacidad intelectual?</strong>
+                            </legend>
+
                             {[
-                                { id: "TEA", label: "🧩 TEA" },
-                                { id: "Dislexia", label: "🔠 Dislexia" },
-                                { id: "TDAH", label: "⚡ TDAH" },
-                                { id: "Memoria", label: "🧠 Memoria" },
-                                { id: "Prefiero no responder", label: "❌ No responder" }
+                                { id: "si", label: "Sí" },
+                                { id: "no", label: "No" },
+                                { id: "no_se", label: "No lo sé / No estoy segura(o)" },
+                                { id: "prefiero_no", label: "Prefiero no decirlo" }
                             ].map((option) => (
-                                <div
+                                <label
                                     key={option.id}
-                                    className={`toggle-option ${userSelections.includes(option.id) ? "active" : ""}`}
-
+                                    className={`radio-card ${summary.discapacidad.tieneDI === option.id ? 'checked' : ''}`}
+                                    htmlFor={`di-${option.id}`}
                                 >
-                                    <span className="toggle-label">{option.label}</span>
-                                    <label className="switch">
-                                        <input
-                                            type="checkbox"
-                                            checked={summary.discapacidad.includes(option.id)}
-                                            onChange={() => togglediscapacidad(option.id)} />
-                                        <span className="slider"></span>
-                                    </label>
-                                </div>
-                            ))}
-
-                            {/* Botón "Otra opción" en Caso 2 */}
-                            <div className={`toggle-option ${otraData.caso2.guardada ? "active" : ""}`}>
-                                <span className="toggle-label">➕ Otra opción</span>
-                                <label className="switch">
                                     <input
-                                        type="checkbox"
-                                        checked={otraData.caso2.seleccionada}
-                                        onChange={() =>
-                                            setOtraData(prev => ({
-                                                ...prev,
-                                                caso2: { ...prev.caso2, seleccionada: !prev.caso2.seleccionada }
-                                            }))
-                                        }
+                                        type="radio"
+                                        name="tieneDI"
+                                        id={`di-${option.id}`}
+                                        checked={summary.discapacidad.tieneDI === option.id}
+                                        onChange={() => handleTieneDI(option.id)}
                                     />
-                                    <span className="slider"></span>
+                                    <span className="radio-label">{option.label}</span>
+                                    <span className="radio-indicator" aria-hidden="true">
+                                        {summary.discapacidad.tieneDI === option.id ? '✓' : ''}
+                                    </span>
                                 </label>
-                            </div>
+                            ))}
+                        </fieldset>
 
-                            {/* Campo de texto y botón de guardar */}
-                            {otraData.caso2.seleccionada && (
-                                <div className="other-input-container">
-                                    <textarea
-                                        className="custom-textarea"
-                                        placeholder="Escribe aquí..."
-                                        value={otraData.caso2.respuesta}
-                                        onChange={(e) =>
-                                            setOtraData(prev => ({
-                                                ...prev,
-                                                caso2: { ...prev.caso2, respuesta: e.target.value }
-                                            }))
-                                        }
-                                    ></textarea>
+                        {/* Pregunta 2: Grado (solo si respondió "Sí") */}
+                        {summary.discapacidad.tieneDI === "si" && (
+                            <fieldset className="radio-group radio-group-secondary" aria-labelledby="pregunta-grado">
+                                <legend id="pregunta-grado" className="question-label">
+                                    <strong>¿Sabes el grado de tu discapacidad intelectual?</strong>
+                                </legend>
 
-                                    {otraData.caso2.respuesta.trim() && (
-                                        <button
-                                            className={`accept-btn ${otraData.caso2.guardada ? "saved" : ""}`}
-                                            onClick={() => {
-                                                setSummary(prevSummary => ({
-                                                    ...prevSummary,
-                                                    discapacidad: [...prevSummary.discapacidad, `Otra - ${otraData.caso2.respuesta}`]
-                                                }));
-                                                setOtraData(prev => ({
-                                                    ...prev,
-                                                    caso2: { ...prev.caso2, guardada: true }
-                                                }));
-                                            }}
-                                        >
-                                            {otraData.caso2.guardada ? "✅ Guardado" : "✅ Guardar"}
-                                        </button>
-                                    )}
-                                </div>
-                            )}
-                        </div>
+                                {[
+                                    { id: "limite", label: "Límite" },
+                                    { id: "leve", label: "Leve" },
+                                    { id: "moderada", label: "Moderada" },
+                                    { id: "severa", label: "Severa" },
+                                    { id: "profunda", label: "Profunda" },
+                                    { id: "no_se", label: "No lo sé / No estoy segura(o)" },
+                                    { id: "prefiero_no", label: "Prefiero no decirlo" }
+                                ].map((option) => (
+                                    <label
+                                        key={option.id}
+                                        className={`radio-card ${summary.discapacidad.grado === option.id ? 'checked' : ''}`}
+                                        htmlFor={`grado-${option.id}`}
+                                    >
+                                        <input
+                                            type="radio"
+                                            name="gradoDI"
+                                            id={`grado-${option.id}`}
+                                            checked={summary.discapacidad.grado === option.id}
+                                            onChange={() => handleGradoDI(option.id)}
+                                        />
+                                        <span className="radio-label">{option.label}</span>
+                                        <span className="radio-indicator" aria-hidden="true">
+                                            {summary.discapacidad.grado === option.id ? '✓' : ''}
+                                        </span>
+                                    </label>
+                                ))}
+                            </fieldset>
+                        )}
                     </div>
                 );
 
             case 3:
                 return (
                     <div className="question-page">
-                        <h2>🌟 Paso 2: ¡Haz que tu compañera digital sea tu mejor guía!</h2>
-                        <h3>¿Qué te cuesta más entender?</h3>
-                        <p>Elige todas las que veas necesarias:</p>
+                        <h2 id="titulo-dificultades">SofIA se adapta a ti</h2>
+                        <p className="instruction">
+                            <strong>Tú eliges lo que te cuesta.</strong>
+                        </p>
 
-                        <div className="toggle-options-container">
+                        <fieldset className="checkbox-list-vertical" aria-labelledby="titulo-dificultades">
                             {[
-                                { id: "Textos Largos", label: "Textos largos", color: "yellow", icon: "📖 " },
-                                { id: "Palabras Dificiles", label: "Palabras difíciles", color: "green", icon: "🧩 " },
-                                { id: "Organizar Ideas", label: "Organizar ideas", color: "blue", icon: "📝 " },
-                                { id: "Mantener Atencion", label: "Mantener la atención", color: "orange", icon: "🎯 " },
-                                { id: "Memoria", label: "Recordar", color: "purple", icon: "🧠 " },
+                                { id: "frases_largas", label: "Me cuesta leer y entender frases largas." },
+                                { id: "palabras_dificiles", label: "Me cuesta leer y entender palabras difíciles." },
+                                { id: "muchas_cosas", label: "Me cuesta entender si me dicen muchas cosas seguidas." },
+                                { id: "recordar", label: "Me cuesta recordar cosas de hace poco tiempo." },
+                                { id: "pensar_palabras", label: "Me cuesta pensar las palabras para escribir lo que quiero." },
+                                { id: "escribir_largo", label: "Me cuesta escribir frases largas." }
                             ].map((option) => (
-                                <div
+                                <label
                                     key={option.id}
-                                    className={`toggle-option ${userSelections.includes(option.id) ? "active" : ""}`}
-
+                                    className={`checkbox-card-row ${summary.retos.includes(option.id) ? 'checked' : ''}`}
+                                    htmlFor={`reto-${option.id}`}
                                 >
-                                    <span className="toggle-label"> {option.icon}{option.label}</span>
-                                    <label className="switch">
-                                        <input
-                                            type="checkbox"
-                                            checked={summary.retos.includes(option.id)}
-                                            onChange={() => toggleReto(option.id)}
-                                        />
-                                        <span className="slider"></span>
-                                    </label>
-                                </div>
-                            ))}
-
-                            {/* Botón "Otra opción" en Caso 3 */}
-                            <div className={`toggle-option ${otraData.caso3.guardada ? "active" : ""}`}>
-                                <span className="toggle-label">➕ Otra opción</span>
-                                <label className="switch">
                                     <input
                                         type="checkbox"
-                                        checked={otraData.caso3.seleccionada}
-                                        onChange={() =>
-                                            setOtraData(prev => ({
-                                                ...prev,
-                                                caso3: { ...prev.caso3, seleccionada: !prev.caso3.seleccionada }
-                                            }))
-                                        }
+                                        id={`reto-${option.id}`}
+                                        checked={summary.retos.includes(option.id)}
+                                        onChange={() => toggleReto(option.id)}
                                     />
-                                    <span className="slider"></span>
+                                    <span className="checkbox-card-row-label">{option.label}</span>
+                                    <span className="checkbox-card-row-indicator" aria-hidden="true">
+                                        {summary.retos.includes(option.id) ? '✓' : ''}
+                                    </span>
                                 </label>
-                            </div>
-
-                            {/* Campo de texto y botón de guardar */}
-                            {otraData.caso3.seleccionada && (
-                                <div className="other-input-container">
-                                    <textarea
-                                        className="custom-textarea"
-                                        placeholder="Escribe aquí..."
-                                        value={otraData.caso3.respuesta}
-                                        onChange={(e) =>
-                                            setOtraData(prev => ({
-                                                ...prev,
-                                                caso3: { ...prev.caso3, respuesta: e.target.value }
-                                            }))
-                                        }
-                                    ></textarea>
-
-                                    {otraData.caso3.respuesta.trim() && (
-                                        <button
-                                            className={`accept-btn ${otraData.caso3.guardada ? "saved" : ""}`}
-                                            onClick={() => {
-                                                setSummary(prevSummary => ({
-                                                    ...prevSummary,
-                                                    retos: [...prevSummary.retos, `Otra - ${otraData.caso3.respuesta}`]
-                                                }));
-                                                setOtraData(prev => ({
-                                                    ...prev,
-                                                    caso3: { ...prev.caso3, guardada: true }
-                                                }));
-                                            }}
-                                        >
-                                            {otraData.caso3.guardada ? "✅ Guardado" : "✅ Guardar"}
-                                        </button>
-                                    )}
-                                </div>
-                            )}
-
-
-                        </div>
+                            ))}
+                        </fieldset>
                     </div>
                 );
 
             case 4:
                 return (
                     <div className="question-page">
-                        <h2>🎭 Paso 3: Dale una personalidad a tu compañera virtual </h2>
-                        <p>Teniendo en cuenta lo elegido antes</p>
-                        <h3>¿Cómo quieres que te ayude tu compañero digital? </h3>
-                        <p>Elige todas las opciones que veas necesarias:</p>
+                        <h2 id="titulo-como-ayudar">¿Cómo quieres que te ayude?</h2>
+                        <p className="instruction">
+                            <strong>Marca lo que prefieras. Puedes elegir varias.</strong>
+                        </p>
 
-
-                        <div className="options-container">
+                        {/* Lista vertical con descripción y ejemplo */}
+                        <fieldset className="checkbox-list-vertical" aria-labelledby="titulo-como-ayudar">
                             {tools.map((tool) => (
-                                <div key={tool.id} className={`option-box ${summary.herramientas.includes(tool.id) ? "active" : ""}`}>
-                                    <div className="option-header">
-                                        <span className="option-title">{tool.label}</span>
-                                        <label className="switch">
-                                            <input
-                                                type="checkbox"
-                                                checked={summary.herramientas.includes(tool.id)}
-                                                onChange={() => toggleTool(tool.id)}
-                                            />
-                                            <span className="slider"></span>
-                                        </label>
+                                <label
+                                    key={tool.id}
+                                    className={`checkbox-card-row-expanded ${summary.herramientas.includes(tool.id) ? 'checked' : ''}`}
+                                    htmlFor={`tool-${tool.id}`}
+                                >
+                                    <input
+                                        type="checkbox"
+                                        id={`tool-${tool.id}`}
+                                        checked={summary.herramientas.includes(tool.id)}
+                                        onChange={() => toggleTool(tool.id)}
+                                    />
+                                    <div className="checkbox-card-row-content">
+                                        <div className="checkbox-card-row-header">
+                                            <span className="checkbox-card-row-label">{tool.label}</span>
+                                            <span className="checkbox-card-row-indicator" aria-hidden="true">
+                                                {summary.herramientas.includes(tool.id) ? '✓' : ''}
+                                            </span>
+                                        </div>
+                                        <span className="checkbox-card-row-desc">{tool.description}</span>
+                                        <div className="checkbox-card-row-example">
+                                            <span className="checkbox-card-row-example-title">Ejemplo:</span>
+                                            <p className="checkbox-card-row-example-text">{tool.ejemplo}</p>
+                                        </div>
                                     </div>
-
-                                    {/* Ejemplo visual según la herramienta seleccionada */}
-                                    <div className="example-container">
-                                        <label className="example-title">Ejemplo:</label>
-                                        {tool.id === "ejemplo" && (
-                                            <ul>
-                                                <li>Un planeta es como una pelota gigante que da vueltas alrededor de una luz muy fuerte, como el Sol. Por ejemplo, la Tierra es un planeta que gira alrededor del Sol.</li>
-                                            </ul>
-                                        )}
-
-                                        {tool.id === "bullet" && (
-                                            <ul>
-                                                <li>🪐 Cuerpo celeste.</li>
-                                                <li>💫 Órbita alrededor de una estrella.</li>
-                                                <li>🌍 Suficiente masa para ser esférico.</li>
-                                            </ul>
-                                        )}
-
-                                        {tool.id === "textocorto" && (
-                                            <ul>
-                                                <li>Un planeta es un cuerpo celeste que gira alrededor de una estrella y tiene forma esférica.</li>
-                                            </ul>
-                                        )}
-
-                                        {tool.id === "frasescortas" && (
-                                            <ul>
-                                                <li>Es un cuerpo celeste. Orbita alrededor de una estrella. Tiene masa suficiente para volverse esférico.</li>
-                                            </ul>
-                                        )}
-
-                                    </div>
-                                </div>
+                                </label>
                             ))}
-                        </div>
-
+                        </fieldset>
                     </div>
                 );
 
             case 5:
                 return (
                     <div className="question-page">
-                        <div className="final-content">
-                            <h2 className="final-title">
-                                ¡OlivIA está lista para ayudarte! 🚀
-                            </h2>
-                            <p className="final-text">
-                                Gracias por contarme cómo puedo ayudarte mejor.
-                                OlivIA ya está preparada para explicarte lo que necesites, cuando lo necesites.</p>
+                        <h2>¡Listo!</h2>
+                        <p className="instruction">
+                            <strong>Mira si todo está bien.</strong>
+                        </p>
 
-                            {generateSummary()} {/* RESUMEN COMPLETO */}
+                        {generateSummary()}
 
-                            <div className="robot-container">
-                                <img src={robotLogoCuerpo} alt="Compañero Virtual" className="robot-img" />
-                            </div>
-
-                            <h3 className="final-question">¿Quieres conocer a tu nueva compañera?</h3>
-
-                            <div className="button-group">
-                                <button className="final-btn gray" onClick={() => setPage(1)}>
-                                    🔄 No, quiero cambiar algo
-                                </button>
-                                <button className="final-btn green" onClick={() => onComplete(summary)}>
-                                    ✔️ Sí, estoy listo
-                                </button>
-
-                            </div>
+                        <div className="robot-container">
+                            <img src={robotLogoCuerpo} alt="SofIA está lista" className="robot-img" />
                         </div>
                     </div>
                 );
@@ -576,17 +503,24 @@ export default function Questionario({ onComplete }) {
      */
 
     return (
-        <div className="container">
-            {renderPage()}
-            <div className={`nav-buttons ${page === 1 ? "center-nav" : "right-nav"}`}>
-                {page > 1 && page < 5 && <button className="back-btn" onClick={prevPage}>Anterior</button>}
-                {page < 5 && <button className="next-btn" onClick={nextPage}>Siguiente →</button>}
-            </div>
-
+        <div className="principal-container">
             <ProgressStepper currentStep={page} />
 
-        </div>
+            <div className="questionnaire-content">
+                {renderPage()}
+            </div>
 
+            <div className={`nav-buttons ${page === 1 ? "center-nav" : "right-nav"}`}>
+                {page > 1 && page < 5 && <button className="back-btn" onClick={prevPage}>Anterior</button>}
+                {page < 5 && <button className="next-btn" onClick={nextPage}>Siguiente</button>}
+                {page === 5 && (
+                    <>
+                        <button className="back-btn" onClick={() => setPage(1)}>Cambiar algo</button>
+                        <button className="next-btn" onClick={() => onComplete(summary)}>Empezar</button>
+                    </>
+                )}
+            </div>
+        </div>
     );
 }
 

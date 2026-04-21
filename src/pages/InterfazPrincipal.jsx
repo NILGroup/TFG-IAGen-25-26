@@ -1,7 +1,7 @@
 /**
  * InterfazPrincipal.jsx
  *
- * Este componente es el centro de la experiencia conversacional con OlivIA.
+ * Este componente es el centro de la experiencia conversacional con SofIA.
  * Administra la lógica y estados globales: chat, historial, configuración,
  * generación de preguntas y respuestas, interacción con la IA, y personalización
  * basada en el cuestionario inicial (`summary`).
@@ -14,183 +14,59 @@
  */
 
 import { useState, useEffect, useRef } from "react";
-import robotLogo from "../assets/AventurIA_robot_sinfondo.png";
 
 import usePromptFunctions from "../hooks/usePrompts";
-import ConfigPanel from "../components/ConfigPanel";
-import ChatHistory from "../components/ChatHistory";
+import useChatHistoryController from "../hooks/useChatHistoryController";
+import useChatInputController from "../hooks/useChatInputController";
+import useSpeechController from "../hooks/useSpeechController";
+import useHelpOptionsController from "../hooks/useHelpOptionsController";
+import useTooltipController from "../hooks/useTooltipController";
+import HistoryModal from "../components/HistoryModal";
+import QuestionPromptPanel from "../components/QuestionPromptPanel";
+import ChatActivePanel from "../components/ChatActivePanel";
+import ResponseConfigPanel from "../components/ResponseConfigPanel";
+import PanelGlosario from "../components/PanelGlosario";
 
-import Chat from "../components/Chat";
-import BotonesInteraccion from "../components/BotonesInteraccion";
+export default function InterfazPrincipal({
+    summary,
+    modoSeleccionado,
+    promptInicial,
+    flujoElegido,
+    onBack,
+    onIrAPerfil,
+    chatHistoryGlobal = [],
+    setChatHistoryGlobal,
+    chatToResume = null,
+    onFinalizarConversacion
+}) {
+    const {
+        selectedOption,
+        setSelectedOption,
+        prompt,
+        setPrompt,
+        setLoading,
+        showChat,
+        setShowChat,
+        chatFlow,
+        setChatFlow,
+    } = useChatInputController();
 
-export default function InterfazPrincipal({ summary, promptInicial, onBack }) {
+    const {
+        setShowHelpOptions,
+        setShowUsefulQuestion,
+        setShowSimplificationOptions,
+        setShowTextInput,
+        resetHelpOptions,
+    } = useHelpOptionsController();
 
+    const {
+        speechState,
+        activeSpeechId,
+        setSpeechState,
+        setActiveSpeechId,
+        toggleSpeech,
+    } = useSpeechController();
 
-    /** ===============================
-    *    ESTADOS PRINCIPALES Y DE CHAT
-    *  ================================
-    */
-
-    // Controla la opción seleccionada del menú de preguntas
-    const [selectedOption, setSelectedOption] = useState(null);
-    // Controla el input de la pregunta del usuario
-    const [prompt, setPrompt] = useState(""); // Separa el input del prompt final
-    // Indica si la IA está procesando la respuesta
-    const [loading, setLoading] = useState(false);
-    // Controla si se está mostrando el chat (evita mostrar la pantalla inicial)
-    const [showChat, setShowChat] = useState(false);
-    // el historial y conversacion que se mantiene con la IA
-    const [chatFlow, setChatFlow] = useState([]);
-
-
-    /** ============================================
-     *  ESTADOS DE PREGUNTAS PARA HACER DISPONIBLES
-     *  ============================================
-     */
-    const options = [
-        { id: 1, text: "Dame un ejemplo de", color: "yellow" },
-        { id: 2, text: "Explícame con un ejemplo", color: "blue" },
-        { id: 3, text: "Resume en pocas palabras", color: "green" },
-        { id: 4, text: "¿Qué significa", color: "red", needsQuestionMark: true },
-        { id: 5, text: "Dame sinónimos de", color: "purple" },
-        { id: 6, text: "¿Cómo se hace", color: "orange", needsQuestionMark: true }
-    ];
-
-    const handleOptionClick = (option) => {
-        setSelectedOption(option);
-        setPrompt(""); // Vacía el input al cambiar de opción
-        setGuidedTopic("");
-        setGuidedNeed("");
-        setGuidedFormat("");
-    };
-
-    const handleResetQuestion = () => {
-        setSelectedOption(null);
-        setPrompt("");
-        setGuidedTopic("");
-        setGuidedNeed("");
-        setGuidedFormat("");
-    };
-
-
-    /** =====================================
-    *   ESTADOS PARA BOTONES DE RESPUESTA IA
-    *  ======================================
-    */
-
-    // Método para limpiar las opciones cuando se genere una nueva pregunta
-    const resetHelpOptions = () => {
-        setShowHelpOptions(false);
-        setShowSimplificationOptions(false);
-        setShowTextInput(false);
-    };
-
-    //=== ESTADOS PARA BOTON DE RESUMEN Y EJEMPLO  ===
-    const [requestingSummary, setRequestingSummary] = useState(false);
-    const [requestingExample, setRequestingExample] = useState(false);
-
-
-    /** =========================================
-    *   ESTADOS Y LÓGICA PARA BOTON DE REFORMULAR
-    *  ==========================================
-    */
-
-    // Estado para controlar la visibilidad de las opciones adicionales
-    const [showSimplificationOptions, setShowSimplificationOptions] = useState(false);
-    const [showTextInput, setShowTextInput] = useState(false);
-    const [unknownWords, setUnknownWords] = useState("");
-
-    // Método para manejar el toggle del cuadro de texto de sinónimos
-    const toggleSynonymInput = () => {
-        setShowTextInput(!showTextInput);
-        setUnknownWords("");
-    };
-
-    // Método para manejar la opción de "Responder en lenguaje más sencillo"
-    const handleSimplification = () => {
-        // Si ya está abierto, lo cerramos
-        if (showSimplificationOptions) {
-            setShowSimplificationOptions(false);  // Ocultar opciones adicionales
-            setShowTextInput(false);              // Ocultar el cuadro de sinónimos si está abierto
-        } else {
-            // Si no estaba abierto, se muestra
-            setShowSimplificationOptions(true);
-        }
-    };
-    // Método para cerrar todas las opciones adicionales
-    const closeRedButtonOptions = () => {
-        setShowSimplificationOptions(false); // Ocultar opciones adicionales
-        setShowTextInput(false);             // Ocultar el cuadro de sinónimos
-    };
-
-
-    /** ====================================
-     *  ESTADOS PARA BOTÓN DE "NO, GRACIAS"
-     *  ====================================
-     */
-    const [showHelpOptions, setShowHelpOptions] = useState(false); // Muestra botones de ayuda tras la respuesta
-    const [showUsefulQuestion, setShowUsefulQuestion] = useState(false); // Pregunta si la respuesta fue útil
-    //const [showInitialOptions, setShowInitialOptions] = useState(false); // Muestra las opciones iniciales después de responder
-    const [showConfirmationButton, setShowConfirmationButton] = useState(false);
-
-
-    /** ========================================
-     *  ESTADOS Y LÓGICA PARA ESCUCHAR RESPUESTA
-     *  ========================================
-    */
-
-    // Estado para cambiar el icono de reproducir respuesta
-    const [speechState, setSpeechState] = useState("idle"); // idle | playing | paused
-    const [activeSpeechId, setActiveSpeechId] = useState(null); // ID del mensaje que se está leyendo
-
-
-    // Función para leer texto en voz alta
-    const speakText = (text, id) => {
-        if (!text.trim()) {
-            alert("No hay texto para reproducir.");
-            return;
-        }
-
-        if (!window.speechSynthesis) {
-            alert("Tu navegador no soporta la síntesis de voz.");
-            return;
-        }
-
-        window.speechSynthesis.cancel();
-
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = 'es-ES';
-        utterance.rate = 1;
-        utterance.pitch = 1;
-
-        utterance.onstart = () => {
-            setActiveSpeechId(id);
-            setSpeechState("playing");
-        };
-        utterance.onend = () => {
-            setSpeechState("idle");
-            setActiveSpeechId(null);
-        };
-        utterance.onerror = () => {
-            setSpeechState("idle");
-            setActiveSpeechId(null);
-        };
-
-        window.speechSynthesis.speak(utterance);
-    };
-
-
-    const toggleSpeech = (text, id) => {
-        if (activeSpeechId !== id) {
-            speakText(text, id);
-        } else if (speechState === "playing") {
-            window.speechSynthesis.pause();
-            setSpeechState("paused");
-        } else if (speechState === "paused") {
-            window.speechSynthesis.resume();
-            setSpeechState("playing");
-        }
-    };
     const [expandedResponses, setExpandedResponses] = useState({});
 
     const toggleExpanded = (index) => {
@@ -200,24 +76,17 @@ export default function InterfazPrincipal({ summary, promptInicial, onBack }) {
         }));
     };
 
-    /** =====================================
-    *   ESTADOS PARA GUIAR LA PREGUNTA
-    *  ======================================
-    */
-    const [guidedTopic, setGuidedTopic] = useState("");
-    const [guidedNeed, setGuidedNeed] = useState("");
-    const [guidedFormat, setGuidedFormat] = useState("");
+    // Estados para el panel de configuración de respuestas
+    const [showResponseConfig, setShowResponseConfig] = useState(false);
+    const [responseConfig, setResponseConfig] = useState(["lectura-facil", "ejemplos"]);
 
-    const buildGuidedPrompt = () => {
-        const parts = [
-            guidedTopic?.trim(),
-            guidedNeed?.trim(),
-            guidedFormat?.trim()
-        ].filter(Boolean);
-        return parts.join(". ");
+    // Estado para el panel de glosario
+    const [showGlosario, setShowGlosario] = useState(false);
+
+    const handleApplyResponseConfig = (newConfig) => {
+        setResponseConfig(newConfig);
+        console.log("Nueva configuración de respuestas:", newConfig);
     };
-
-
     /** ================================
     *  ESTADOS PARA CARGAR A LOS PROMPTS
     *  ================================
@@ -226,13 +95,9 @@ export default function InterfazPrincipal({ summary, promptInicial, onBack }) {
     const {
         sendPrompt,
         sendCustomPrompt,
-        requestSummary,
-        requestExample,
-        requestSimplifiedResponse,
-        requestSynonyms,
-        generateTitleFromChat
+        generateTitleFromChat,
     } = usePromptFunctions({
-        summary,
+        summary: summary,
         chatFlow,
         setChatFlow,
         setPrompt,
@@ -243,86 +108,65 @@ export default function InterfazPrincipal({ summary, promptInicial, onBack }) {
         setShowTextInput,
         resetHelpOptions,
         setActiveSpeechId,
-        setSpeechState,
-        prompt,
-        selectedOption
+        setSpeechState
     });
 
-    /** ===================================
-     *  ESTADOS Y LÓGICA PARA EL HISTORIAL
-     *  ===================================
-     */
-
-    // Estado para almacenar el historial de chats
-    const [chatHistory, setChatHistory] = useState([]);
-    const [showHistory, setShowHistory] = useState(false); // Mostrar/ocultar historial
-    const [activeChat, setActiveChat] = useState(null); // Almacena el chat activo
-    const [isSavingChat, setIsSavingChat] = useState(false);
-
-    const toggleHistory = () => setShowHistory(!showHistory);
+    const {
+        tooltipInfo,
+        glossary,
+        handleTextSelection,
+        handleButtonClick,
+        handleReplaceText,
+    } = useTooltipController({
+        chatFlow,
+        setChatFlow,
+    });
 
 
-    const saveChatToHistory = async (clearAfter = true) => {
-        if (chatFlow.length === 0) return;
+    const {
+        chatHistory,
+        setChatHistory,
+        showHistory,
+        activeChat,
+        setActiveChat,
+        toggleHistory,
+        saveChatToHistory,
+    } = useChatHistoryController({
+        chatFlow,
+        setChatFlow,
+        setShowChat,
+        setShowHelpOptions,
+        setPrompt,
+        setSelectedOption,
+        setShowUsefulQuestion,
+        generateTitleFromChat,
+        initialHistory: chatHistoryGlobal, // Usar historial global
+    });
 
-        setIsSavingChat(true);
-
-        const aiGeneratedTitle = await generateTitleFromChat();
-
-        if (activeChat) {
-            // Actualiza el historial activo
-            const updated = chatHistory.map(entry =>
-                entry === activeChat
-                    ? { ...entry, flow: [...chatFlow], timestamp: new Date().toLocaleString() }
-                    : { ...entry, isNew: false }
-            );
-            setChatHistory(updated);
-        } else {
-            // Solo si no hay historial activo, se crea uno nuevo
-            const chatEntry = {
-                title: aiGeneratedTitle,
-                flow: [...chatFlow],
-                timestamp: new Date().toLocaleString(),
-                isNew: true
-            };
-            setChatHistory([
-                ...chatHistory.map(entry => ({ ...entry, isNew: false })),
-                chatEntry
-            ]);
+    // Función personalizada para finalizar y volver a elección
+    const handleFinalizarYVolver = async () => {
+        if (chatFlow.length === 0) {
+            onFinalizarConversacion(null, null);
+            return;
         }
 
-        if (clearAfter) {
-            setShowUsefulQuestion(false);
-            setSelectedOption(null);
-            setPrompt("");
-            //setShowInitialOptions(false);
-            setShowChat(false);
-            setChatFlow([]);
-            setShowHistory(true);
-        }
+        // Generar título para el chat (solo si es nuevo, no al retomar)
+        const aiGeneratedTitle = chatToResume
+            ? chatToResume.title
+            : await generateTitleFromChat();
 
-        setShowHelpOptions(true);
-        setIsSavingChat(false);
+        // Crear entrada del historial
+        const chatEntry = {
+            title: aiGeneratedTitle,
+            flow: [...chatFlow],
+            timestamp: new Date().toLocaleString(),
+            isNew: !chatToResume, // Solo es nuevo si no estamos retomando
+        };
+
+        // Llamar a la función de App.jsx para guardar y volver a elección
+        // Pasamos el chat original si estamos retomando para poder actualizarlo
+        onFinalizarConversacion(chatEntry, chatToResume);
     };
-
-
-    /** ================================
-    *  ESTADOS PARA CONFIGURACIÓN
-    *  ================================
-    */
-
-    const [showConfig, setShowConfig] = useState(false);
-    // guardado de configuracion brillate
-    const [savedEffect, setSavedEffect] = useState(false);
-
-    // === PARA EDITAR LO QUE YA ESTABA SELECCIONADO ANTERIORMENTE EN EL CUESIONARIO ===
-    const [editingField, setEditingField] = useState(null);
-    const [tempSummary, setTempSummary] = useState({ ...summary });
-
-    const [otraOpciones, setOtraOpciones] = useState({
-        discapacidad: { activa: false, valor: "", guardado: false },
-        retos: { activa: false, valor: "", guardado: false }
-    });
 
     /** =============================================
      *  EFECTO PARA CARGAR PROMPT INICIAL
@@ -334,64 +178,118 @@ export default function InterfazPrincipal({ summary, promptInicial, onBack }) {
         // Si hay un promptInicial y no se ha enviado todavía
         if (promptInicial && !promptInicialEnviado.current) {
             promptInicialEnviado.current = true;
-            setPrompt(promptInicial);
             setShowChat(true);
             // Enviar el prompt automáticamente como pregunta personalizada
             sendCustomPrompt(promptInicial);
+            // Dejar el input vacío para la siguiente pregunta
+            setPrompt("");
         }
     }, [promptInicial]); // Solo se ejecuta cuando cambia promptInicial
+
+    /** =============================================
+     *  EFECTO PARA RETOMAR CONVERSACIÓN DEL HISTORIAL
+     *  =============================================
+     */
+    const lastResumedChat = useRef(null);
+
+    useEffect(() => {
+        // Si hay un chat a retomar y es diferente al último procesado
+        if (chatToResume && chatToResume !== lastResumedChat.current) {
+            lastResumedChat.current = chatToResume;
+            setChatFlow([...chatToResume.flow]);
+            setActiveChat(chatToResume);
+            setShowChat(true);
+            setShowHelpOptions(true);
+        }
+    }, [chatToResume, setChatFlow, setActiveChat, setShowChat, setShowHelpOptions]);
 
     /** ================================
      *     RETORNO DE LA INTERFAZ
      *  ================================
      */
 
+    // Calcular posición de la conversación actual en el historial
+    const currentChatIndex = activeChat ? chatHistory.findIndex(entry => entry === activeChat) : -1;
+    const currentNumber = currentChatIndex !== -1 ? currentChatIndex + 1 : 0;
+    const totalChats = chatHistory.length;
+
     return (
 
         <div className="app-wrapper">
             <div className="header-bar">
-                OlivIA
+                <div className="header-bar-container">
+                    <h1
+                        className="header-bar-title"
+                        onClick={onBack}
+                        role="button"
+                        tabIndex={0}
+                        onKeyPress={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                                onBack();
+                            }
+                        }}
+                    >
+                        SofIA
+                    </h1>
 
-                <button
-                    className={`history-btn ${showHistory ? "open" : "closed"}`}
-                    onClick={toggleHistory}
-                >
-                    {showHistory ? "📁 Cerrar Historial" : "📂 Abrir Historial"}
-                </button>
+                    <div className="header-bar-right">
+                        <button
+                            className="boton-perfil"
+                            onClick={onIrAPerfil}
+                            aria-label="Ir a mi perfil"
+                        >
+                            Perfil
+                        </button>
+                    </div>
 
-                <button
-                    className={`config-btn ${showConfig ? "open" : "closed"}`}
-                    onClick={() => setShowConfig(!showConfig)}
-                >
-                    {showConfig ? "⚙️ Cerrar Configuración" : "⚙️  Configuración"}
-                </button>
-
-                {/*LÓGICA HISTORIAL*/}
-                <ChatHistory
-                    showHistory={showHistory}
-                    chatHistory={chatHistory}
-                    activeChat={activeChat}
-                    chatFlow={chatFlow}
-                    setActiveChat={setActiveChat}
-                    setChatFlow={setChatFlow}
-                    setShowChat={setShowChat}
-                    setShowHelpOptions={setShowHelpOptions}
-                    setChatHistory={setChatHistory}
-                />
-
+                </div>
             </div>
-            {/*LÓGICA CONFIGURACIÓN*/}
-            {showConfig && (
-                <ConfigPanel
-                    summary={summary}
-                    tempSummary={tempSummary}
-                    setTempSummary={setTempSummary}
-                    otraOpciones={otraOpciones}
-                    setOtraOpciones={setOtraOpciones}
-                    savedEffect={savedEffect}
-                    setSavedEffect={setSavedEffect}
-                    setEditingField={setEditingField}
-                />
+
+            {/* Botón de Diccionario tipo dropdown - izquierda */}
+            <div className="diccionario-dropdown-container">
+                <button
+                    className="diccionario-dropdown-btn"
+                    onClick={() => setShowGlosario(!showGlosario)}
+                    aria-label="Abrir diccionario"
+                    aria-expanded={showGlosario}
+                >
+                    <span className="diccionario-dropdown-texto">Diccionario</span>
+                    <span className="diccionario-dropdown-icono">▼</span>
+                </button>
+            </div>
+
+            {/* Botón de Historial tipo dropdown - centrado debajo de SofIA */}
+            {chatHistory.length > 0 && (
+                <div className="historial-dropdown-container">
+                    <button
+                        className="historial-dropdown-btn"
+                        onClick={toggleHistory}
+                        aria-label={`Abrir historial de conversaciones. Chat ${currentNumber} de ${totalChats}`}
+                        aria-expanded={showHistory}
+                    >
+                        <span className="historial-dropdown-contador">
+                            {currentNumber}/{totalChats}
+                        </span>
+                        <span className="historial-dropdown-separador">|</span>
+                        <span className="historial-dropdown-texto">Historial</span>
+                        <span className="historial-dropdown-icono">▼</span>
+                    </button>
+                </div>
+            )}
+
+            {/* Botón de Configuración de Ayuda - derecha debajo de Perfil */}
+            {flujoElegido === "formulario" && (
+                <div className="config-ayuda-dropdown-container">
+                    <button
+                        className="config-ayuda-dropdown-btn"
+                        onClick={() => setShowResponseConfig(!showResponseConfig)}
+                        aria-label="Configurar cómo quieres que aparezcan las respuestas"
+                        aria-expanded={showResponseConfig}
+                    >
+                        <span className="config-ayuda-dropdown-texto">Cómo quieres que aparezcan las respuestas</span>
+                        <span className="config-ayuda-dropdown-icono">▼</span>
+                    </button>
+                </div>
             )}
             {activeChat && (
                 <div className="chat-wrapper">
@@ -408,108 +306,74 @@ export default function InterfazPrincipal({ summary, promptInicial, onBack }) {
 
             {/*GENERADOR/SELECCIONADOR DE PREGUNTA*/}
             {!showChat ? (
-                <>
-                    {/* Botón volver a elegir modo */}
-                    {onBack && (
-                        <button className="back-to-choice-btn" onClick={onBack}>
-                            ← Volver a elegir modo
-                        </button>
-                    )}
-
-                    {/* Logo y saludo inicial personalizado */}
-                    <img src={robotLogo} alt="AventurIA Logo" className="robot-logo" />
-                    <h1 className="title">
-                        {summary?.nombre
-                            ? `Hola ${summary.nombre}, ¿Qué vamos a aprender hoy?`
-                            : "Hola ¿Qué vamos a aprender hoy?"}
-                    </h1>
-
-                    {/* Opciones de preguntas predefinidas */}
-                    <div className="box-container">
-                        <div className="grid">
-                            {options.map((option) => (
-                                <button
-                                    key={option.id}
-                                    className={`btn ${option.color}`}
-                                    onClick={() => handleOptionClick(option)}
-                                >
-                                    {option.text} ___{option.needsQuestionMark ? " ?" : ""}
-                                </button>
-                            ))}
-                        </div>
-
-                        {/* Botón para escribir una pregunta personalizada */}
-                        <button className="custom-btn" onClick={handleResetQuestion}>
-                            Quiero ayuda para escribir mi pregunta
-                        </button>
-                    </div>
-
-                    {/* Input para la pregunta */}
-                    <div className={`question-container ${selectedOption ? selectedOption.color : ""}`}>
-                        <h3 className="question-title">
-                            {selectedOption ? selectedOption.text : "Formula una pregunta"}
-                        </h3>
-
-                        <input
-                            type="text"
-                            className="question-input"
-                            placeholder="Escribe aquí..."
-                            value={prompt}
-                            onChange={(e) => setPrompt(e.target.value)}
-                        />
-
-                        <button
-                            className="discover-btn"
-                            onClick={() => {
-                                sendPrompt(prompt, selectedOption);
-                                setPrompt("");
-                            }}
-                        >
-                            🔍 ¡Descubrir Respuesta!
-                        </button>
-                    </div>
-                </>
+                <QuestionPromptPanel
+                    onBack={onBack}
+                    userName={summary?.nombre}
+                    selectedOption={selectedOption}
+                    prompt={prompt}
+                    setPrompt={setPrompt}
+                    sendPrompt={sendPrompt}
+                />
             ) : (
-                <>
-                    {/*LÓGICA GENERADOR DE RESPUESTA Y MANEJO CHAT*/}
-                    <Chat
-                        chatFlow={chatFlow}
-                        expandedResponses={expandedResponses}
-                        toggleExpanded={toggleExpanded}
-                        toggleSpeech={toggleSpeech}
-                        activeSpeechId={activeSpeechId}
-                        speechState={speechState}
-                    />
-
-                    {/*LÓGICA BOTONES INTERACCIÓN CON RESPUESTA*/}
-                    <BotonesInteraccion
-                        prompt={prompt}
-                        setPrompt={setPrompt}
-                        showHelpOptions={showHelpOptions}
-                        showSimplificationOptions={showSimplificationOptions}
-                        showTextInput={showTextInput}
-                        requestingSummary={requestingSummary}
-                        requestingExample={requestingExample}
-                        unknownWords={unknownWords}
-                        setUnknownWords={setUnknownWords}
-                        requestExample={requestExample}
-                        requestSummary={requestSummary}
-                        requestSimplifiedResponse={requestSimplifiedResponse}
-                        requestSynonyms={requestSynonyms}
-                        toggleSynonymInput={toggleSynonymInput}
-                        handleSimplification={handleSimplification}
-                        closeRedButtonOptions={closeRedButtonOptions}
-                        setShowHelpOptions={setShowHelpOptions}
-                        setShowUsefulQuestion={setShowUsefulQuestion}
-                        showUsefulQuestion={showUsefulQuestion}
-                        showConfirmationButton={showConfirmationButton}
-                        setShowConfirmationButton={setShowConfirmationButton}
-                        saveChatToHistory={saveChatToHistory}
-                        sendCustomPrompt={sendCustomPrompt}
-                    />
-                </>
+                <ChatActivePanel
+                    chatFlow={chatFlow}
+                    expandedResponses={expandedResponses}
+                    toggleExpanded={toggleExpanded}
+                    toggleSpeech={toggleSpeech}
+                    activeSpeechId={activeSpeechId}
+                    speechState={speechState}
+                    avatarMode={modoSeleccionado}
+                    tooltipInfo={tooltipInfo}
+                    handleTextSelection={handleTextSelection}
+                    handleButtonClick={handleButtonClick}
+                    handleReplaceText={handleReplaceText}
+                    prompt={prompt}
+                    setPrompt={setPrompt}
+                    sendCustomPrompt={sendCustomPrompt}
+                    saveChatToHistory={handleFinalizarYVolver}
+                />
             )}
 
+            {/* Panel de configuración de respuestas - Solo en flujo "con ayuda" */}
+            {flujoElegido === "formulario" && (
+                <ResponseConfigPanel
+                    isOpen={showResponseConfig}
+                    onClose={() => setShowResponseConfig(false)}
+                    currentConfig={responseConfig}
+                    onApply={handleApplyResponseConfig}
+                />
+            )}
+
+            <PanelGlosario
+                isOpen={showGlosario}
+                onClose={() => setShowGlosario(false)}
+                glossary={glossary}
+            />
+
+            {/* Modal de Historial */}
+            <HistoryModal
+                isOpen={showHistory}
+                onClose={toggleHistory}
+                chatHistory={chatHistory}
+                activeChat={activeChat}
+                onSelectChat={(entry) => {
+                    setActiveChat(entry);
+                    setChatFlow([...entry.flow]);
+                    setShowChat(true);
+                    setShowHelpOptions(true);
+                }}
+                onDeleteChat={(entryToDelete) => {
+                    setChatHistory(prev => prev.filter(entry => entry !== entryToDelete));
+                    // Si eliminamos el chat activo, limpiar
+                    if (activeChat === entryToDelete) {
+                        setActiveChat(null);
+                    }
+                    // Sincronizar con el historial global
+                    if (setChatHistoryGlobal) {
+                        setChatHistoryGlobal(prev => prev.filter(entry => entry !== entryToDelete));
+                    }
+                }}
+            />
 
         </div>
     );

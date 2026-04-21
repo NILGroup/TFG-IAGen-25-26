@@ -1,0 +1,533 @@
+/* ============================================================================
+ * Pantallas.css
+ * - PantallaRol.jsx      → Usuario elige: Profesor o Familiar
+ * - PantallaEleccion.jsx → Usuario elige: Con ayuda o Directa
+ * - FormularioPrompt.jsx → Usuario escribe: Tema y Objetivo
+ * ============================================================================ */
+
+
+/* ============================================================================
+ * ESTILOS COMPARTIDOS
+ * ============================================================================ */
+
+.modo-container,
+.eleccion-container,
+.formulario-container {
+  min-height: calc(100vh - 91px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-bg, #f5f9fa);
+  padding: 2rem;
+  box-sizing: border-box;
+}
+
+/* Contenido central de cada pantalla
+ * - max-width 800px: no crece más de 800px de ancho
+ * - flex column: organiza hijos en vertical
+ * - gap 1.5rem: espacio entre cada elemento
+ */
+.modo-content,
+.eleccion-content,
+.formulario-content {
+  max-width: 800px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  background: white;
+  padding: 40px;
+  border-radius: 24px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+}
+
+/* Títulos principales de cada pantalla
+ * - clamp: tamaño responsive (mínimo 1.8rem, máximo 2.5rem)
+ * - color #1a1a2e: azul muy oscuro (casi negro)
+ */
+.modo-title,
+.eleccion-title,
+.formulario-title {
+  font-size: clamp(1.8rem, 4vw, 2.5rem);
+  font-weight: bold;
+  text-align: center;
+  color: #1a1a2e;
+  margin: 0;
+  line-height: 1.3;
+}
+
+/* Subtítulos explicativos
+ * - color #555: gris medio para texto secundario
+ */
+.modo-subtitle,
+.eleccion-subtitle,
+.formulario-subtitle {
+  font-size: clamp(1rem, 2.5vw, 1.25rem);
+  text-align: center;
+  color: #555;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Grid de tarjetas (PantallaRol y PantallaEleccion)
+ * - grid 2 columnas: muestra 2 tarjetas lado a lado
+ * - gap 1.5rem: espacio entre tarjetas
+ */
+.modo-options,
+.eleccion-options {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+  width: 100%;
+  margin-top: 1rem;
+}
+
+/* Tarjetas clickeables (Profesor/Familiar, Con ayuda/Directa)
+ * - background white: fondo blanco
+ * - border 4px #e0e0e0: borde gris claro
+ * - border-radius 1.5rem: esquinas muy redondeadas
+ * - box-shadow: sombra para efecto elevado
+ * - transition: animación suave al hacer hover
+ * - cursor pointer: muestra mano al pasar el mouse
+ */
+.modo-card,
+.eleccion-card {
+  background: white;
+  padding: 2rem;
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 3px solid #e0e0e0;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  width: 100%;
+}
+
+/* Tarjetas - cuando el mouse pasa por encima o tiene foco
+ * - transform translateY(-6px): sube la tarjeta 6px
+ * - box-shadow más grande: sombra más pronunciada
+ * - border-color azul: borde cambia a azul
+ */
+.modo-card:hover,
+.modo-card:focus-visible,
+.eleccion-card:hover,
+.eleccion-card:focus-visible {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+  border-color: #1f4189;
+}
+
+/* Tarjetas - cuando se hace click
+ * - sube menos (2px) para efecto de presión
+ * - borde azul más oscuro
+ */
+.modo-card:active,
+.eleccion-card:active {
+  transform: translateY(-4px);
+  border-color: #0d0b3f;
+}
+
+.modo-card:focus-visible,
+.eleccion-card:focus-visible {
+  outline: 3px solid #2196f3;
+  outline-offset: 2px;
+}
+
+/* Títulos dentro de las tarjetas */
+.modo-card-title,
+.eleccion-card-title {
+  font-size: clamp(1.3rem, 3vw, 1.75rem);
+  font-weight: bold;
+  color: #1a1a2e;
+  margin: 0;
+  text-align: center;
+}
+
+/* Botón "← Volver" - usado en PantallaEleccion y FormularioPrompt
+ * - align-self flex-start: se posiciona a la izquierda
+ * - ::before añade la flecha automáticamente
+ */
+.pantalla-back-btn {
+  align-self: flex-start;
+  padding: 12px 20px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #555;
+  background-color: #f5f9fa;
+  border: 2px solid #d0d0d0;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* Añade "← " antes del texto del botón */
+.pantalla-back-btn::before {
+  content: "← ";
+}
+
+/* Botón volver - hover: fondo más oscuro */
+.pantalla-back-btn:hover {
+  background-color: #e5e7eb;
+  color: #333;
+  border-color: #bbb;
+}
+
+/* Botón volver - cuando se pulsa */
+.pantalla-back-btn:active {
+  background-color: #d1d5db;
+  border-color: #999;
+  transform: scale(0.98);
+}
+
+/* Botón volver - focus (teclado) */
+.pantalla-back-btn:focus-visible {
+  outline: 3px solid #10b981;
+  outline-offset: 2px;
+}
+
+
+/* ============================================================================
+ * PANTALLA ROL - Estilos específicos
+ * Solo para PantallaRol.jsx (elegir Profesor o Familiar)
+ * ============================================================================ */
+
+/* Imagen del profesor/familiar dentro de la tarjeta */
+.modo-img {
+  width: 100%;
+  max-width: 180px;
+  height: auto;
+  border-radius: 16px;
+  transition: transform 0.3s ease;
+}
+
+.modo-card:hover .modo-img {
+  transform: scale(1.05);
+}
+
+/* Mensaje de bienvenida personalizado */
+.modo-welcome {
+  font-size: clamp(1.1rem, 2.5vw, 1.4rem);
+  color: #1f4189;
+  text-align: center;
+  margin: 0;
+  padding: 12px 24px;
+  background: #e3f2fd;
+  border-radius: 12px;
+  border: 2px solid #90caf9;
+}
+
+.modo-welcome strong {
+  color: #0d0b3f;
+}
+
+/* Botón para reiniciar perfil */
+.modo-reset-btn {
+  margin-top: 1.5rem;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #666;
+  background: transparent;
+  border: 2px solid #d0d0d0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.modo-reset-btn:hover {
+  color: #333;
+  border-color: #999;
+  background: #f5f5f5;
+}
+
+.modo-reset-btn:focus-visible {
+  outline: 3px solid #2196f3;
+  outline-offset: 2px;
+}
+
+
+/* ============================================================================
+ * PANTALLA ELECCION - Estilos específicos
+ * Solo para PantallaEleccion.jsx (elegir Con ayuda o Directa)
+ * ============================================================================ */
+
+/* Descripción dentro de las tarjetas de elección
+ * Ej: "Te haré unas preguntas sencillas para preparar tu mensaje"
+ */
+.eleccion-card {
+  padding: 2.5rem 2rem;
+  min-height: 180px;
+  justify-content: center;
+}
+
+.eleccion-card-desc {
+  font-size: clamp(0.95rem, 2vw, 1.1rem);
+  color: #555;
+  text-align: center;
+  margin: 0;
+  line-height: 1.5;
+}
+
+
+/* ============================================================================
+ * FORMULARIO PROMPT - Estilos específicos
+ * Solo para FormularioPrompt.jsx (escribir Tema y Objetivo)
+ * ============================================================================ */
+
+.formulario-content {
+  max-width: 900px;
+}
+
+.formulario-card {
+  background: #f8fbff;
+  padding: 24px;
+  border-radius: 16px;
+  border: 2px solid #e3f2fd;
+
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease;
+}
+
+.formulario-card:focus-within {
+  border-color: #2196f3;
+}
+
+/* Etiqueta de la pregunta
+ * Ej: "1. ¿Sobre qué tema quieres hablar?"
+ */
+.formulario-label {
+  display: block;
+  font-size: clamp(1.1rem, 2.5vw, 1.35rem);
+  font-weight: bold;
+  color: #1a1a2e;
+  margin-bottom: 8px;
+}
+
+/* Texto de ayuda debajo de la etiqueta
+ * Ej: "Por ejemplo: Animales, Cocina, Historia..."
+ */
+.formulario-helper {
+  font-size: clamp(0.9rem, 2vw, 1rem);
+  color: #666;
+  margin: 0 0 12px 0;
+  line-height: 1.5;
+}
+
+/* Input (1 línea) y Textarea (varias líneas)
+ * - color #333: texto gris oscuro (visible)
+ * - background #fafafa: fondo gris muy claro
+ * - border gris: borde sutil
+ */
+.formulario-input,
+.formulario-textarea {
+  width: 100%;
+  padding: 16px 20px;
+  font-size: 18px;
+  font-family: inherit;
+  color: #333;
+  border: 2px solid #d0d0d0;
+  border-radius: 12px;
+  background-color: white;
+  box-sizing: border-box;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+/* Input/Textarea - cuando tiene foco (usuario está escribiendo)
+ * - borde azul
+ * - sombra azul suave alrededor
+ */
+.formulario-input:focus,
+.formulario-textarea:focus {
+  outline: none;
+  border-color: #2196f3;
+  box-shadow: 0 0 0 4px rgba(33, 150, 243, 0.15);
+}
+
+/* Textarea específico - puede redimensionarse verticalmente */
+.formulario-textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+/* Botón "Continuar al chat"
+ * - background verde: color de acción positiva
+ * - border-radius: esquinas redondeadas
+ */
+.formulario-submit-btn {
+  width: 100%;
+  padding: 18px;
+  font-size: clamp(1.2rem, 3vw, 1.4rem);
+  font-weight: bold;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 0.5rem;
+}
+
+/* Botón enviar - hover: verde más oscuro */
+.formulario-submit-btn:hover:not(.disabled) {
+  background-color: #45a049;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+}
+
+.formulario-submit-btn:focus-visible {
+  outline: 3px solid #2196f3;
+  outline-offset: 2px;
+}
+
+/* Botón enviar - deshabilitado (cuando falta completar campos)
+ * - opacity 0.4: semitransparente
+ * - cursor not-allowed: muestra que no se puede hacer click
+ */
+.formulario-submit-btn.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: #9e9e9e;
+}
+
+/* Mensaje de error de validación (texto rojo) */
+
+.formulario-validation {
+  color: #dc2626;
+  font-size: 1rem;
+  text-align: center;
+  margin: 8px 0 0;
+  font-weight: 500;
+}
+
+/* ============================================================================
+ * RESPONSIVE
+ * ============================================================================ */
+
+@media (max-width: 768px) {
+  .modo-container,
+  .eleccion-container,
+  .formulario-container {
+    padding: 1rem;
+    min-height: calc(100vh - 70px);
+  }
+
+  .modo-content,
+  .eleccion-content,
+  .formulario-content {
+    padding: 24px;
+    gap: 1.25rem;
+  }
+
+  .modo-options,
+  .eleccion-options {
+    gap: 1.25rem;
+  }
+}
+
+@media (max-width: 600px) {
+
+  .eleccion-card {
+    min-height: 140px;
+  }
+
+
+  .modo-img {
+    max-width: 140px;
+  }
+
+
+  .formulario-card {
+    padding: 20px;
+  }
+
+  .formulario-input,
+  .formulario-textarea {
+    padding: 14px 16px;
+    font-size: 16px;
+  }
+
+
+  .formulario-textarea {
+    min-height: 80px;
+  }
+
+  .formulario-submit-btn {
+    padding: 16px;
+  }
+}
+
+
+/* ============================================================================
+ * PÁGINA PERFIL - Estilos específicos
+ * Solo para PaginaPerfil.jsx (editar perfil del usuario)
+ * ============================================================================ */
+
+/* Cuadro blanco más grande para el perfil */
+.perfil-content {
+  max-width: 1000px;
+}
+
+/* Animación para el campo de grado (aparece suavemente) */
+.perfil-card-animada {
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+/* ============================================================================
+ * ANIMACIONES
+ * ============================================================================ */
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modo-content,
+.eleccion-content,
+.formulario-content {
+  animation: fadeInUp 0.4s ease-out;
+}
+
+.modo-card,
+.eleccion-card,
+.formulario-card {
+  animation: fadeInUp 0.5s ease-out;
+  animation-fill-mode: both;
+}
+
+.modo-card:nth-child(1),
+.eleccion-card:nth-child(1),
+.formulario-card:nth-child(1) {
+  animation-delay: 0.1s;
+}
+
+.modo-card:nth-child(2),
+.eleccion-card:nth-child(2),
+.formulario-card:nth-child(2) {
+  animation-delay: 0.2s;
+}

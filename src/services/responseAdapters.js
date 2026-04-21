@@ -1,0 +1,53 @@
+/**
+ * responseAdapters.js
+ *
+ * Adaptadores de respuesta que encapsulan el flujo de Lectura Fácil.
+ */
+
+import { promptLF1, promptLF2 } from "../utils/promptLF";
+import { fetchFromGroq, fetchFromGemini, fetchFromOllama } from "./apiFunctions";
+
+export const adaptToLecturaFacil = async ({
+    response,
+    summary,
+    setChatFlow,
+}) => {
+    if (!summary || !summary.herramientas?.includes("lecturaFacil")) {
+        return response;
+    }
+
+    setChatFlow((prev) => [
+        ...prev.filter((entry) => entry.type !== "loading"),
+        { type: "loading", content: "✨ Adaptando a Lectura Fácil..." }
+    ]);
+
+    const refinementMessages1 = [
+        {
+            role: "user",
+            content: `${promptLF1}\n\n"${response}"`
+        }
+    ];
+
+    let refinedResponse1 = "";
+    try {
+        refinedResponse1 = await fetchFromGemini(refinementMessages1);
+    } catch (error) {
+        console.log("Falló Gemini, usamos Ollama");
+        refinedResponse1 = await fetchFromOllama(refinementMessages1);
+    }
+
+    const refinementMessages2 = [
+        {
+            role: "user",
+            content: `${promptLF2}\n\n"${refinedResponse1}"`
+        }
+    ];
+
+    const refinedResponse2 = await fetchFromGroq(refinementMessages2);
+
+    if (refinedResponse2 && !refinedResponse2.includes("Error")) {
+        return refinedResponse2;
+    }
+
+    return response;
+};

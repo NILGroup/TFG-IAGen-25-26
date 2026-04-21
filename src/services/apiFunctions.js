@@ -34,7 +34,12 @@ const fetchIA = async ({
             return `Error de servidor: ${data.error.message}`;
         }
 
-        return data.choices?.[0]?.message?.content?.trim() || "Sin respuesta :/";
+        let content = data.choices?.[0]?.message?.content || "Sin respuesta :/";
+
+        // Eliminar bloques de pensamiento <think>...</think> (el CoT intrinseco de modelos como deepseek)
+        content = content.replace(/<think>[\s\S]*?<\/think>/gi, "").trim();
+
+        return content;
 
     } catch (error) {
         console.error("Error al obtener respuesta IA:", error);
@@ -43,6 +48,7 @@ const fetchIA = async ({
 };
 
 // === FETCH DE GROQ ===
+// Modelos: openai/gpt-oss-120b, llama-3.3-70b-versatile, meta-llama/llama-4-maverick-17b-128e-instruct ¿? Posible
 export const fetchFromGroq = (messages, model = "llama-3.3-70b-versatile") => {
     return fetchIA({
         url: "https://api.groq.com/openai/v1/chat/completions",
@@ -50,6 +56,71 @@ export const fetchFromGroq = (messages, model = "llama-3.3-70b-versatile") => {
         apiKey: import.meta.env.VITE_GROQ_LLAMA_API_KEY1,
         messages
     });
+};
+
+export const fetchFromGemini = async (messages, model = "gemini-flash-latest") => {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${import.meta.env.VITE_GEMINI_API_KEY}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            contents: messages.map(msg => ({
+                role: msg.role === "assistant" ? "model" : "user",
+                parts: [{ text: msg.content }]
+            }))
+        })
+    });
+
+    if (!response.ok) throw new Error();
+    
+    const data = await response.json();
+    return data.candidates[0].content.parts[0].text;
+};
+
+// === FETCH DE OLLAMA (LOCAL) ===
+// Modelos: deepseek-v3.1:671b-cloud
+export const fetchFromOllama = (messages, model = "deepseek-v3.1:671b-cloud") => {
+    return fetchIA({
+        url: "http://localhost:11434/v1/chat/completions",
+        model: model,
+        apiKey: "", /**No es necesaria va por local */
+        messages,
+    });
+};
+
+// === PRE-PROCESADO DE PROMPTS CON LLAMA3-VERSATILE ===
+/**
+ * Envía el prompt del usuario a llama-3.3-70b-versatile para que lo evalúe y mejore
+ * siguiendo la estructura CO-STAR, dejándolo listo para el modelo final.
+ *
+ * @param {string} userPrompt - El prompt original del usuario
+ * @param {object} summaryInfo - Información del usuario (discapacidad, retos, herramientas, rol)
+ * @returns {string} - El prompt mejorado y reestructurado
+ */
+export const enhancePromptWithCoStar = async (userPrompt, summaryInfo = null) => {
+    const metaPrompt = `Reescribe este prompt para que sea más claro y preciso, sin cambiar su intención. \
+Devuelve SOLO el prompt mejorado, sin explicaciones. Mantén el idioma del mensaje. \
+Si es pregunta, mantén formato pregunta. Si es ambiguo, expándelo ligeramente.\
+${summaryInfo ? ` Usuario con: ${summaryInfo.discapacidad || 'no especificado'}, retos: ${summaryInfo.retos || 'no especificados'}.` : ''}
+
+"${userPrompt}"`;
+
+    try {
+        const enhanced = await fetchFromGroq(
+            [{ role: "user", content: metaPrompt }],
+            "llama-3.3-70b-versatile"
+        );
+
+        // Si la mejora falla o viene vacía, devolvemos el original
+        if (!enhanced || enhanced === "Error de conexión" || enhanced.startsWith("Error de servidor")) {
+            console.warn("Fallo en pre-procesado CO-STAR, usando prompt original.");
+            return userPrompt;
+        }
+
+        return enhanced.trim();
+    } catch (error) {
+        console.error("Error en enhancePromptWithCoStar:", error);
+        return userPrompt;
+    }
 };
 
 // === AQUÍ PUEDES IR AÑADIENDO MÁS ===

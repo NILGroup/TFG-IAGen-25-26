@@ -1,5 +1,5 @@
 /**
- * Prompts.jsx
+ * usePrompts.jsx
  *
  * Este hook personalizado encapsula toda la lógica relacionada con la generación de prompts
  * y respuestas por parte de la IA, utilizando diferentes APIs.
@@ -7,8 +7,11 @@
  * un título que englobe toda la conversación.
  */
 
-import { fetchFromGroq } from '../services/apiFunctions';
+import { fetchFromGroq, enhancePromptWithCoStar } from '../services/apiFunctions';
+import { buildConversationMessages, buildPrompt } from '../services/promptBuilders';
+import { adaptToLecturaFacil } from '../services/responseAdapters';
 import { useCallback } from "react";
+
 
 const usePromptFunctions = ({
     summary,                   // Información personalizada del usuario recogida en el cuestionario
@@ -24,53 +27,6 @@ const usePromptFunctions = ({
     setActiveSpeechId,         // Cancela lectura por voz si hay una activa
     setSpeechState             // Resetea el estado de voz a "idle"
 }) => {
-
-    /*====================================
-    *    FUNCIONES PARA CONSTRUIR PROMPT
-    * ====================================*/
-
-    // PERSONALIZACIÓN DE RESPUESTA DE LA IA
-    const buildPrompt = useCallback((promptText) => {
-        if (!summary) {
-            return {
-                displayPrompt: promptText,
-                apiPrompt: promptText
-            };
-        }
-
-        // Estructura CO-STAR
-        const context = `Soy un usuario con las siguientes características: ${summary.discapacidad?.join(", ") || "Sin discapacidad específica"}.`;
-        const objective = `Tu tarea principal es responder a la siguiente consulta: "${promptText}"`;
-        const style = `Utiliza el siguiente estilo o herramientas de apoyo: ${summary.herramientas?.join(", ") || "Lenguaje claro y sencillo"}.`;
-        const tone = `Mantén un tono empático, paciente y respetuoso.`;
-        const audience = `La respuesta es para mí. Debes evitar estrictamente: ${summary.retos?.join(", ") || "Ninguna limitación adicional"}.`;
-        const response = `Asegúrate de que la respuesta cumpla con todas las restricciones anteriores.`;
-
-        const coStarPrompt = `
-# CONTEXT (Contexto)
-${context}
-
-# OBJECTIVE (Objetivo)
-${objective}
-
-# STYLE (Estilo)
-${style}
-
-# TONE (Tono)
-${tone}
-
-# AUDIENCE (Audiencia)
-${audience}
-
-# RESPONSE (Respuesta)
-${response}
-`;
-
-        return {
-            displayPrompt: coStarPrompt.trim(),
-            apiPrompt: coStarPrompt.trim(),
-        };
-    }, [summary]);
 
     /*=============================
    *    FUNCIONES DE ENVÍO
@@ -89,40 +45,53 @@ ${response}
         setShowChat(true);
         setShowHelpOptions(false);
 
-        const { displayPrompt, apiPrompt } = buildPrompt(
-            selectedOption?.id && selectedOption.id <= 6
-                ? `${selectedOption.text} ${prompt}${selectedOption.needsQuestionMark ? "?" : ""}`
-                : prompt
-        );
+        // Texto original tal como lo escribió el usuario
+        const rawUserText = selectedOption?.id && selectedOption.id <= 6
+            ? `${selectedOption.text} ${prompt}${selectedOption.needsQuestionMark ? "?" : ""}`
+            : prompt;
 
+        // Mostrar inmediatamente el mensaje del usuario en el chat
         setChatFlow((prev) => [
             ...prev,
-            { type: "user", content: displayPrompt },
-            { type: "loading", content: "⌛ Cargando..." },
+            { type: "user", content: rawUserText, timestamp: new Date().toISOString() },
+            { type: "loading", content: "⌛ Cargando...", timestamp: new Date().toISOString() },
         ]);
 
+        // Construir el prompt con estructura CO-STAR
+        const { apiPrompt } = buildPrompt(summary, rawUserText);
+
         const messages = [
-            ...chatFlow
-                .filter(entry => entry.type === "user" || entry.type === "ai")
-                .map(entry => ({
-                    role: entry.type === "user" ? "user" : "assistant",
-                    content: entry.content,
-                })),
+            ...buildConversationMessages(chatFlow),
             { role: "user", content: apiPrompt }
         ];
 
-        const response = await fetchFromGroq(messages);
+        let response = await fetchFromGroq(messages); // cambio const por let por si la tengo que adaptar a LF
+
+        // Adaptar respuesta a LF
+        response = await adaptToLecturaFacil({ response, summary, setChatFlow });
 
         setChatFlow((prev) => [
             ...prev.filter((entry) => entry.type !== "loading"),
-            { type: "ai", content: response },
+            { type: "ai", content: response, timestamp: new Date().toISOString() },
         ]);
-
+        
         setShowHelpOptions(true);
         setLoading(false);
         setPrompt("");
 
-    }, [chatFlow, buildPrompt]);
+    }, [
+        chatFlow,
+        buildPrompt,
+        summary,
+        setActiveSpeechId,
+        setSpeechState,
+        resetHelpOptions,
+        setLoading,
+        setShowChat,
+        setShowHelpOptions,
+        setChatFlow,
+        setPrompt,
+    ]);
 
     // Enviar un mensaje personalizado (texto libre o contextual)
     const sendCustomPrompt = useCallback(
@@ -137,36 +106,51 @@ ${response}
             setLoading(true);
             setShowChat(true);
 
-            const { apiPrompt } = buildPrompt(context ? `${context} ${customPrompt}` : customPrompt);
             const displayPrompt = displayOverride || customPrompt;
 
+            // Mostrar inmediatamente el mensaje del usuario en el chat
             setChatFlow((prev) => [
                 ...prev,
-                { type: "user", content: displayPrompt },
-                { type: "loading", content: "⌛ Cargando..." }
+                { type: "user", content: displayPrompt, timestamp: new Date().toISOString() },
+                { type: "loading", content: "Cargando...", timestamp: new Date().toISOString() }
             ]);
 
+            // Construir el prompt con estructura CO-STAR
+            const rawText = context ? `${context} ${customPrompt}` : customPrompt;
+            const { apiPrompt } = buildPrompt(summary, rawText);
+
+            // Pre-procesado transparente: llama3-versatile mejora el prompt CO-STAR ya construido
+            const enhancedPrompt = await enhancePromptWithCoStar(apiPrompt, summary);
+
             const messages = [
-                ...chatFlow
-                    .filter(entry => entry.type === "user" || entry.type === "ai")
-                    .map(entry => ({
-                        role: entry.type === "user" ? "user" : "assistant",
-                        content: entry.content,
-                    })),
-                { role: "user", content: apiPrompt }
+                ...buildConversationMessages(chatFlow),
+                { role: "user", content: enhancedPrompt }
             ];
 
-            const response = await fetchFunction(messages);   //DEPENDIENDO DE LA API QUE SE LE PASE X PARAMETRO SE USA UNA U OTRA
+            let response = await fetchFunction(messages); 
+
+            // Adaptar respuesta a LF
+            response = await adaptToLecturaFacil({ response, summary, setChatFlow });
 
             setChatFlow((prev) => [
                 ...prev.filter((entry) => entry.type !== "loading"),
-                { type: "ai", content: response },
+                { type: "ai", content: response, timestamp: new Date().toISOString() },
             ]);
 
             setShowHelpOptions(true);
             setLoading(false);
         },
-        [chatFlow, buildPrompt]
+        [
+            chatFlow,
+            summary,
+            setChatFlow,
+            setLoading,
+            setShowChat,
+            setShowHelpOptions,
+            resetHelpOptions,
+            setActiveSpeechId,
+            setSpeechState,
+        ]
     );
 
 
@@ -181,7 +165,7 @@ ${response}
             .join("\n");
 
 
-        const titlePrompt = `Lee esta conversación y dime un título corto (máximo 7 palabras) que represente de qué se trata. No uses comillas, ni hagas una frase larga:\n\n${conversation}`;
+        const titlePrompt = `Lee esta conversación y ofréceme un título corto (máximo 7 palabras) que explique de qué trata la conversación. IMPORTANTE: No uses comillas:\n\n${conversation}`;
 
         const messages = [{ role: "user", content: titlePrompt }];
         const response = await fetchFromGroq(messages);
@@ -193,7 +177,7 @@ ${response}
     /*===================================================
     *    FUNCIONES PARA RESPONDER ANTE EL ÚLTIMO MENSAJE
     * ===================================================*/
-
+    /**Obtener el ultimo mensaje de la IA */
     const getLastAIResponse = useCallback(() => {
 
         const lastAIMessage = chatFlow
@@ -205,7 +189,7 @@ ${response}
 
     }, [chatFlow]);
 
-
+    /**Petición de resumen del último mensaje */
     const requestSummary = useCallback(() => {
 
         const lastResponse = getLastAIResponse();
@@ -214,6 +198,7 @@ ${response}
 
     }, [getLastAIResponse, sendCustomPrompt]);
 
+    /**Petición de un ejemplo */
     const requestExample = useCallback(() => {
 
         const lastResponse = getLastAIResponse();
@@ -222,6 +207,7 @@ ${response}
 
     }, [getLastAIResponse, sendCustomPrompt]);
 
+    /**Petición de una respuesta simplificada */
     const requestSimplifiedResponse = useCallback(() => {
 
         const lastResponse = getLastAIResponse();
@@ -230,8 +216,9 @@ ${response}
         sendCustomPrompt(simplifiedPrompt, "Reformular de la manera más sencilla y corta posible", "Reformular toda la respuesta", fetchFromGroq);
         setShowSimplificationOptions(false);
 
-    }, [getLastAIResponse, sendCustomPrompt]);
+    }, [getLastAIResponse, sendCustomPrompt, setShowSimplificationOptions]);
 
+    /**Petición de sinónimos */
     const requestSynonyms = useCallback((words) => {
 
         if (words.trim()) {
@@ -239,10 +226,10 @@ ${response}
             sendCustomPrompt(synonymPrompt, "Dame un sinónimo y una definición corta y muy sencilla de", `Dame sinónimos de ${synonymPrompt}`, fetchFromGroq);
             setShowTextInput(false);
         } else {
-            alert("Por favor, escribe algunas palabras para buscar sinónimos.");
+            alert("Por favor, escribe algo para buscar sinónimos.");
         }
 
-    }, [sendCustomPrompt]);
+    }, [sendCustomPrompt, setShowTextInput]);
 
     return {
         sendPrompt,
