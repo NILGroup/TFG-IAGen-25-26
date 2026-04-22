@@ -205,11 +205,11 @@ export default function Questionario({ onComplete }) {
         "escribir_largo": "Escribir frases largas",
         "otra": "Otra dificultad",
         // Herramientas
-        "lecturaFacil": "Texto fácil de leer",
+        "lecturaFacil": "Lectura Fácil",
         "ejemplo": "Con ejemplos",
         "bullet": "Con listas",
         "textocorto": "Respuestas cortas",
-        "frasescortas": "Frases cortas"
+        "frasescortas": "Frases sencillas"
     };
 
     // PÁGINA 5 - Resumen con etiquetas claras
@@ -287,7 +287,7 @@ export default function Questionario({ onComplete }) {
     const tools = [
         {
             id: "lecturaFacil",
-            label: "Texto fácil de leer",
+            label: "Lectura Fácil",
             description: "Te explico todo con palabras sencillas",
             ejemplo: "Un planeta es una bola muy grande. Está en el cielo. Da vueltas alrededor del Sol."
         },
@@ -312,7 +312,7 @@ export default function Questionario({ onComplete }) {
         {
             id: "frasescortas",
             label: "Frases cortas",
-            description: "Cada idea en una frase",
+            description: "Cada idea es una frase corta",
             ejemplo: "Es una bola. Es muy grande. Da vueltas al Sol."
         }
     ];

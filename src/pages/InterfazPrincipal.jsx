@@ -270,14 +270,26 @@ export default function InterfazPrincipal({
                     {/* Centro: título SofIA */}
                     <h1
                         className="header-bar-title"
-                        onClick={onBack}
+                        onClick={async () => {
+                            // Si hay conversación, guardar automáticamente antes de volver
+                            if (chatFlow.length > 0) {
+                                await handleFinalizarYVolver();
+                            }
+                            onBack();
+                        }}
                         role="button"
                         tabIndex={0}
-                        onKeyPress={(e) => {
+                        onKeyPress={async (e) => {
                             if (e.key === 'Enter' || e.key === ' ') {
+                                e.preventDefault();
+                                if (chatFlow.length > 0) {
+                                    await handleFinalizarYVolver();
+                                }
                                 onBack();
                             }
                         }}
+                        aria-label="SofIA. Haz clic para empezar una nueva conversación"
+                        title="Volver al inicio"
                     >
                         SofIA
                     </h1>
@@ -365,7 +377,6 @@ export default function InterfazPrincipal({
                     <QuestionPromptPanel
                         onBack={onBack}
                         userName={summary?.nombre}
-                        selectedOption={selectedOption}
                         prompt={prompt}
                         setPrompt={setPrompt}
                         sendPrompt={sendPrompt}

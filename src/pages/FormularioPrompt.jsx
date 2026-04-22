@@ -108,7 +108,6 @@ export default function FormularioPrompt({ onComplete, onBack, summary }) {
         </div>
 
         {/* PREGUNTA 2: Tema (SEGUNDO) */}
-        {/* Ejemplos basados en: PMC9543174, Plena Inclusión Murcia, Opportunity Village */}
         <div className="formulario-card">
           <label className="formulario-label">
             2. ¿Sobre qué tema?

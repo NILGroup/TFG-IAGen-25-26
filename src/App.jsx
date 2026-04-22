@@ -1,79 +1,113 @@
 /**
  * App.jsx
  *
- * Punto de entrada de la aplicación SofIA, es decir, arranca todo lo visual
+ * Punto de entrada de la aplicación SofIA.
  * Controla la navegación entre el cuestionario inicial (`Questionario`)
  * y la interfaz principal conversacional (`InterfazPrincipal`).
  *
- * - Usa un estado `completed` para saber si el cuestionario ya se completó.
- * - Recoge y guarda el resumen del usuario (`summary`) para personalizar la experiencia.
- * - Muestra el cuestionario al inicio y, tras completarlo, la interfaz principal.
+ * Flujo simplificado para accesibilidad cognitiva (COGA):
+ * Cuestionario → Elegir Rol → Pregunta Directa → Chat
+ *
+ * Características de accesibilidad:
+ * - Navegación lineal y predecible (COGA 3.3.2)
+ * - Reducción de pasos intermedios (COGA 2.4.1)
+ * - Lenguaje claro en cada pantalla (COGA 4.2.1)
+ * - Consistencia en botones de navegación (WCAG 3.2.3)
  */
 
 import { useState } from "react";
 import Questionario from "./pages/Questionario";
 import PantallaRol from "./pages/PantallaRol";
-import PantallaEleccion from "./pages/PantallaEleccion";
-import FormularioPrompt from "./pages/FormularioPrompt";
+import QuestionPromptPanel from "./pages/QuestionPromptPanel";
 import InterfazPrincipal from "./pages/InterfazPrincipal";
 import PaginaPerfil from "./pages/PaginaPerfil";
 import HistoryModal from "./components/HistoryModal";
 import "./App.css";
 
 export default function App() {
-  // Estados para controlar la navegación
-  const [paso, setPaso] = useState("cuestionario"); // cuestionario, modo, eleccion, formulario, chat, perfil
-  const [summary, setSummary] = useState(null); // Resumen del cuestionario inicial
-  const [modoSeleccionado, setModoSeleccionado] = useState(null); // "profesor" | "familiar"
-  const [promptGenerado, setPromptGenerado] = useState(null); // Prompt del formulario
-  const [flujoElegido, setFlujoElegido] = useState(null); // "formulario" | "directa"
-  const [pasoAnterior, setPasoAnterior] = useState(null); // Para volver desde el perfil
+  // ========================================
+  // ESTADOS DE NAVEGACIÓN
+  // ========================================
+  
+  // Paso actual: "cuestionario", "modo", "questionPrompt", "chat", "perfil"
+  const [paso, setPaso] = useState("cuestionario");
+  
+  // Datos del perfil del usuario (del cuestionario)
+  const [summary, setSummary] = useState(null);
+  
+  // Modo seleccionado: "profesor" o "familiar"
+  const [modoSeleccionado, setModoSeleccionado] = useState(null);
+  
+  // Texto de la pregunta que el usuario escribe en QuestionPromptPanel
+  const [preguntaInicial, setPreguntaInicial] = useState("");
+  
+  // Estado de carga mientras se envía la primera pregunta
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // Paso anterior (para volver desde el perfil)
+  const [pasoAnterior, setPasoAnterior] = useState(null);
 
-  // Estado del historial (elevado desde InterfazPrincipal para acceso global)
+  // ========================================
+  // ESTADOS DEL HISTORIAL
+  // ========================================
+  
   const [chatHistory, setChatHistory] = useState([]);
   const [showHistoryModal, setShowHistoryModal] = useState(false);
-  const [chatToResume, setChatToResume] = useState(null); // Chat seleccionado del historial
+  const [chatToResume, setChatToResume] = useState(null);
 
-  // 1. Cuando termina el cuestionario inicial
+  // ========================================
+  // FUNCIONES DE NAVEGACIÓN
+  // ========================================
+
+  /**
+   * 1. Cuando termina el cuestionario inicial
+   * Guarda los datos del usuario y avanza a elegir rol.
+   */
   const handleQuestionnaireComplete = (data) => {
     setSummary(data);
-    setPaso("modo"); // Ir a la pantalla de selección de modo
+    setPaso("modo");
   };
 
-  // 2. Cuando el usuario elige modo (Profesor / Familia)
+  /**
+   * 2. Cuando el usuario elige modo (Profesor / Familia)
+   * Guarda el modo y avanza directamente a escribir la primera pregunta.
+   */
   const handleModoComplete = (modo) => {
     setModoSeleccionado(modo);
-    setPaso("eleccion"); // Ir a la pantalla de elección
+    setPaso("questionPrompt");
   };
 
-  // 3. Cuando el usuario elige en la pantalla de elección
-  const handleSelectOption = (opcion) => {
-    setFlujoElegido(opcion); // Guardar el flujo elegido
-    if (opcion === "formulario") {
-      setPaso("formulario"); // Ir al formulario guiado
-    } else if (opcion === "directa") {
-      setPaso("chat"); // Ir directamente al chat
-    }
+  /**
+   * 3. Cuando el usuario envía su primera pregunta
+   * Guarda la pregunta y navega al chat.
+   */
+  const handleSendFirstPrompt = (pregunta) => {
+    setIsSubmitting(true);
+    
+    // Guardar la pregunta y navegar al chat
+    setPreguntaInicial(pregunta);
+    setPaso("chat");
+    
+    // Limpiar el estado de carga después de la navegación
+    setTimeout(() => setIsSubmitting(false), 100);
   };
 
-  // 4. Cuando completa el formulario guiado
-  const handleFormularioComplete = (prompt) => {
-    setPromptGenerado(prompt); // Guardar el prompt generado
-    setPaso("chat"); // Ir al chat con el prompt listo
+  /**
+   * 4. Para volver a la pantalla de rol desde QuestionPromptPanel
+   */
+  const handleVolverARol = () => {
+    setPreguntaInicial("");
+    setPaso("modo");
   };
 
-  // 5. Para volver a la pantalla de elección
-  const handleVolverAEleccion = () => {
-    setPromptGenerado(null); // Limpiar el prompt generado
-    setChatToResume(null); // Limpiar chat a retomar
-    setPaso("eleccion");
-  };
-
-  // 5b. Cuando se finaliza una conversación desde el chat
+  /**
+   * 5. Cuando se finaliza una conversación desde el chat
+   * Guarda la conversación en el historial y vuelve a pregunta inicial.
+   */
   const handleFinalizarConversacion = (chatEntry, originalChat = null) => {
     if (chatEntry) {
       if (originalChat) {
-        // Actualizar el chat existente en lugar de crear uno nuevo
+        // Actualizar chat existente
         setChatHistory(prev =>
           prev.map(entry =>
             entry === originalChat
@@ -89,51 +123,71 @@ export default function App() {
         ]);
       }
     }
-    setPromptGenerado(null);
+    
+    // Limpiar y volver a la pantalla de pregunta
+    setPreguntaInicial("");
     setChatToResume(null);
-    setPaso("eleccion"); // Volver a la pantalla de elección
+    setPaso("questionPrompt");
   };
 
-  // 5c. Para seleccionar un chat del historial y retomarlo
+  /**
+   * 6. Para iniciar una nueva conversación desde el chat
+   * Vuelve a QuestionPromptPanel para escribir una nueva pregunta.
+   */
+  const handleNuevaConversacion = () => {
+    setPreguntaInicial("");
+    setChatToResume(null);
+    setPaso("questionPrompt");
+  };
+
+  /**
+   * 7. Para seleccionar un chat del historial y retomarlo
+   */
   const handleSelectChatFromHistory = (entry) => {
     setChatToResume(entry);
     setShowHistoryModal(false);
-    setFlujoElegido("directa"); // Retomar siempre en modo directo
     setPaso("chat");
   };
 
-  // 5d. Para eliminar una conversación del historial
+  /**
+   * 8. Para eliminar una conversación del historial
+   */
   const handleDeleteChat = (entryToDelete) => {
     setChatHistory(prev => prev.filter(entry => entry !== entryToDelete));
-    // Si el chat eliminado era el que se iba a retomar, limpiar
+    
     if (chatToResume === entryToDelete) {
       setChatToResume(null);
     }
   };
 
-  // 6. Para volver a la pantalla de rol
-  const handleVolverARol = () => {
-    setPaso("modo");
-  };
-
-  // 7. Para ir a la página de perfil
+  /**
+   * 9. Para ir a la página de perfil
+   */
   const handleIrAPerfil = () => {
-    setPasoAnterior(paso); // Guardar el paso actual para poder volver
+    setPasoAnterior(paso);
     setPaso("perfil");
   };
 
-  // 8. Para volver desde la página de perfil
+  /**
+   * 10. Para volver desde la página de perfil
+   */
   const handleVolverDesdePerfil = () => {
-    setPaso(pasoAnterior || "eleccion"); // Volver al paso anterior
+    setPaso(pasoAnterior || "questionPrompt");
   };
 
-  // 9. Para guardar cambios en el perfil
+  /**
+   * 11. Para guardar cambios en el perfil
+   */
   const handleSaveProfile = (updatedSummary) => {
     setSummary(updatedSummary);
   };
 
-  // Las páginas formulario, chat y perfil tienen su propio header con botones
-  const paginasConHeaderPropio = paso === "formulario" || paso === "chat" || paso === "perfil";
+  // ========================================
+  // RENDERIZADO CONDICIONAL
+  // ========================================
+  
+  // Las páginas chat y perfil tienen su propio header
+  const paginasConHeaderPropio = paso === "chat" || paso === "perfil";
 
   return (
     <div className="app-wrapper">
@@ -141,8 +195,7 @@ export default function App() {
       {!paginasConHeaderPropio && (
         <div className="header-bar">
           <div className="header-bar-container">
-
-            {/* Izquierda: botón Historial - solo si hay conversaciones guardadas */}
+            {/* Izquierda: botón Historial */}
             {chatHistory.length > 0 && (
               <div className="header-bar-left">
                 <button
@@ -155,9 +208,10 @@ export default function App() {
               </div>
             )}
 
+            {/* Título central */}
             <h1 className="header-bar-title">SofIA</h1>
 
-            {/* Derecha: botón Perfil - solo si ya existe un perfil */}
+            {/* Derecha: botón Perfil */}
             {summary && (
               <div className="header-bar-right">
                 <button
@@ -173,37 +227,41 @@ export default function App() {
         </div>
       )}
 
-      {/* Renderizado condicional según el paso */} 
+      {/* ========================================
+          PANTALLAS DE LA APLICACIÓN
+          Flujo lineal simplificado:
+          Cuestionario → Elegir Rol → Pregunta → Chat
+          ======================================== */}
+
+      {/* Paso 1: Cuestionario inicial */}
       {paso === "cuestionario" && (
         <Questionario onComplete={handleQuestionnaireComplete} />
       )}
 
+      {/* Paso 2: Elegir entre Profesor o Familiar */}
       {paso === "modo" && (
         <PantallaRol onSelectMode={handleModoComplete} />
       )}
 
-      {paso === "eleccion" && (
-        <PantallaEleccion
-          onSelectOption={handleSelectOption}
+      {/* Paso 3: Escribir la primera pregunta */}
+      {paso === "questionPrompt" && (
+        <QuestionPromptPanel
           onBack={handleVolverARol}
+          userName={summary?.nombre}
+          prompt={preguntaInicial}
+          setPrompt={setPreguntaInicial}
+          sendPrompt={handleSendFirstPrompt}
+          isSubmitting={isSubmitting}
         />
       )}
 
-      {paso === "formulario" && (
-        <FormularioPrompt
-          onComplete={handleFormularioComplete}
-          onBack={handleVolverAEleccion}
-          summary={summary}
-        />
-      )}
-
+      {/* Paso 4: Chat conversacional */}
       {paso === "chat" && (
         <InterfazPrincipal
           summary={summary}
           modoSeleccionado={modoSeleccionado}
-          promptInicial={promptGenerado}
-          flujoElegido={flujoElegido}
-          onBack={handleVolverAEleccion}
+          promptInicial={preguntaInicial}
+          onBack={handleNuevaConversacion}
           onIrAPerfil={handleIrAPerfil}
           chatHistoryGlobal={chatHistory}
           setChatHistoryGlobal={setChatHistory}
@@ -212,6 +270,7 @@ export default function App() {
         />
       )}
 
+      {/* Paso 5: Página de perfil (accesible desde cualquier pantalla) */}
       {paso === "perfil" && (
         <PaginaPerfil
           summary={summary}
