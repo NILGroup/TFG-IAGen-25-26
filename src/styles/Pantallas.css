@@ -31,6 +31,7 @@
   max-width: 800px;
   width: 100%;
   display: flex;
+  height: auto;
   flex-direction: column;
   align-items: center;
   gap: 1.5rem;
@@ -42,14 +43,15 @@
 
 /* PantallaRol - mismo tamaño que question-prompt-content */
 .modo-content {
-  max-width: 1600px;
+  max-width: 1400px;
   width: calc(100vw - 100px);
   display: flex;
+  height: auto;
   flex-direction: column;
   align-items: center;
-  gap: 1.5rem;
+  gap: 1rem;
   background: white;
-  padding: 40px 60px;
+  padding: 20px 40px;
   border-radius: 24px;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
 }
@@ -800,5 +802,157 @@
 
   .question-prompt-submit-btn:hover:not(:disabled) {
     transform: none;
+  }
+}
+/* ============================================================================
+ * EXIT CONFIRM MODAL - Modal de confirmación de salida
+ * Diseñado para accesibilidad cognitiva (COGA/WCAG)
+ * ============================================================================ */
+
+.exit-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 2000;
+}
+
+.exit-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  max-width: 450px;
+  background-color: white;
+  border-radius: 20px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  z-index: 2001;
+  overflow: hidden;
+}
+
+.exit-modal-header {
+  background-color: #0d0b3f;
+  padding: 24px 28px;
+}
+
+.exit-modal-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: white;
+  margin: 0;
+  text-align: center;
+}
+
+.exit-modal-content {
+  padding: 28px;
+}
+
+.exit-modal-description {
+  font-size: 1.1rem;
+  color: #444;
+  text-align: center;
+  margin: 0 0 24px 0;
+  line-height: 1.5;
+}
+
+.exit-modal-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.exit-modal-btn {
+  width: 100%;
+  padding: 16px 24px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  min-height: 56px;
+  text-align: center;
+}
+
+.exit-modal-btn-primary {
+  background-color: #2e7d32;
+  color: white;
+}
+
+.exit-modal-btn-primary:hover {
+  background-color: #1b5e20;
+}
+
+.exit-modal-btn-primary:focus-visible {
+  outline: 3px solid #2196f3;
+  outline-offset: 2px;
+}
+
+.exit-modal-btn-secondary {
+  background-color: #f5f5f5;
+  color: #666;
+  border: 2px solid #d0d0d0;
+}
+
+.exit-modal-btn-secondary:hover {
+  background-color: #e0e0e0;
+  color: #333;
+}
+
+.exit-modal-btn-secondary:focus-visible {
+  outline: 3px solid #2196f3;
+  outline-offset: 2px;
+}
+
+.exit-modal-btn-tertiary {
+  background-color: transparent;
+  color: #666;
+  text-decoration: underline;
+  min-height: 44px;
+}
+
+.exit-modal-btn-tertiary:hover {
+  color: #333;
+  background-color: #f5f5f5;
+}
+
+.exit-modal-btn-tertiary:focus-visible {
+  outline: 3px solid #2196f3;
+  outline-offset: 2px;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .exit-modal {
+    max-width: 90%;
+  }
+
+  .exit-modal-header {
+    padding: 20px;
+  }
+
+  .exit-modal-title {
+    font-size: 1.3rem;
+  }
+
+  .exit-modal-content {
+    padding: 20px;
+  }
+
+  .exit-modal-description {
+    font-size: 1rem;
+  }
+
+  .exit-modal-btn {
+    padding: 14px 20px;
+    font-size: 1rem;
+  }
+}
+
+/* Preferencias de movimiento reducido */
+@media (prefers-reduced-motion: reduce) {
+  .exit-modal-btn {
+    transition: none;
   }
 }

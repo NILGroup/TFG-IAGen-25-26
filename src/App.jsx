@@ -110,26 +110,27 @@ export default function App() {
 
   /**
    * 5. Cuando se finaliza una conversación desde el chat
-   * Guarda la conversación en el historial y vuelve a pregunta inicial.
+   * Guarda o actualiza la conversación en el historial.
    */
-  const handleFinalizarConversacion = (chatEntry, originalChat = null) => {
-    if (chatEntry) {
-      if (originalChat) {
-        // Actualizar chat existente
-        setChatHistory(prev =>
-          prev.map(entry =>
-            entry === originalChat
-              ? { ...chatEntry, isNew: false }
-              : { ...entry, isNew: false }
-          )
-        );
-      } else {
-        // Añadir nuevo chat al historial
-        setChatHistory(prev => [
-          ...prev.map(entry => ({ ...entry, isNew: false })),
-          { ...chatEntry, isNew: true }
-        ]);
-      }
+  const handleFinalizarConversacion = (chatEntry, chatOriginal = null) => {
+    if (!chatEntry) return;
+    
+    if (chatOriginal) {
+      // Actualizar chat existente (retomado del historial)
+      setChatHistory(prev =>
+        prev.map(entry =>
+          entry.id === chatOriginal.id
+            ? { ...chatEntry, id: chatOriginal.id }
+            : entry
+        )
+      );
+    } else {
+      // Añadir nuevo chat al historial con ID único
+      const newChat = {
+        ...chatEntry,
+        id: `chat_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      };
+      setChatHistory(prev => [...prev, newChat]);
     }
     
     // Limpiar y volver a la pantalla de pregunta
@@ -161,9 +162,9 @@ export default function App() {
    * 8. Para eliminar una conversación del historial
    */
   const handleDeleteChat = (entryToDelete) => {
-    setChatHistory(prev => prev.filter(entry => entry !== entryToDelete));
+    setChatHistory(prev => prev.filter(entry => entry.id !== entryToDelete.id));
     
-    if (chatToResume === entryToDelete) {
+    if (chatToResume?.id === entryToDelete.id) {
       setChatToResume(null);
     }
   };
@@ -220,7 +221,6 @@ export default function App() {
             <h1
               className="header-bar-title"
               onClick={() => {
-                // Solo navegar si ya ha completado el cuestionario y elegido rol
                 if (summary && modoSeleccionado) {
                   setPreguntaInicial("");
                   setChatToResume(null);
