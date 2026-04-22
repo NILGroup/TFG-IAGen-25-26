@@ -139,6 +139,7 @@ body {
   transform: translateY(-50%);
   display: flex;
   align-items: center;
+  gap: 12px;
 }
 
 .header-bar-right {
@@ -2692,7 +2693,7 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
-  background-color: #1f4189;
+  background-color: #d97706;
   color: white;
   border: none;
   font-size: 23px;
@@ -2707,7 +2708,7 @@ body {
 }
 
 .favoritos-btn:hover {
-  background-color: #2a5497;
+  background-color: #b45309;
 }
 
 .favoritos-btn:focus-visible {
@@ -2969,22 +2970,66 @@ body {
 
 .ai-bottom-row {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
+  gap: 12px;
   margin-top: 10px;
+  flex-wrap: wrap;
 }
 
 .audio-btn {
-  background: #ffffff;
-  border: 1px solid #ccc;
-  border-radius: 50%;
-  padding: 8px;
+  background: #1e3a8a;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
   cursor: pointer;
-  font-size: 18px;
+  font-size: 16px;
+  font-weight: 600;
+  font-family: inherit;
+  transition: background-color 0.2s;
 }
 
 .audio-btn:hover {
-  background: #e0e0e0;
+  background: #1e40af;
+}
+
+.audio-btn:focus-visible {
+  outline: 3px solid #1e3a8a;
+  outline-offset: 2px;
+}
+
+/* Botón guardar respuesta en favoritos - Amarillo */
+.guardar-respuesta-btn {
+  background: #d97706;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  font-family: inherit;
+  transition: background-color 0.2s;
+}
+
+.guardar-respuesta-btn:hover:not(:disabled) {
+  background: #b45309;
+}
+
+.guardar-respuesta-btn:focus-visible {
+  outline: 3px solid #f59e0b;
+  outline-offset: 2px;
+}
+
+/* Estado cuando ya está guardado */
+.guardar-respuesta-btn.guardado {
+  background: #9ca3af;
+  cursor: not-allowed;
+}
+
+.guardar-respuesta-btn.guardado:hover {
+  background: #9ca3af;
 }
 
 /*========================
@@ -3058,19 +3103,25 @@ body {
 * ==================================*/
 
 .see-more-btn {
-  margin-top: 10px;
-  background-color: #f0f8ff;
-  border: 1px solid #2a5d9e;
-  border-radius: 5px;
-  padding: 4px 10px;
-  font-size: 0.85rem;
+  background: #4b5563;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
   cursor: pointer;
-  color: #2a5d9e;
-  transition: background-color 0.3s ease;
+  font-size: 16px;
+  font-weight: 600;
+  font-family: inherit;
+  transition: background-color 0.2s;
 }
 
 .see-more-btn:hover {
-  background-color: #dceeff;
+  background: #374151;
+}
+
+.see-more-btn:focus-visible {
+  outline: 3px solid #4b5563;
+  outline-offset: 2px;
 }
 
 /* CONTENEDOR PAGINA TRAS ELECCION ROL */

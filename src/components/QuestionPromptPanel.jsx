@@ -13,6 +13,8 @@ export default function QuestionPromptPanel({
     setPrompt,        // Función para actualizar el texto
     sendPrompt,       // Función para enviar la pregunta y navegar al chat
     isSubmitting,     // Indica si se está enviando la pregunta (para deshabilitar el botón)
+    favorites = [],   // Lista de favoritos guardados
+    onOpenFavoritos,  // Función para abrir el modal de favoritos
 }) {
     /**
      * Maneja el envío del formulario.
@@ -40,6 +42,21 @@ export default function QuestionPromptPanel({
 
     return (
         <div className="question-prompt-container">
+            {/* Botón de favoritos - centrado debajo del header */}
+            {favorites.length > 0 && onOpenFavoritos && (
+                <div className="favoritos-btn-container">
+                    <button
+                        className="favoritos-btn"
+                        onClick={onOpenFavoritos}
+                        aria-label={`Abrir favoritos. ${favorites.length} guardados`}
+                    >
+                        <span className="favoritos-btn-contador">{favorites.length}</span>
+                        <span className="favoritos-btn-separador">|</span>
+                        <span className="favoritos-btn-texto">Favoritos</span>
+                    </button>
+                </div>
+            )}
+
             {/* Contenido principal centrado */}
             <div className="question-prompt-content">
                 {/* Botón para cambiar de ayudante (dentro del cuadro, como en PantallaEleccion) */}

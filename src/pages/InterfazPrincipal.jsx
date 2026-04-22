@@ -37,7 +37,9 @@ export default function InterfazPrincipal({
     chatHistoryGlobal = [],
     setChatHistoryGlobal,
     chatToResume = null,
-    onFinalizarConversacion
+    onFinalizarConversacion,
+    favoritesGlobal = [],
+    setFavoritesGlobal,
 }) {
     const {
         selectedOption,
@@ -143,38 +145,69 @@ export default function InterfazPrincipal({
         initialHistory: chatHistoryGlobal, // Usar historial global
     });
 
-    // Estado de favoritos (pares pregunta-respuesta guardados)
-    const [favorites, setFavorites] = useState([]);
+    // Favoritos (usando estado global desde App.jsx)
+    const favorites = favoritesGlobal;
+    const setFavorites = setFavoritesGlobal;
     const [showFavoritos, setShowFavoritos] = useState(false);
-    const [savedToast, setSavedToast] = useState(null); // null | "saved" | "already"
 
-    const handleGuardarFavorito = () => {
-        // Obtener el último par user + ai del chatFlow
-        const reversed = [...chatFlow].reverse();
-        const lastAi = reversed.find(m => m.type === "ai");
-        const lastUser = reversed.find(m => m.type === "user");
+    /**
+     * Guarda un par pregunta-respuesta específico en favoritos.
+     * @param {number} aiIndex - Índice de la respuesta de IA en chatFlow
+     */
+    const handleGuardarFavorito = (aiIndex) => {
+        // Obtener la respuesta de IA por su índice
+        const aiMessage = chatFlow[aiIndex];
+        if (!aiMessage || aiMessage.type !== "ai") return;
 
-        if (!lastAi || !lastUser) return;
+        // Buscar la pregunta del usuario justo antes de esta respuesta
+        let userMessage = null;
+        for (let i = aiIndex - 1; i >= 0; i--) {
+            if (chatFlow[i].type === "user") {
+                userMessage = chatFlow[i];
+                break;
+            }
+        }
+
+        if (!userMessage) return;
 
         // Comprobar si ya está guardado
         const yaGuardado = favorites.some(
-            f => f.question === lastUser.content && f.answer === lastAi.content
+            f => f.question === userMessage.content && f.answer === aiMessage.content
         );
 
-        if (yaGuardado) {
-            setSavedToast("already");
-            setTimeout(() => setSavedToast(null), 2500);
-            return;
-        }
+        if (yaGuardado) return; // Ya está guardado, no hacer nada
 
         setFavorites(prev => [...prev, {
             id: Date.now(),
-            question: lastUser.content,
-            answer: lastAi.content,
+            question: userMessage.content,
+            answer: aiMessage.content,
             timestamp: new Date().toLocaleString(),
         }]);
-        setSavedToast("saved");
-        setTimeout(() => setSavedToast(null), 2500);
+    };
+
+    /**
+     * Verifica si una respuesta ya está guardada en favoritos.
+     * @param {number} aiIndex - Índice de la respuesta de IA en chatFlow
+     * @returns {boolean}
+     */
+    const isResponseSaved = (aiIndex) => {
+        const aiMessage = chatFlow[aiIndex];
+        if (!aiMessage || aiMessage.type !== "ai") return false;
+
+        // Buscar la pregunta del usuario justo antes
+        let userMessage = null;
+        for (let i = aiIndex - 1; i >= 0; i--) {
+            if (chatFlow[i].type === "user") {
+                userMessage = chatFlow[i];
+                break;
+            }
+        }
+
+        if (!userMessage) return false;
+
+        return favorites.some(
+            f => f.question === userMessage.content && f.answer === aiMessage.content
+        );
     };
 
     // Función personalizada para finalizar y volver a elección
@@ -399,7 +432,7 @@ export default function InterfazPrincipal({
                         sendCustomPrompt={sendCustomPrompt}
                         saveChatToHistory={handleFinalizarYVolver}
                         onGuardarFavorito={handleGuardarFavorito}
-                        savedToast={savedToast}
+                        isResponseSaved={isResponseSaved}
                     />
                 )}
 

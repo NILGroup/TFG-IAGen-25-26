@@ -22,6 +22,7 @@ import QuestionPromptPanel from "./components/QuestionPromptPanel";
 import InterfazPrincipal from "./pages/InterfazPrincipal";
 import PaginaPerfil from "./pages/PaginaPerfil";
 import HistoryModal from "./components/HistoryModal";
+import FavoritosModal from "./components/FavoritosModal";
 import "./App.css";
 
 export default function App() {
@@ -50,10 +51,17 @@ export default function App() {
   // ========================================
   // ESTADOS DEL HISTORIAL
   // ========================================
-  
+
   const [chatHistory, setChatHistory] = useState([]);
   const [showHistoryModal, setShowHistoryModal] = useState(false);
   const [chatToResume, setChatToResume] = useState(null);
+
+  // ========================================
+  // ESTADOS DE FAVORITOS
+  // ========================================
+
+  const [favorites, setFavorites] = useState([]);
+  const [showFavoritosModal, setShowFavoritosModal] = useState(false);
 
   // ========================================
   // FUNCIONES DE NAVEGACIÓN
@@ -276,6 +284,8 @@ export default function App() {
           setPrompt={setPreguntaInicial}
           sendPrompt={handleSendFirstPrompt}
           isSubmitting={isSubmitting}
+          favorites={favorites}
+          onOpenFavoritos={() => setShowFavoritosModal(true)}
         />
       )}
 
@@ -291,6 +301,8 @@ export default function App() {
           setChatHistoryGlobal={setChatHistory}
           chatToResume={chatToResume}
           onFinalizarConversacion={handleFinalizarConversacion}
+          favoritesGlobal={favorites}
+          setFavoritesGlobal={setFavorites}
         />
       )}
 
@@ -311,6 +323,14 @@ export default function App() {
         activeChat={chatToResume}
         onSelectChat={handleSelectChatFromHistory}
         onDeleteChat={handleDeleteChat}
+      />
+
+      {/* Modal de Favoritos - Accesible desde cualquier pantalla */}
+      <FavoritosModal
+        isOpen={showFavoritosModal}
+        onClose={() => setShowFavoritosModal(false)}
+        favorites={favorites}
+        onDelete={(id) => setFavorites(prev => prev.filter(f => f.id !== id))}
       />
     </div>
   );

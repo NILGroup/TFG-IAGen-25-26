@@ -46,8 +46,8 @@ export default function ChatActivePanel({
     saveChatToHistory,           // Guarda la conversación actual en el historial
 
     // Favoritos
-    onGuardarFavorito,           // Guarda el último par pregunta-respuesta
-    savedToast,                  // "saved" | "already" | null
+    onGuardarFavorito,           // Guarda un par pregunta-respuesta específico
+    isResponseSaved,             // Verifica si una respuesta ya está guardada
 }) {
     /**
      * Envía una pregunta de seguimiento al chat.
@@ -83,6 +83,8 @@ export default function ChatActivePanel({
                     activeSpeechId={activeSpeechId}
                     speechState={speechState}
                     avatarMode={avatarMode}
+                    onGuardarFavorito={onGuardarFavorito}
+                    isResponseSaved={isResponseSaved}
                 />
 
                 {/* Tooltip que aparece al seleccionar texto en los mensajes */}
@@ -102,25 +104,6 @@ export default function ChatActivePanel({
             */}
             {chatFlow.length > 0 && (
                 <div className="chat-actions-bottom">
-                    {/* Toast de confirmación */}
-                    {savedToast && (
-                        <div
-                            className={`guardar-toast ${savedToast === "already" ? "already" : ""}`}
-                            role="status"
-                            aria-live="polite"
-                        >
-                            {savedToast === "already" ? "Ya guardado" : "Guardado"}
-                        </div>
-                    )}
-
-                    <button
-                        className="guardar-favorito-btn"
-                        onClick={onGuardarFavorito}
-                        aria-label="Guardar esta pregunta y respuesta"
-                    >
-                        Guardar
-                    </button>
-
                     <button
                         className="finalizar-conversacion-btn-bottom"
                         onClick={async () => {
