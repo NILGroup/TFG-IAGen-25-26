@@ -20,9 +20,9 @@ import Questionario from "./pages/Questionario";
 import PantallaRol from "./pages/PantallaRol";
 import QuestionPromptPanel from "./components/QuestionPromptPanel";
 import InterfazPrincipal from "./pages/InterfazPrincipal";
-import PaginaPerfil from "./pages/PaginaPerfil";
 import HistoryModal from "./components/HistoryModal";
 import FavoritosModal from "./components/FavoritosModal";
+import ProfileModal from "./components/ProfileModal";
 import "./App.css";
 
 export default function App() {
@@ -30,23 +30,23 @@ export default function App() {
   // ESTADOS DE NAVEGACIÓN
   // ========================================
   
-  // Paso actual: "cuestionario", "modo", "questionPrompt", "chat", "perfil"
+  // Paso actual: "cuestionario", "modo", "questionPrompt", "chat"
   const [paso, setPaso] = useState("cuestionario");
-  
+
   // Datos del perfil del usuario (del cuestionario)
   const [summary, setSummary] = useState(null);
-  
+
   // Modo seleccionado: "profesor" o "familiar"
   const [modoSeleccionado, setModoSeleccionado] = useState(null);
-  
+
   // Texto de la pregunta que el usuario escribe en QuestionPromptPanel
   const [preguntaInicial, setPreguntaInicial] = useState("");
-  
+
   // Estado de carga mientras se envía la primera pregunta
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
-  // Paso anterior (para volver desde el perfil)
-  const [pasoAnterior, setPasoAnterior] = useState(null);
+
+  // Estado del modal de perfil
+  const [showProfileModal, setShowProfileModal] = useState(false);
 
   // ========================================
   // ESTADOS DEL HISTORIAL
@@ -170,22 +170,14 @@ export default function App() {
   };
 
   /**
-   * 9. Para ir a la página de perfil
+   * 9. Para abrir el modal de perfil
    */
   const handleIrAPerfil = () => {
-    setPasoAnterior(paso);
-    setPaso("perfil");
+    setShowProfileModal(true);
   };
 
   /**
-   * 10. Para volver desde la página de perfil
-   */
-  const handleVolverDesdePerfil = () => {
-    setPaso(pasoAnterior || "questionPrompt");
-  };
-
-  /**
-   * 11. Para guardar cambios en el perfil
+   * 10. Para guardar cambios en el perfil
    */
   const handleSaveProfile = (updatedSummary) => {
     setSummary(updatedSummary);
@@ -195,8 +187,8 @@ export default function App() {
   // RENDERIZADO CONDICIONAL
   // ========================================
   
-  // Las páginas chat y perfil tienen su propio header
-  const paginasConHeaderPropio = paso === "chat" || paso === "perfil";
+  // La página chat tiene su propio header
+  const paginasConHeaderPropio = paso === "chat";
 
   return (
     <div className="app-wrapper">
@@ -306,14 +298,13 @@ export default function App() {
         />
       )}
 
-      {/* Paso 5: Página de perfil (accesible desde cualquier pantalla) */}
-      {paso === "perfil" && (
-        <PaginaPerfil
-          summary={summary}
-          onSave={handleSaveProfile}
-          onBack={handleVolverDesdePerfil}
-        />
-      )}
+      {/* Modal de Perfil - Accesible desde cualquier pantalla */}
+      <ProfileModal
+        isOpen={showProfileModal}
+        onClose={() => setShowProfileModal(false)}
+        summary={summary}
+        onSave={handleSaveProfile}
+      />
 
       {/* Modal de Historial - Accesible desde cualquier pantalla */}
       <HistoryModal
