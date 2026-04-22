@@ -69,8 +69,7 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 100vh;
-  overflow: hidden; /* Sin scroll general */
+  min-height: 100vh;
 }
 
 /* Barra fija arriba con el titulito */
@@ -174,6 +173,12 @@ body {
 /* Cuando la config está abierta, empuja el contenido a la izquierda */
 .config-abierto .main-content {
   margin-right: 320px;
+}
+
+/* En el chat, no hay scroll general */
+.config-abierto {
+  overflow: hidden;
+  height: 100vh;
 }
 
 .config-abierto .header-bar-container {
