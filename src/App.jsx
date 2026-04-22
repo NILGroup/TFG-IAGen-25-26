@@ -18,7 +18,7 @@
 import { useState } from "react";
 import Questionario from "./pages/Questionario";
 import PantallaRol from "./pages/PantallaRol";
-import QuestionPromptPanel from "./pages/QuestionPromptPanel";
+import QuestionPromptPanel from "./components/QuestionPromptPanel";
 import InterfazPrincipal from "./pages/InterfazPrincipal";
 import PaginaPerfil from "./pages/PaginaPerfil";
 import HistoryModal from "./components/HistoryModal";
@@ -208,8 +208,32 @@ export default function App() {
               </div>
             )}
 
-            {/* Título central */}
-            <h1 className="header-bar-title">SofIA</h1>
+            {/* Título central - clickeable para ir a QuestionPromptPanel */}
+            <h1
+              className="header-bar-title"
+              onClick={() => {
+                // Solo navegar si ya ha completado el cuestionario y elegido rol
+                if (summary && modoSeleccionado) {
+                  setPreguntaInicial("");
+                  setChatToResume(null);
+                  setPaso("questionPrompt");
+                }
+              }}
+              role={summary && modoSeleccionado ? "button" : undefined}
+              tabIndex={summary && modoSeleccionado ? 0 : undefined}
+              onKeyPress={(e) => {
+                if ((e.key === 'Enter' || e.key === ' ') && summary && modoSeleccionado) {
+                  e.preventDefault();
+                  setPreguntaInicial("");
+                  setChatToResume(null);
+                  setPaso("questionPrompt");
+                }
+              }}
+              style={{ cursor: summary && modoSeleccionado ? 'pointer' : 'default' }}
+              aria-label={summary && modoSeleccionado ? "Ir a nueva conversación" : "SofIA"}
+            >
+              SofIA
+            </h1>
 
             {/* Derecha: botón Perfil */}
             {summary && (

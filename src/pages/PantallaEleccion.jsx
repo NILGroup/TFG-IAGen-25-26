@@ -1,5 +1,6 @@
 /**
- * PantallaEleccion.jsx
+ * YA NO SE USA
+ * PantallaEleccion.jsx 
  *
  * Pantalla que aparece después de elegir el rol.
  * Muestra dos opciones al usuario:

@@ -1,4 +1,5 @@
 /**
+ * YA NO SE USA
  * FormularioPrompt.jsx
  *
  * Formulario guiado con 2 preguntas simples para ayudar al usuario
