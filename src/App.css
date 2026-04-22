@@ -64,14 +64,13 @@ p {
 body {
   font-family: Verdana, Geneva, Tahoma, sans-serif;
   background-color: #f5f9fa;
-  /* Zoom al 50% */
   margin: 0;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 100%;
-
+  height: 100vh;
+  overflow: hidden; /* Sin scroll general */
 }
 
 /* Barra fija arriba con el titulito */
@@ -174,22 +173,22 @@ body {
 
 /* Cuando la config está abierta, empuja el contenido a la izquierda */
 .config-abierto .main-content {
-  margin-right: 380px;
+  margin-right: 320px;
 }
 
 .config-abierto .header-bar-container {
-  padding-right: calc(380px + 16px);
+  padding-right: calc(320px + 16px);
 }
 
 /* Si los dos están abiertos a la vez */
 .glosario-abierto.config-abierto .main-content {
   margin-left: 340px;
-  margin-right: 380px;
+  margin-right: 320px;
 }
 
 .glosario-abierto.config-abierto .header-bar-container {
   padding-left: calc(340px + 16px);
-  padding-right: calc(380px + 16px);
+  padding-right: calc(320px + 16px);
 }
 
 /* Botón Historial dentro del header - mismo estilo que Perfil */
@@ -1423,18 +1422,18 @@ body {
 .chat-message.user-message {
   background-color: #4caf50;
   color: black;
-  padding: 20px 28px;
-  border-radius: 16px;
-  max-width: 80%;
+  padding: 14px 20px;
+  border-radius: 14px;
+  max-width: 85%;
   text-align: left;
   /* NUNCA justify - mejor lectura para discapacitados */
   border: 2px solid #45a049;
   position: relative;
   box-shadow: 0 2px 8px rgba(76, 175, 80, 0.15);
-  font-size: 20px;
+  font-size: 17px;
   font-weight: normal;
-  margin: 14px 0;
-  line-height: 1.6;
+  margin: 10px 0;
+  line-height: 1.5;
 }
 
 /* Botón de Descubrir (desaparece después de enviar) */
@@ -1468,10 +1467,10 @@ body {
 
 /* Avatar de SofIA */
 .chat-avatar {
-  width: 120px;
-  height: 120px;
-  min-width: 120px;
-  min-height: 120px;
+  width: 70px;
+  height: 70px;
+  min-width: 70px;
+  min-height: 70px;
   border-radius: 50%;
   object-fit: cover;
   border: 2px solid #2196f3;
@@ -1485,18 +1484,18 @@ body {
 .chat-message.ai-message {
   background-color: #e3f2fd;
   color: black;
-  padding: 20px 28px;
-  border-radius: 16px;
-  max-width: 80%;
+  padding: 14px 20px;
+  border-radius: 14px;
+  max-width: 85%;
   text-align: left;
   /* NUNCA justify - mejor lectura para discapacitados */
   border: 2px solid #2196f3;
   position: relative;
   box-shadow: 0 2px 8px rgba(33, 150, 243, 0.15);
-  font-size: 20px;
-  margin: 14px 0;
+  font-size: 17px;
+  margin: 10px 0;
   overflow-wrap: break-word;
-  line-height: 1.6;
+  line-height: 1.5;
 }
 
 /* === ESTILOS PARA MARKDOWN DENTRO DEL CHAT === */
@@ -1656,59 +1655,29 @@ body {
   right: 0;
   top: 91px;
   height: calc(100vh - 91px);
-  width: 380px;
+  width: 320px;
   background-color: #fafafa;
   box-shadow: -3px 0 12px rgba(0, 0, 0, 0.08);
   border-left: 1px solid #e0e0e0;
   z-index: 999;
   display: flex;
   flex-direction: column;
-  transition: transform 0.3s ease-in-out;
 }
 
-.response-config-panel.open {
-  transform: translateX(0);
-}
-
-.response-config-panel.closed {
-  transform: translateX(100%);
-}
-
-/* Header del panel - solo botón cerrar, sin título */
+/* Header del panel con título */
 .response-config-header {
-  padding: 12px 16px;
+  padding: 16px;
   border-bottom: 1px solid #e0e0e0;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  background-color: white;
+  background-color: #f5f5f5;
 }
 
-.response-config-close-btn {
-  background-color: transparent;
-  border: 2px solid #e0e0e0;
+.response-config-title {
+  font-size: 16px;
+  font-weight: 600;
   color: #333;
-  font-size: 20px;
-  cursor: pointer;
-  padding: 6px 14px;
-  border-radius: 8px;
-  transition: all 0.2s;
-  line-height: 1;
-}
-
-.response-config-close-btn:hover {
-  background-color: #f0f0f0;
-  border-color: #bbb;
-}
-
-.response-config-close-btn:focus-visible {
-  outline: 3px solid #1f4189;
-  outline-offset: 2px;
-}
-
-/* Ocultar el botón disparador cuando el panel está abierto */
-.config-abierto .config-ayuda-dropdown-container {
-  display: none;
+  margin: 0;
+  text-align: center;
+  line-height: 1.4;
 }
 
 /* Mensaje de advertencia */
@@ -1812,12 +1781,13 @@ body {
   font-size: 16px;
 }
 
-/* Botones de acción */
+/* Botones de acción - alineados con input bar */
 .response-config-actions {
   border-top: 1px solid #e0e0e0;
-  padding: 24px;
+  padding: 16px;
   display: flex;
   gap: 12px;
+  margin-top: auto; /* Empuja al fondo */
 }
 
 .response-config-btn {
@@ -2591,42 +2561,48 @@ body {
   flex-direction: column;
   max-width: 2200px;
   width: 98%;
-  margin: 160px auto 0;
-  height: calc(100vh - 251px); /* 91px header + 160px margin */
+  margin: 110px auto 0;
+  height: calc(100vh - 110px - 70px); /* 110px margin top + 70px input bar */
   overflow: hidden;
-  /* Sin scroll externo - solo scroll interno en el cuadro */
 }
 
 /* Cuadro blanco solo para los mensajes - más ancho */
 .chat-selection-area {
   background: white;
-  border-radius: 20px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  overflow-y: auto;
-  padding: 50px 100px;
+  border-radius: 20px 20px 0 0; /* Solo bordes redondeados arriba */
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05); /* Sombra solo hacia arriba */
+  overflow: hidden; /* Respeta los bordes redondeados */
+  padding: 20px 30px;
   width: 100%;
   max-width: 2200px;
-  margin: 0 auto 20px;
+  margin: 0 auto;
   flex: 1;
-  /* Ocupa el espacio disponible menos los controles */
-  height: calc(100vh - 451px);
-  /* 91px app-wrapper + 160px margin + 140px controles + 60px margen */
+  display: flex;
+  flex-direction: column;
 }
 
-/* Barra de acciones - fuera del cuadro, fija */
+/* Contenedor interno para scroll */
+.chat-mensajes-container {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 8px; /* Espacio para scrollbar */
+  background-color: white;
+}
+
+/* Botón finalizar flotante - fondo transparente */
 .chat-actions-bottom {
   position: fixed;
-  bottom: 90px;
+  bottom: 100px; /* Encima del input bar */
   left: 0;
-  right: 0;
+  right: 320px; /* Deja espacio para el panel lateral */
   z-index: 999;
-  background-color: transparent;
-  padding: 16px 20px;
   display: flex;
   justify-content: center;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
+  pointer-events: none; /* El contenedor no bloquea clics */
+}
+
+.chat-actions-bottom .finalizar-conversacion-btn {
+  pointer-events: auto; /* Solo el botón recibe clics */
 }
 
 /* Toast de confirmación de guardado */
@@ -2769,20 +2745,18 @@ body {
   outline-offset: 2px;
 }
 
-/* Barra de entrada - fuera del cuadro, fija abajo */
+/* Barra de entrada - fija abajo, alineada con panel lateral */
 .chat-input-bar {
   position: fixed;
   bottom: 0;
   left: 0;
-  right: 0;
-  background-color: #f5f5f5;
-  border-top: 2px solid #d0d0d0;
-  padding: 20px;
+  right: 320px; /* Deja espacio para el panel lateral */
+  background-color: white;
+  padding: 16px 24px;
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
-  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
 }
 
 /* Contenedor interno para limitar ancho y centrar */
@@ -2853,13 +2827,34 @@ body {
   outline-offset: 2px;
 }
 
-/*==================================
-*    ESTILOS ANTIGUOS DEPRECADOS
-* ==================================*/
-
-/* Mantener por compatibilidad pero ocultos */
+/* Botón finalizar conversación - flotante */
 .finalizar-conversacion-btn {
-  display: none;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 14px 28px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+}
+
+.finalizar-conversacion-btn:hover {
+  background-color: #43a047;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(76, 175, 80, 0.4);
+}
+
+.finalizar-conversacion-btn:active {
+  background-color: #388e3c;
+  transform: translateY(0);
+}
+
+.finalizar-conversacion-btn:focus {
+  outline: 2px solid #4caf50;
+  outline-offset: 2px;
 }
 
 /*=====================================

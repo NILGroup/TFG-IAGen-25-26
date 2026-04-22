@@ -2,7 +2,6 @@
  * ResponseConfigPanel.jsx
  *
  * Panel lateral derecho para configurar cómo se presentan las respuestas de SofIA.
- * Solo aparece cuando el usuario elige el flujo "con ayuda".
  * Permite activar/desactivar opciones como Lectura Fácil, Ejemplos, Listas, etc.
  */
 
@@ -37,21 +36,17 @@ const RESPONSE_OPTIONS = [
 ];
 
 export default function ResponseConfigPanel({
-  isOpen,
-  onClose,
   currentConfig = [],
   onApply,
 }) {
   const [selectedOptions, setSelectedOptions] = useState(currentConfig);
   const [hasChanges, setHasChanges] = useState(false);
 
-  // Sincronizar con la configuración actual cuando se abre el panel
+  // Sincronizar con la configuración actual
   useEffect(() => {
-    if (isOpen) {
-      setSelectedOptions(currentConfig);
-      setHasChanges(false);
-    }
-  }, [isOpen, currentConfig]);
+    setSelectedOptions(currentConfig);
+    setHasChanges(false);
+  }, [currentConfig]);
 
   // Detectar cambios
   useEffect(() => {
@@ -81,19 +76,15 @@ export default function ResponseConfigPanel({
 
   return (
     <div
-      className={`response-config-panel ${isOpen ? "open" : "closed"}`}
+      className="response-config-panel"
       role="complementary"
       aria-label="Panel de configuración de respuestas"
     >
-      {/* Header - solo botón de cerrar */}
+      {/* Header con título */}
       <div className="response-config-header">
-        <button
-          onClick={onClose}
-          className="response-config-close-btn"
-          aria-label="Cerrar configuración de respuestas"
-        >
-          →
-        </button>
+        <h2 className="response-config-title">
+          Cómo quieres que aparezcan las respuestas
+        </h2>
       </div>
 
       {/* Warning Message */}

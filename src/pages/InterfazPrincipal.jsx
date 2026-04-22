@@ -73,8 +73,7 @@ export default function InterfazPrincipal({
         }));
     };
 
-    // Estados para el panel de configuración de respuestas
-    const [showResponseConfig, setShowResponseConfig] = useState(false);
+    // Configuración de respuestas (panel siempre visible)
     const [responseConfig, setResponseConfig] = useState(["lectura-facil", "ejemplos"]);
 
     // Estado para el panel de glosario
@@ -316,7 +315,7 @@ export default function InterfazPrincipal({
     const totalChats = chatHistory.length;
 
     return (
-        <div className={`app-wrapper${showGlosario ? " glosario-abierto" : ""}${showResponseConfig ? " config-abierto" : ""}`}>
+        <div className={`app-wrapper${showGlosario ? " glosario-abierto" : ""} config-abierto`}>
             <div className="header-bar">
                 <div className="header-bar-container">
                     {/* Izquierda: botón Historial */}
@@ -400,19 +399,6 @@ export default function InterfazPrincipal({
                     </button>
                 </div>
 
-                {/* Botón de Configuración de Ayuda */}
-                <div className="config-ayuda-dropdown-container">
-                    <button
-                        className="config-ayuda-dropdown-btn"
-                        onClick={() => setShowResponseConfig(!showResponseConfig)}
-                        aria-label={showResponseConfig ? "Cerrar configuración de respuestas" : "Configurar cómo quieres que aparezcan las respuestas"}
-                        aria-expanded={showResponseConfig}
-                        aria-controls="response-config-panel"
-                    >
-                        <span className="config-ayuda-dropdown-texto">Cómo quieres que aparezcan las respuestas</span>
-                    </button>
-                </div>
-
                 {/* Chat activo o panel de pregunta */}
                 {!showChat ? (
                     <QuestionPromptPanel
@@ -446,10 +432,8 @@ export default function InterfazPrincipal({
                     />
                 )}
 
-                {/* Panel de configuración de respuestas */}
+                {/* Panel de configuración de respuestas (siempre visible) */}
                 <ResponseConfigPanel
-                    isOpen={showResponseConfig}
-                    onClose={() => setShowResponseConfig(false)}
                     currentConfig={responseConfig}
                     onApply={handleApplyResponseConfig}
                 />
