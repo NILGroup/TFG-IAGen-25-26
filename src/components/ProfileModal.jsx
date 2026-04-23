@@ -127,7 +127,7 @@ export default function ProfileModal({ isOpen, onClose, summary, onSave }) {
   const tools = [
     {
       id: "lecturaFacil",
-      label: "Texto fácil de leer",
+      label: "Lectura Fácil",
       description: "Te explico todo con palabras sencillas",
       ejemplo: "Un planeta es una bola muy grande. Está en el cielo. Da vueltas alrededor del Sol.",
     },
@@ -209,16 +209,16 @@ export default function ProfileModal({ isOpen, onClose, summary, onSave }) {
             />
           </div>
 
-          {/* SECCIÓN 2: DISCAPACIDAD INTELECTUAL */}
+          {/* SECCIÓN 2: SOBRE TI */}
           <div className="formulario-card">
             <fieldset className="radio-group" aria-labelledby="modal-pregunta-di">
               <legend id="modal-pregunta-di" className="formulario-label">
-                ¿Tienes discapacidad intelectual?
+                ¿Cómo te defines?
               </legend>
 
               {[
-                { id: "si", label: "Sí" },
-                { id: "no", label: "No" },
+                { id: "si", label: "Tengo discapacidad intelectual" },
+                { id: "no", label: "No tengo discapacidad intelectual" },
                 { id: "no_se", label: "No lo sé / No estoy segura(o)" },
                 { id: "prefiero_no", label: "Prefiero no decirlo" },
               ].map((option) => (
@@ -292,9 +292,9 @@ export default function ProfileModal({ isOpen, onClose, summary, onSave }) {
               aria-labelledby="modal-titulo-dificultades"
             >
               <legend id="modal-titulo-dificultades" className="formulario-label">
-                ¿Qué te cuesta más?
+                ¿Qué cosas te cuestan?
               </legend>
-              <p className="formulario-helper">Puedes elegir varias opciones</p>
+              <p className="formulario-helper">Marca lo que te pase. Puedes elegir varias o escribir.</p>
 
               {[
                 { id: "frases_largas", label: "Me cuesta leer y entender frases largas." },

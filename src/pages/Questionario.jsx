@@ -186,7 +186,7 @@ export default function Questionario({ onComplete }) {
     // Mapeo de IDs a etiquetas legibles (Lectura Fácil)
     const labelMap = {
         // Discapacidad intelectual
-        "si": "Sí, tengo discapacidad intelectual",
+        "si": "Tengo discapacidad intelectual",
         "no": "No tengo discapacidad intelectual",
         "no_se": "No lo sé",
         "prefiero_no": "Prefiero no decirlo",
@@ -352,15 +352,15 @@ export default function Questionario({ onComplete }) {
                     <div className="question-page">
                         <h2 id="titulo-sobre-ti">Sobre ti</h2>
 
-                        {/* Pregunta 1: ¿Tienes discapacidad intelectual? */}
+                        {/* Pregunta 1: ¿Cómo te defines? */}
                         <fieldset className="radio-group" aria-labelledby="pregunta-di">
                             <legend id="pregunta-di" className="question-label">
-                                <strong>¿Tienes discapacidad intelectual?</strong>
+                                <strong>¿Cómo te defines?</strong>
                             </legend>
 
                             {[
-                                { id: "si", label: "Sí" },
-                                { id: "no", label: "No" },
+                                { id: "si", label: "Tengo discapacidad intelectual" },
+                                { id: "no", label: "No tengo discapacidad intelectual" },
                                 { id: "no_se", label: "No lo sé / No estoy segura(o)" },
                                 { id: "prefiero_no", label: "Prefiero no decirlo" }
                             ].map((option) => (
@@ -427,7 +427,10 @@ export default function Questionario({ onComplete }) {
                 return (
                     <div className="question-page">
                         <h2 id="titulo-dificultades">Cuéntanos lo qué te cuesta.</h2>
-                        
+                        <p className="instruction">
+                            <strong>Marca lo que te pase. Puedes elegir varias o escribir.</strong>
+                        </p>
+
                         <fieldset className="checkbox-list-vertical" aria-labelledby="titulo-dificultades">
                             {[
                                 { id: "frases_largas", label: "Me cuesta leer y entender frases largas." },
