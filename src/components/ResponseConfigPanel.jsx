@@ -1,12 +1,16 @@
 /**
  * ResponseConfigPanel.jsx
  *
- * Panel lateral derecho para configurar cómo se presentan las respuestas de SofIA.
- * Permite activar/desactivar opciones como Lectura Fácil, Ejemplos, Listas, etc.
+ * Panel lateral derecho para configurar:
+ * - Cómo se presentan las respuestas de SofIA (Lectura Fácil, Ejemplos, etc.)
+ * - El rol del ayudante (Profesor o Familiar)
+ *
+ * Al aplicar cambios, la IA regenera la respuesta con la nueva configuración.
  */
 
 import { useState, useEffect } from "react";
 
+// Opciones de formato de respuesta
 const RESPONSE_OPTIONS = [
   {
     id: "lectura-facil",
@@ -15,46 +19,66 @@ const RESPONSE_OPTIONS = [
   },
   {
     id: "ejemplos",
-    label: "Ejemplos",
+    label: "Con ejemplos",
     description: "Incluir ejemplos prácticos para ilustrar",
   },
   {
     id: "listas",
-    label: "Listas",
+    label: "Con listas",
     description: "Organizar la información en puntos clave",
   },
   {
     id: "textos-cortos",
-    label: "Textos Cortos",
+    label: "Textos cortos",
     description: "Respuestas breves y concisas",
   },
   {
     id: "frases-sencillas",
-    label: "Frases Sencillas",
+    label: "Frases sencillas",
     description: "Usar frases cortas y vocabulario común",
+  },
+];
+
+// Opciones de rol
+const ROLE_OPTIONS = [
+  {
+    id: "profesor",
+    label: "Profesor",
+    description: "Explica de forma didáctica y paciente",
+  },
+  {
+    id: "familiar",
+    label: "Familiar",
+    description: "Cercano, cálido y de confianza",
   },
 ];
 
 export default function ResponseConfigPanel({
   currentConfig = [],
+  currentRole = "profesor",
   onApply,
+  onRoleChange,
 }) {
   const [selectedOptions, setSelectedOptions] = useState(currentConfig);
+  const [selectedRole, setSelectedRole] = useState(currentRole);
   const [hasChanges, setHasChanges] = useState(false);
 
   // Sincronizar con la configuración actual
   useEffect(() => {
     setSelectedOptions(currentConfig);
+    setSelectedRole(currentRole);
     setHasChanges(false);
-  }, [currentConfig]);
+  }, [currentConfig, currentRole]);
 
   // Detectar cambios
   useEffect(() => {
-    const changed =
+    const configChanged =
       JSON.stringify([...selectedOptions].sort()) !==
       JSON.stringify([...currentConfig].sort());
-    setHasChanges(changed);
-  }, [selectedOptions, currentConfig]);
+    const roleChanged = selectedRole !== currentRole;
+
+    setHasChanges(configChanged || roleChanged);
+  }, [selectedOptions, selectedRole, currentConfig, currentRole]);
 
   const toggleOption = (id) => {
     setSelectedOptions((prev) =>
@@ -66,11 +90,15 @@ export default function ResponseConfigPanel({
     if (onApply) {
       onApply(selectedOptions);
     }
+    if (onRoleChange && selectedRole !== currentRole) {
+      onRoleChange(selectedRole);
+    }
     setHasChanges(false);
   };
 
   const handleReset = () => {
     setSelectedOptions(currentConfig);
+    setSelectedRole(currentRole);
     setHasChanges(false);
   };
 
@@ -78,67 +106,95 @@ export default function ResponseConfigPanel({
     <div
       className="response-config-panel"
       role="complementary"
-      aria-label="Panel de configuración de respuestas"
+      aria-label="Panel de configuración"
     >
-      {/* Header con título */}
-      <div className="response-config-header">
-        <h2 className="response-config-title">
+      {/* Sección: Formato de respuestas */}
+      <div className="response-config-section">
+        <h2 className="response-config-section-title">
           Cómo quieres que aparezcan las respuestas
         </h2>
-      </div>
 
-      {/* Warning Message */}
-      {hasChanges && (
-        <div className="response-config-warning">
-          <span className="response-config-warning-icon">⚠️</span>
-          <p className="response-config-warning-text">
-            Los cambios no se aplicarán hasta que pulses el botón{" "}
-            <strong>"Aplicar cambios"</strong>
-          </p>
+        {/* Mensaje de advertencia */}
+        {hasChanges && (
+          <div className="response-config-warning">
+            <span className="response-config-warning-text">
+              Pulsa "Aplicar cambios" para regenerar la respuesta
+            </span>
+          </div>
+        )}
+
+        {/* Lista de opciones de formato */}
+        <div className="response-config-options">
+          {RESPONSE_OPTIONS.map((option) => {
+            const isSelected = selectedOptions.includes(option.id);
+
+            return (
+              <label
+                key={option.id}
+                className={`checkbox-card-row ${isSelected ? "checked" : ""}`}
+                htmlFor={`config-${option.id}`}
+              >
+                <input
+                  type="checkbox"
+                  id={`config-${option.id}`}
+                  checked={isSelected}
+                  onChange={() => toggleOption(option.id)}
+                />
+                <div className="checkbox-card-row-text">
+                  <span className="checkbox-card-row-label">{option.label}</span>
+                  <span className="checkbox-card-row-desc">{option.description}</span>
+                </div>
+                <span className="checkbox-card-row-indicator" aria-hidden="true">
+                  {isSelected ? "✓" : ""}
+                </span>
+              </label>
+            );
+          })}
         </div>
-      )}
-
-      {/* Options List */}
-      <div className="response-config-options">
-        {RESPONSE_OPTIONS.map((option) => {
-          const isSelected = selectedOptions.includes(option.id);
-
-          return (
-            <button
-              key={option.id}
-              onClick={() => toggleOption(option.id)}
-              className={`response-config-option ${
-                isSelected ? "selected" : ""
-              }`}
-              aria-pressed={isSelected}
-              role="checkbox"
-              aria-checked={isSelected}
-            >
-              <div className="response-config-option-content">
-                <div className="response-config-option-label">
-                  {option.label}
-                </div>
-                <div className="response-config-option-desc">
-                  {option.description}
-                </div>
-              </div>
-              <div className={`response-config-checkbox ${isSelected ? "checked" : ""}`}>
-                {isSelected && <span>✓</span>}
-              </div>
-            </button>
-          );
-        })}
       </div>
 
-      {/* Action Buttons */}
+      {/* Sección: Rol del ayudante */}
+      <div className="response-config-section">
+        <h2 className="response-config-section-title">
+          Quién te acompaña
+        </h2>
+
+        <div className="response-config-options">
+          {ROLE_OPTIONS.map((option) => {
+            const isSelected = selectedRole === option.id;
+
+            return (
+              <label
+                key={option.id}
+                className={`radio-card ${isSelected ? "checked" : ""}`}
+                htmlFor={`role-${option.id}`}
+              >
+                <input
+                  type="radio"
+                  name="role-config"
+                  id={`role-${option.id}`}
+                  checked={isSelected}
+                  onChange={() => setSelectedRole(option.id)}
+                />
+                <span className="radio-label">{option.label}</span>
+                <span className="radio-indicator" aria-hidden="true">
+                  {isSelected ? "✓" : ""}
+                </span>
+              </label>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Botones de acción */}
       <div className="response-config-actions">
         <button
           onClick={handleReset}
           disabled={!hasChanges}
           className="response-config-btn reset-btn"
-          aria-label="Eliminar cambios"
+          aria-label="Descartar cambios"
         >
-          Eliminar cambios
+          Descartar
         </button>
         <button
           onClick={handleApply}

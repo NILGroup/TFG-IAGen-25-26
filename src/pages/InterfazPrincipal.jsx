@@ -76,6 +76,9 @@ export default function InterfazPrincipal({
     // Configuración de respuestas (panel siempre visible)
     const [responseConfig, setResponseConfig] = useState(["lectura-facil", "ejemplos"]);
 
+    // Rol actual del ayudante (puede cambiar desde el panel lateral)
+    const [currentRole, setCurrentRole] = useState(modoSeleccionado || "profesor");
+
     // Estado para el panel de glosario
     const [showGlosario, setShowGlosario] = useState(false);
 
@@ -90,7 +93,14 @@ export default function InterfazPrincipal({
 
     const handleApplyResponseConfig = (newConfig) => {
         setResponseConfig(newConfig);
+        // TODO: Regenerar la última respuesta de la IA con la nueva configuración
         console.log("Nueva configuración de respuestas:", newConfig);
+    };
+
+    const handleRoleChange = (newRole) => {
+        setCurrentRole(newRole);
+        // TODO: Regenerar la última respuesta de la IA con el nuevo rol
+        console.log("Rol cambiado a:", newRole);
     };
 
     const {
@@ -418,7 +428,7 @@ export default function InterfazPrincipal({
                         toggleSpeech={toggleSpeech}
                         activeSpeechId={activeSpeechId}
                         speechState={speechState}
-                        avatarMode={modoSeleccionado}
+                        avatarMode={currentRole}
                         tooltipInfo={tooltipInfo}
                         handleTextSelection={handleTextSelection}
                         handleButtonClick={handleButtonClick}
@@ -435,7 +445,9 @@ export default function InterfazPrincipal({
                 {/* Panel de configuración de respuestas (siempre visible) */}
                 <ResponseConfigPanel
                     currentConfig={responseConfig}
+                    currentRole={currentRole}
                     onApply={handleApplyResponseConfig}
+                    onRoleChange={handleRoleChange}
                 />
 
                 {/* Modal de confirmación de salida */}

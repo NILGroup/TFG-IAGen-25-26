@@ -1667,140 +1667,108 @@ body {
   z-index: 999;
   display: flex;
   flex-direction: column;
+  overflow-y: auto;
 }
 
-/* Header del panel con título */
-.response-config-header {
-  padding: 16px;
+/* Sección del panel */
+.response-config-section {
+  padding: 20px;
   border-bottom: 1px solid #e0e0e0;
-  background-color: #f5f5f5;
 }
 
-.response-config-title {
-  font-size: 16px;
+.response-config-section:last-of-type {
+  border-bottom: none;
+}
+
+/* Título de sección */
+.response-config-section-title {
+  font-size: 15px;
   font-weight: 600;
-  color: #333;
-  margin: 0;
-  text-align: center;
-  line-height: 1.4;
+  color: #1a1a2e;
+  margin: 0 0 16px 0;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #e0e0e0;
 }
 
 /* Mensaje de advertencia */
 .response-config-warning {
   background-color: #fff3cd;
   border-left: 4px solid #ffc107;
-  padding: 16px;
-  margin: 16px;
+  padding: 12px 14px;
+  margin-bottom: 16px;
   border-radius: 8px;
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-}
-
-.response-config-warning-icon {
-  font-size: 20px;
-  flex-shrink: 0;
 }
 
 .response-config-warning-text {
-  font-size: 14px;
+  font-size: 13px;
   color: #856404;
-  line-height: 1.5;
+  line-height: 1.4;
   margin: 0;
 }
 
-/* Lista de opciones */
+/* Lista de opciones - usa los estilos de checkbox-card-row del cuestionario */
 .response-config-options {
-  flex: 1;
-  overflow-y: auto;
-  padding: 24px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 8px;
 }
 
-/* Cada opción */
-.response-config-option {
-  width: 100%;
-  text-align: left;
-  padding: 20px;
-  border-radius: 8px;
-  border: 2px solid #e0e0e0;
-  background-color: white;
-  cursor: pointer;
-  transition: all 0.2s;
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 16px;
+/* Ajustes específicos para el panel lateral */
+.response-config-panel .checkbox-card-row {
+  padding: 12px 14px;
+  min-height: auto;
 }
 
-.response-config-option:hover {
-  border-color: #9e9e9e;
-}
-
-.response-config-option.selected {
-  background-color: #e8f5e9;
-  border-color: #4caf50;
-}
-
-.response-config-option-content {
-  flex: 1;
-}
-
-.response-config-option-label {
-  font-size: 18px;
-  font-weight: bold;
-  color: #1a1a2e;
-  margin-bottom: 4px;
-}
-
-.response-config-option-desc {
+.response-config-panel .checkbox-card-row-label {
   font-size: 15px;
-  color: #666;
-  line-height: 1.4;
 }
 
-/* Checkbox personalizado */
-.response-config-checkbox {
-  width: 24px;
-  height: 24px;
-  border: 2px solid #ccc;
-  border-radius: 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  margin-top: 4px;
-  transition: all 0.2s;
+.response-config-panel .checkbox-card-row-desc {
+  font-size: 12px;
 }
 
-.response-config-checkbox.checked {
-  background-color: #4caf50;
-  border-color: #4caf50;
+.response-config-panel .checkbox-card-row-indicator {
+  width: 26px;
+  height: 26px;
+  min-width: 26px;
+  font-size: 14px;
 }
 
-.response-config-checkbox span {
-  color: white;
-  font-weight: bold;
-  font-size: 16px;
+/* Ajustes para radio buttons en el panel */
+.response-config-panel .radio-card {
+  padding: 12px 14px;
+  min-height: auto;
 }
 
-/* Botones de acción - alineados con input bar */
+.response-config-panel .radio-label {
+  font-size: 15px;
+}
+
+.response-config-panel .radio-indicator {
+  width: 26px;
+  height: 26px;
+  min-width: 26px;
+  font-size: 14px;
+}
+
+/* Botones de acción */
 .response-config-actions {
   border-top: 1px solid #e0e0e0;
-  padding: 16px;
+  padding: 16px 20px;
   display: flex;
-  gap: 12px;
-  margin-top: auto; /* Empuja al fondo */
+  gap: 10px;
+  margin-top: auto;
+  background-color: #fafafa;
+  position: sticky;
+  bottom: 0;
 }
 
 .response-config-btn {
   flex: 1;
-  padding: 12px 24px;
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: bold;
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
   border: 2px solid;
@@ -1814,11 +1782,12 @@ body {
 .reset-btn {
   background-color: white;
   color: #666;
-  border-color: #ccc;
+  border-color: #d0d0d0;
 }
 
 .reset-btn:hover:not(:disabled) {
   background-color: #f5f5f5;
+  border-color: #bbb;
 }
 
 .apply-btn {
@@ -1828,13 +1797,19 @@ body {
 }
 
 .apply-btn:hover:not(:disabled) {
-  background-color: #45a049;
+  background-color: #43a047;
+  border-color: #43a047;
 }
 
 .apply-btn:disabled {
-  background-color: #d1d5db;
-  color: #9ca3af;
-  border-color: #d1d5db;
+  background-color: #e0e0e0;
+  color: #999;
+  border-color: #e0e0e0;
+}
+
+.response-config-btn:focus-visible {
+  outline: 3px solid #2196f3;
+  outline-offset: 2px;
 }
 
 /*==================================
