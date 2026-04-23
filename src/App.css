@@ -87,9 +87,8 @@ body {
 .header-bar-container {
   position: relative;
   height: 100%;
-  max-width: 1470px;
-  margin: 0 auto;
-  padding: 0 4px;
+  width: 100%;
+  padding: 0 16px;
 }
 
 .header-bar-title {
