@@ -426,11 +426,8 @@ export default function Questionario({ onComplete }) {
             case 3:
                 return (
                     <div className="question-page">
-                        <h2 id="titulo-dificultades">SofIA se adapta a ti</h2>
-                        <p className="instruction">
-                            <strong>Tú eliges lo que te cuesta.</strong>
-                        </p>
-
+                        <h2 id="titulo-dificultades">Cuéntanos lo qué te cuesta.</h2>
+                        
                         <fieldset className="checkbox-list-vertical" aria-labelledby="titulo-dificultades">
                             {[
                                 { id: "frases_largas", label: "Me cuesta leer y entender frases largas." },
