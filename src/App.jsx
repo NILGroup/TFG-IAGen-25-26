@@ -197,7 +197,7 @@ export default function App() {
         <div className="header-bar">
           <div className="header-bar-container">
             {/* Izquierda: botón Historial */}
-            {chatHistory.length > 0 && (
+            {summary &&
               <div className="header-bar-left">
                 <button
                   className="header-historial-btn"
@@ -207,7 +207,7 @@ export default function App() {
                   <span className="header-historial-texto">Historial</span>
                 </button>
               </div>
-            )}
+            }
 
             {/* Título central - clickeable para ir a QuestionPromptPanel */}
             <h1
