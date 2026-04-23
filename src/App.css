@@ -2544,6 +2544,8 @@ body {
   margin: 110px auto 0;
   height: calc(100vh - 110px - 70px); /* 110px margin top + 70px input bar */
   overflow: hidden;
+  min-height: 0; /* Fix para Safari */
+  -webkit-flex: 1; /* Prefijo para Safari */
 }
 
 /* Cuadro blanco solo para los mensajes - más ancho */
@@ -2559,6 +2561,7 @@ body {
   flex: 1;
   display: flex;
   flex-direction: column;
+  min-height: 0; /* Fix para Safari */
 }
 
 /* Contenedor interno para scroll */
@@ -2567,6 +2570,8 @@ body {
   overflow-y: auto;
   padding-right: 8px; /* Espacio para scrollbar */
   background-color: white;
+  min-height: 0; /* Fix para Safari */
+  -webkit-overflow-scrolling: touch; /* Scroll suave en Safari iOS */
 }
 
 /* Botón finalizar flotante - fondo transparente */

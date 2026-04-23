@@ -14,6 +14,7 @@
  * - Tooltip para seleccionar texto y obtener ayuda
  */
 
+import { useEffect, useRef } from "react";
 import Chat from "./Chat";
 import { TooltipBubble } from "./TooltipBubble";
 
@@ -49,6 +50,30 @@ export default function ChatActivePanel({
     onGuardarFavorito,           // Guarda un par pregunta-respuesta específico
     isResponseSaved,             // Verifica si una respuesta ya está guardada
 }) {
+    // Ref para el contenedor del chat (para forzar repaint en Safari)
+    const wrapperRef = useRef(null);
+
+    /**
+     * Fix para Safari: fuerza un repaint cuando el contenido cambia.
+     * Safari no recalcula el layout automáticamente con flexbox dinámico.
+     */
+    useEffect(() => {
+        if (wrapperRef.current) {
+            // Forzar repaint en Safari
+            const element = wrapperRef.current;
+
+            // Técnica 1: Forzar reflow leyendo offsetHeight
+            void element.offsetHeight;
+
+            // Técnica 2: Cambiar display momentáneamente
+            requestAnimationFrame(() => {
+                element.style.display = 'none';
+                void element.offsetHeight; // Forzar reflow
+                element.style.display = '';
+            });
+        }
+    }, [chatFlow]);
+
     /**
      * Envía una pregunta de seguimiento al chat.
      * Se ejecuta cuando el usuario presiona el botón de enviar o Enter.
@@ -65,7 +90,7 @@ export default function ChatActivePanel({
     };
 
     return (
-        <div className="chat-active-wrapper">
+        <div className="chat-active-wrapper" ref={wrapperRef}>
             {/* ========================================
                 CUADRO BLANCO: ÁREA DE MENSAJES
                 ========================================
