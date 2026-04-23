@@ -134,9 +134,9 @@ export default function ChatActivePanel({
                         onClick={async () => {
                             await saveChatToHistory();
                         }}
-                        aria-label="Finalizar y guardar conversación"
+                        aria-label="He terminado"
                     >
-                        Finalizar conversación
+                        He terminado
                     </button>
                 </div>
             )}
@@ -161,7 +161,7 @@ export default function ChatActivePanel({
                                 submitFollowup();
                             }
                         }}
-                        aria-label="Campo para escribir tu pregunta a SofIA"
+                        aria-label="Escribe tu pregunta aquí"
                     />
 
                     {/* Botón de enviar */}
@@ -171,7 +171,7 @@ export default function ChatActivePanel({
                         disabled={!prompt.trim()}
                         aria-label="Enviar pregunta"
                     >
-                        ➤
+                        Enviar
                     </button>
                 </div>
             </div>

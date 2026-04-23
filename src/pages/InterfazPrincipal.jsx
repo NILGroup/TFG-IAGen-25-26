@@ -373,17 +373,17 @@ export default function InterfazPrincipal({
                 </div>
             </div>
 
-            {/* Botón de favoritos */}
+            {/* Botón de respuestas recordadas */}
             {favorites.length > 0 && (
                 <div className="favoritos-btn-container">
                     <button
                         className="favoritos-btn"
                         onClick={() => setShowFavoritos(true)}
-                        aria-label={`Abrir favoritos. ${favorites.length} guardados`}
+                        aria-label={`Ver ${favorites.length} ${favorites.length === 1 ? "respuesta recordada" : "respuestas recordadas"}`}
                     >
-                        <span className="favoritos-btn-contador">{favorites.length}</span>
-                        <span className="favoritos-btn-separador">|</span>
-                        <span className="favoritos-btn-texto">Favoritos</span>
+                        <span className="favoritos-btn-texto">
+                            {favorites.length} {favorites.length === 1 ? "respuesta recordada" : "respuestas recordadas"}
+                        </span>
                     </button>
                 </div>
             )}

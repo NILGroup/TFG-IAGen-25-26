@@ -47,12 +47,12 @@ export default function FavoritosModal({ isOpen, onClose, favorites, onDelete })
                 {/* Header */}
                 <div className="modal-historial-header">
                     <h2 id="favoritos-modal-title" className="modal-historial-titulo">
-                        Favoritos
+                        Mis respuestas recordadas
                     </h2>
                     <button
                         onClick={onClose}
                         className="modal-historial-cerrar"
-                        aria-label="Cerrar favoritos"
+                        aria-label="Cerrar mis respuestas recordadas"
                     >
                         Cerrar
                     </button>
@@ -63,7 +63,10 @@ export default function FavoritosModal({ isOpen, onClose, favorites, onDelete })
                     {favorites.length === 0 ? (
                         <div className="modal-historial-vacio">
                             <p className="modal-historial-vacio-texto">
-                                Pulsa "Guardar" en el chat para guardar una pregunta aquí
+                                Todavía no has recordado nada.
+                            </p>
+                            <p className="modal-historial-vacio-texto">
+                                En el chat, pulsa el botón Recordar para añadir respuestas aquí.
                             </p>
                         </div>
                     ) : (
@@ -82,9 +85,9 @@ export default function FavoritosModal({ isOpen, onClose, favorites, onDelete })
                                                 setCurrentPage(currentPage - 1);
                                             }
                                         }}
-                                        aria-label="Eliminar favorito"
+                                        aria-label="Olvidar esta respuesta"
                                     >
-                                        Eliminar
+                                        Olvidar
                                     </button>
                                 )}
                             </div>
@@ -111,7 +114,7 @@ export default function FavoritosModal({ isOpen, onClose, favorites, onDelete })
                 {/* Footer con paginación */}
                 <div className="modal-historial-footer">
                     <p className="modal-historial-footer-total">
-                        {totalFavoritos} {totalFavoritos === 1 ? "favorito" : "favoritos"}
+                        {totalFavoritos} {totalFavoritos === 1 ? "respuesta recordada" : "respuestas recordadas"}
                     </p>
 
                     {totalPages > 1 && (
@@ -120,22 +123,22 @@ export default function FavoritosModal({ isOpen, onClose, favorites, onDelete })
                                 onClick={handlePreviousPage}
                                 disabled={currentPage === 1}
                                 className="modal-historial-paginacion-btn"
-                                aria-label="Página anterior"
+                                aria-label="Ver el anterior"
                             >
-                                ← Anterior
+                                Anterior
                             </button>
 
                             <span className="modal-historial-paginacion-texto">
-                                Página {currentPage} de {totalPages}
+                                Respuesta {currentPage} de {totalPages}
                             </span>
 
                             <button
                                 onClick={handleNextPage}
                                 disabled={currentPage === totalPages}
                                 className="modal-historial-paginacion-btn"
-                                aria-label="Página siguiente"
+                                aria-label="Ver el siguiente"
                             >
-                                Siguiente →
+                                Siguiente
                             </button>
                         </div>
                     )}

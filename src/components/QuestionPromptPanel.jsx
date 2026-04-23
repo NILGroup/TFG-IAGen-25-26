@@ -42,17 +42,17 @@ export default function QuestionPromptPanel({
 
     return (
         <div className="question-prompt-container">
-            {/* Botón de favoritos - centrado debajo del header */}
+            {/* Botón de respuestas recordadas - centrado debajo del header */}
             {favorites.length > 0 && onOpenFavoritos && (
                 <div className="favoritos-btn-container">
                     <button
                         className="favoritos-btn"
                         onClick={onOpenFavoritos}
-                        aria-label={`Abrir favoritos. ${favorites.length} guardados`}
+                        aria-label={`Ver ${favorites.length} ${favorites.length === 1 ? "respuesta recordada" : "respuestas recordadas"}`}
                     >
-                        <span className="favoritos-btn-contador">{favorites.length}</span>
-                        <span className="favoritos-btn-separador">|</span>
-                        <span className="favoritos-btn-texto">Favoritos</span>
+                        <span className="favoritos-btn-texto">
+                            {favorites.length} {favorites.length === 1 ? "respuesta recordada" : "respuestas recordadas"}
+                        </span>
                     </button>
                 </div>
             )}

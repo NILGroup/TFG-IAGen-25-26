@@ -1647,7 +1647,7 @@ body {
   opacity: 0.7;
   margin-top: 8px;
   margin-bottom: 0;
-  text-align: right;
+  text-align: left;
   font-style: italic;
 }
 
@@ -2297,7 +2297,7 @@ body {
 }
 
 .modal-historial-vacio {
-  text-align: center;
+  text-align: left;
   padding: 48px 24px;
 }
 
@@ -2542,7 +2542,7 @@ body {
 
 /* Header naranja para favoritos (override del historial) */
 .favoritos-modal .modal-historial-header {
-  background-color: #d97706;
+  background-color: #b45309;
 }
 
 .favoritos-contenido {
@@ -2578,8 +2578,8 @@ body {
   font-weight: 600;
   padding: 8px 16px;
   background-color: transparent;
-  border: 2px solid #e0e0e0;
-  color: #888;
+  border: 2px solid #d0d0d0;
+  color: #666;
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s;
@@ -2608,10 +2608,9 @@ body {
 
 .favorito-pagina-label {
   display: block;
-  font-size: 13px;
-  color: #888;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  font-size: 14px;
+  color: #555;
+  letter-spacing: 0.3px;
   margin-bottom: 6px;
   font-weight: 600;
 }
@@ -2835,10 +2834,10 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
-  background-color: #d97706;
+  background-color: #b45309;
   color: white;
   border: none;
-  font-size: 23px;
+  font-size: 20px;
   font-weight: bold;
   cursor: pointer;
   padding: 0 24px;
@@ -2850,7 +2849,7 @@ body {
 }
 
 .favoritos-btn:hover {
-  background-color: #b45309;
+  background-color: #92400e;
 }
 
 .favoritos-btn:focus-visible {
@@ -2954,19 +2953,20 @@ body {
 }
 
 .chat-input-field::placeholder {
-  color: #999;
+  color: #666;
   font-size: 18px;
 }
 
 .chat-send-btn {
-  width: 56px;
+  padding: 14px 24px;
   height: 56px;
   background-color: #1f4189;
   color: white;
   border: none;
   border-radius: 10px;
-  font-size: 24px;
-  font-weight: bold;
+  font-size: 18px;
+  font-weight: 600;
+  font-family: inherit;
   cursor: pointer;
   transition: background-color 0.2s;
   display: flex;
@@ -3160,9 +3160,9 @@ body {
   outline-offset: 2px;
 }
 
-/* Botón guardar respuesta en favoritos - Amarillo */
+/* Botón guardar respuesta en favoritos - Naranja oscuro */
 .guardar-respuesta-btn {
-  background: #d97706;
+  background: #b45309;
   color: white;
   border: none;
   border-radius: 8px;
@@ -3175,7 +3175,7 @@ body {
 }
 
 .guardar-respuesta-btn:hover:not(:disabled) {
-  background: #b45309;
+  background: #92400e;
 }
 
 .guardar-respuesta-btn:focus-visible {
@@ -3185,12 +3185,12 @@ body {
 
 /* Estado cuando ya está guardado */
 .guardar-respuesta-btn.guardado {
-  background: #9ca3af;
+  background: #6b7280;
   cursor: not-allowed;
 }
 
 .guardar-respuesta-btn.guardado:hover {
-  background: #9ca3af;
+  background: #6b7280;
 }
 
 /*========================
