@@ -113,6 +113,7 @@ export default function Questionario({ onComplete }) {
             grado: ""                            // "limite" | "leve" | "moderada" | "severa" | "profunda" | "no_se" | "prefiero_no"
         },
         retos: [],                               // array: dificultades seleccionadas
+        retoOtro: "",                            // string: texto personalizado de "Otra opción"
         herramientas: [],                        // array: herramientas de ayuda preferidas
         mostrarPorPartes: false,                 // boolean: dividir respuestas largas
         rol: "profesor"                          // string: rol de Olivía
@@ -148,12 +149,25 @@ export default function Questionario({ onComplete }) {
     };
 
     // PÁGINA 3 - Dificultades - retos
-    const toggleReto = (id) => {
+    const toggleReto = (id, borrarTexto = false) => {
+        setSummary(prev => {
+            const newRetos = prev.retos.includes(id)
+                ? prev.retos.filter(item => item !== id)
+                : [...prev.retos, id];
+
+            // Si deselecciona "otra" y se indica borrar texto
+            if (id === "otra" && prev.retos.includes(id) && borrarTexto) {
+                return { ...prev, retos: newRetos, retoOtro: "" };
+            }
+            return { ...prev, retos: newRetos };
+        });
+    };
+
+    // Manejar el texto de "Otra opción"
+    const handleRetoOtro = (e) => {
         setSummary(prev => ({
             ...prev,
-            retos: prev.retos.includes(id)
-                ? prev.retos.filter(item => item !== id)
-                : [...prev.retos, id]
+            retoOtro: e.target.value
         }));
     };
 
@@ -172,7 +186,7 @@ export default function Questionario({ onComplete }) {
     // Mapeo de IDs a etiquetas legibles (Lectura Fácil)
     const labelMap = {
         // Discapacidad intelectual
-        "si": "Sí, tengo discapacidad intelectual",
+        "si": "Tengo discapacidad intelectual",
         "no": "No tengo discapacidad intelectual",
         "no_se": "No lo sé",
         "prefiero_no": "Prefiero no decirlo",
@@ -189,67 +203,78 @@ export default function Questionario({ onComplete }) {
         "recordar": "Recordar cosas",
         "pensar_palabras": "Pensar palabras para escribir",
         "escribir_largo": "Escribir frases largas",
+        "otra": "Otra dificultad",
         // Herramientas
         "lecturaFacil": "Lectura Fácil",
         "ejemplo": "Con ejemplos",
         "bullet": "Con listas",
         "textocorto": "Respuestas cortas",
-        "frasescortas": "Frases fáciles"
+        "frasescortas": "Frases sencillas"
     };
 
     // PÁGINA 5 - Resumen con etiquetas claras
-    const generateSummary = () => (
-        <div className="summary-box-horizontal" role="region" aria-label="Resumen de tu configuración">
-            <h3>Resumen:</h3>
+    const generateSummary = () => {
+        // Verificar si hay dificultades seleccionadas o texto en "otra"
+        const hayDificultades = summary.retos.length > 0 || summary.retoOtro.trim();
 
-            <div className="summary-row">
-                <span className="summary-title">Nombre:</span>
-                <span className="summary-data">{summary.nombre || "No indicado"}</span>
-            </div>
+        return (
+            <div className="summary-box-horizontal" role="region" aria-label="Resumen de lo que has elegido">
+                <h3>Esto es lo que has elegido:</h3>
 
-            <div className="summary-row">
-                <span className="summary-title">Perfil:</span>
-                <ul className="summary-bubbles">
-                    {summary.discapacidad.tieneDI ? (
-                        <>
-                            <li>{labelMap[summary.discapacidad.tieneDI] || summary.discapacidad.tieneDI}</li>
-                            {summary.discapacidad.grado && (
-                                <li>{labelMap[summary.discapacidad.grado] || summary.discapacidad.grado}</li>
-                            )}
-                        </>
-                    ) : (
-                        <li>No indicado</li>
-                    )}
-                </ul>
-            </div>
+                <div className="summary-row">
+                    <span className="summary-title">Tu nombre:</span>
+                    <span className="summary-data">{summary.nombre || "No has escrito nada"}</span>
+                </div>
 
-            <div className="summary-row">
-                <span className="summary-title">Dificultades:</span>
-                <ul className="summary-bubbles">
-                    {summary.retos.length > 0 ? (
-                        summary.retos.map((item) => (
-                            <li key={item}>{labelMap[item] || item}</li>
-                        ))
-                    ) : (
-                        <li>No seleccionado</li>
-                    )}
-                </ul>
-            </div>
+                <div className="summary-row">
+                    <span className="summary-title">Sobre ti:</span>
+                    <ul className="summary-bubbles">
+                        {summary.discapacidad.tieneDI ? (
+                            <>
+                                <li>{labelMap[summary.discapacidad.tieneDI] || summary.discapacidad.tieneDI}</li>
+                                {summary.discapacidad.grado && (
+                                    <li>{labelMap[summary.discapacidad.grado] || summary.discapacidad.grado}</li>
+                                )}
+                            </>
+                        ) : (
+                            <li>No has elegido nada</li>
+                        )}
+                    </ul>
+                </div>
 
-            <div className="summary-row">
-                <span className="summary-title">Ayuda:</span>
-                <ul className="summary-bubbles">
-                    {summary.herramientas.length > 0 ? (
-                        summary.herramientas.map((toolId) => (
-                            <li key={toolId}>{labelMap[toolId] || toolId}</li>
-                        ))
-                    ) : (
-                        <li>Ninguna seleccionada</li>
-                    )}
-                </ul>
+                <div className="summary-row">
+                    <span className="summary-title">Lo que te cuesta:</span>
+                    <ul className="summary-bubbles">
+                        {hayDificultades ? (
+                            <>
+                                {summary.retos.map((item) => (
+                                    <li key={item}>{labelMap[item] || item}</li>
+                                ))}
+                                {summary.retoOtro.trim() && (
+                                    <li key="retoOtro">{summary.retoOtro}</li>
+                                )}
+                            </>
+                        ) : (
+                            <li>No has elegido nada</li>
+                        )}
+                    </ul>
+                </div>
+
+                <div className="summary-row">
+                    <span className="summary-title">Cómo te ayudo:</span>
+                    <ul className="summary-bubbles">
+                        {summary.herramientas.length > 0 ? (
+                            summary.herramientas.map((toolId) => (
+                                <li key={toolId}>{labelMap[toolId] || toolId}</li>
+                            ))
+                        ) : (
+                            <li>No has elegido nada</li>
+                        )}
+                    </ul>
+                </div>
             </div>
-        </div>
-    );
+        );
+    };
 
 
 
@@ -263,13 +288,13 @@ export default function Questionario({ onComplete }) {
         {
             id: "lecturaFacil",
             label: "Lectura Fácil",
-            description: "Te explico todo de forma sencilla",
-            ejemplo: "Un planeta es un cuerpo celeste. Un planeta orbita alrededor del Sol, es grande y tiene forma de bola."
+            description: "Te explico todo con palabras sencillas",
+            ejemplo: "Un planeta es una bola muy grande. Está en el cielo. Da vueltas alrededor del Sol."
         },
         {
             id: "ejemplo",
             label: "Con ejemplos",
-            description: "Te explico con casos de la vida real",
+            description: "Te lo explico con cosas que conoces",
             ejemplo: "Un planeta es como una pelota grande que da vueltas al Sol."
         },
         {
@@ -280,14 +305,14 @@ export default function Questionario({ onComplete }) {
         },
         {
             id: "textocorto",
-            label: "Textos cortos",
+            label: "Respuestas cortas",
             description: "Te lo cuento en pocas palabras",
             ejemplo: "Un planeta es una bola grande que gira alrededor del Sol."
         },
         {
             id: "frasescortas",
-            label: "Frases sencillas",
-            description: "Uso palabras fáciles de entender",
+            label: "Frases cortas",
+            description: "Cada idea es una frase corta",
             ejemplo: "Es una bola. Es muy grande. Da vueltas al Sol."
         }
     ];
@@ -327,15 +352,15 @@ export default function Questionario({ onComplete }) {
                     <div className="question-page">
                         <h2 id="titulo-sobre-ti">Sobre ti</h2>
 
-                        {/* Pregunta 1: ¿Tienes discapacidad intelectual? */}
+                        {/* Pregunta 1: ¿Cómo te defines? */}
                         <fieldset className="radio-group" aria-labelledby="pregunta-di">
                             <legend id="pregunta-di" className="question-label">
-                                <strong>¿Tienes discapacidad intelectual?</strong>
+                                <strong>¿Cómo te defines?</strong>
                             </legend>
 
                             {[
-                                { id: "si", label: "Sí" },
-                                { id: "no", label: "No" },
+                                { id: "si", label: "Tengo discapacidad intelectual" },
+                                { id: "no", label: "No tengo discapacidad intelectual" },
                                 { id: "no_se", label: "No lo sé / No estoy segura(o)" },
                                 { id: "prefiero_no", label: "Prefiero no decirlo" }
                             ].map((option) => (
@@ -401,9 +426,9 @@ export default function Questionario({ onComplete }) {
             case 3:
                 return (
                     <div className="question-page">
-                        <h2 id="titulo-dificultades">SofIA se adapta a ti</h2>
+                        <h2 id="titulo-dificultades">Cuéntanos lo qué te cuesta.</h2>
                         <p className="instruction">
-                            <strong>Tú eliges lo que te cuesta.</strong>
+                            <strong>Marca lo que te pase. Puedes elegir varias o escribir.</strong>
                         </p>
 
                         <fieldset className="checkbox-list-vertical" aria-labelledby="titulo-dificultades">
@@ -432,6 +457,18 @@ export default function Questionario({ onComplete }) {
                                     </span>
                                 </label>
                             ))}
+
+                            {/* Opción "Otra" - input directo sin tick */}
+                            <div className={`checkbox-card-otra-directa ${summary.retoOtro.trim() ? 'activa' : ''}`}>
+                                <span className="otra-opcion-label">Me cuesta otra cosa:</span>
+                                <input
+                                    type="text"
+                                    className="otra-opcion-input-directa"
+                                    placeholder="Escribe aquí..."
+                                    value={summary.retoOtro}
+                                    onChange={handleRetoOtro}
+                                />
+                            </div>
                         </fieldset>
                     </div>
                 );
@@ -480,9 +517,9 @@ export default function Questionario({ onComplete }) {
             case 5:
                 return (
                     <div className="question-page">
-                        <h2>¡Listo!</h2>
+                        <h2>Ya casi terminas</h2>
                         <p className="instruction">
-                            <strong>Mira si todo está bien.</strong>
+                            <strong>Mira lo que has elegido.</strong>
                         </p>
 
                         {generateSummary()}
