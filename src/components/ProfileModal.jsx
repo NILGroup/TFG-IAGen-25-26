@@ -213,12 +213,12 @@ export default function ProfileModal({ isOpen, onClose, summary, onSave }) {
           <div className="formulario-card">
             <fieldset className="radio-group" aria-labelledby="modal-pregunta-di">
               <legend id="modal-pregunta-di" className="formulario-label">
-                ¿Cómo te defines?
+                ¿Tienes discapacidad intelectual?
               </legend>
 
               {[
-                { id: "si", label: "Tengo discapacidad intelectual" },
-                { id: "no", label: "No tengo discapacidad intelectual" },
+                { id: "si", label: "Sí" },
+                { id: "no", label: "No" },
                 { id: "no_se", label: "No lo sé / No estoy segura(o)" },
                 { id: "prefiero_no", label: "Prefiero no decirlo" },
               ].map((option) => (

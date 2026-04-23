@@ -186,8 +186,8 @@ export default function Questionario({ onComplete }) {
     // Mapeo de IDs a etiquetas legibles (Lectura Fácil)
     const labelMap = {
         // Discapacidad intelectual
-        "si": "Tengo discapacidad intelectual",
-        "no": "No tengo discapacidad intelectual",
+        "si": "Sí",
+        "no": "No",
         "no_se": "No lo sé",
         "prefiero_no": "Prefiero no decirlo",
         // Grados
@@ -352,15 +352,15 @@ export default function Questionario({ onComplete }) {
                     <div className="question-page">
                         <h2 id="titulo-sobre-ti">Sobre ti</h2>
 
-                        {/* Pregunta 1: ¿Cómo te defines? */}
+                        {/* Pregunta 1: ¿Tienes discapacidad intelectual? */}
                         <fieldset className="radio-group" aria-labelledby="pregunta-di">
                             <legend id="pregunta-di" className="question-label">
-                                <strong>¿Cómo te defines?</strong>
+                                <strong>¿Tienes discapacidad intelectual?</strong>
                             </legend>
 
                             {[
-                                { id: "si", label: "Tengo discapacidad intelectual" },
-                                { id: "no", label: "No tengo discapacidad intelectual" },
+                                { id: "si", label: "Sí" },
+                                { id: "no", label: "No" },
                                 { id: "no_se", label: "No lo sé / No estoy segura(o)" },
                                 { id: "prefiero_no", label: "Prefiero no decirlo" }
                             ].map((option) => (

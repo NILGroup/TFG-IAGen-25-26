@@ -15,27 +15,27 @@ const RESPONSE_OPTIONS = [
   {
     id: "lectura-facil",
     label: "Lectura Fácil",
-    description: "Texto simplificado y fácil de entender",
+    description: "Con palabras fáciles",
   },
   {
     id: "ejemplos",
     label: "Con ejemplos",
-    description: "Incluir ejemplos prácticos para ilustrar",
+    description: "Te pongo ejemplos para entenderlo mejor",
   },
   {
     id: "listas",
     label: "Con listas",
-    description: "Organizar la información en puntos clave",
+    description: "Te lo cuento punto por punto",
   },
   {
     id: "textos-cortos",
     label: "Textos cortos",
-    description: "Respuestas breves y concisas",
+    description: "Respuestas cortas",
   },
   {
     id: "frases-sencillas",
     label: "Frases sencillas",
-    description: "Usar frases cortas y vocabulario común",
+    description: "Frases cortas y palabras del día a día",
   },
 ];
 
@@ -44,12 +44,12 @@ const ROLE_OPTIONS = [
   {
     id: "profesor",
     label: "Profesor",
-    description: "Explica de forma didáctica y paciente",
+    description: "Te explica paso a paso con paciencia",
   },
   {
     id: "familiar",
     label: "Familiar",
-    description: "Cercano, cálido y de confianza",
+    description: "Te ayuda con cariño y confianza",
   },
 ];
 
@@ -111,14 +111,14 @@ export default function ResponseConfigPanel({
       {/* Sección: Formato de respuestas */}
       <div className="response-config-section">
         <h2 className="response-config-section-title">
-          Cómo quieres que aparezcan las respuestas
+          Cómo quieres las respuestas
         </h2>
 
         {/* Mensaje de advertencia */}
         {hasChanges && (
           <div className="response-config-warning">
             <span className="response-config-warning-text">
-              Pulsa "Aplicar cambios" para regenerar la respuesta
+              Pulsa Aplicar cambios para ver la respuesta de otra forma
             </span>
           </div>
         )}
@@ -192,9 +192,9 @@ export default function ResponseConfigPanel({
           onClick={handleReset}
           disabled={!hasChanges}
           className="response-config-btn reset-btn"
-          aria-label="Descartar cambios"
+          aria-label="No cambiar nada"
         >
-          Descartar
+          No cambiar
         </button>
         <button
           onClick={handleApply}

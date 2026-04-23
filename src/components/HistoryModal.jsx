@@ -110,12 +110,12 @@ export default function HistoryModal({
         {/* Header */}
         <div className="modal-historial-header">
           <h2 id="history-modal-title" className="modal-historial-titulo">
-            Conversaciones anteriores
+            Mis conversaciones
           </h2>
           <button
             onClick={onClose}
             className="modal-historial-cerrar"
-            aria-label="Cerrar historial"
+            aria-label="Cerrar mis conversaciones"
           >
             Cerrar
           </button>
@@ -178,19 +178,19 @@ export default function HistoryModal({
                         {isConfirmingDelete ? (
                           <div className="modal-historial-confirmar-eliminar">
                             <span className="modal-historial-confirmar-texto">
-                              ¿Eliminar?
+                              ¿Borrar esta conversación?
                             </span>
                             <button
                               className="modal-historial-btn-confirmar"
                               onClick={(e) => handleConfirmDelete(e, entry)}
-                              aria-label="Confirmar eliminar"
+                              aria-label="Sí, borrar esta conversación"
                             >
-                              Sí
+                              Sí, borrar
                             </button>
                             <button
                               className="modal-historial-btn-cancelar"
                               onClick={handleCancelDelete}
-                              aria-label="Cancelar eliminar"
+                              aria-label="No borrar"
                             >
                               No
                             </button>
@@ -199,9 +199,9 @@ export default function HistoryModal({
                           <button
                             className="modal-historial-btn-eliminar"
                             onClick={(e) => handleDeleteClick(e, entry, globalIndex)}
-                            aria-label="Eliminar conversación"
+                            aria-label="Borrar conversación"
                           >
-                            Eliminar
+                            Borrar
                           </button>
                         )}
                       </div>
@@ -226,14 +226,14 @@ export default function HistoryModal({
                 onClick={handlePreviousPage}
                 disabled={currentPage === 1}
                 className="modal-historial-paginacion-btn"
-                aria-label="Página anterior"
+                aria-label="Ver anterior"
               >
-                ← Anterior
+                Anterior
               </button>
 
               {/* Indicador de página */}
               <span className="modal-historial-paginacion-texto">
-                Página {currentPage} de {totalPages}
+                Viendo {currentPage} de {totalPages}
               </span>
 
               {/* Botón Siguiente */}
@@ -241,9 +241,9 @@ export default function HistoryModal({
                 onClick={handleNextPage}
                 disabled={currentPage === totalPages}
                 className="modal-historial-paginacion-btn"
-                aria-label="Página siguiente"
+                aria-label="Ver siguiente"
               >
-                Siguiente →
+                Siguiente
               </button>
             </div>
           )}
