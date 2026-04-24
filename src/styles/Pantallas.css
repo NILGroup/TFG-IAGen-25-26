@@ -176,6 +176,15 @@
   text-align: left;
 }
 
+/* Descripción breve dentro de las tarjetas de rol */
+.modo-card-desc {
+  font-size: clamp(0.95rem, 2vw, 1.1rem);
+  color: #555;
+  text-align: left;
+  margin: 0;
+  line-height: 1.4;
+}
+
 /* Botón "← Volver" - usado en PantallaEleccion y FormularioPrompt
  * - align-self flex-start: se posiciona a la izquierda
  * - ::before añade la flecha automáticamente
