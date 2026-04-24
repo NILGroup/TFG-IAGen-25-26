@@ -190,7 +190,7 @@ export default function ProfileModal({ isOpen, onClose, summary, onSave }) {
         {/* Contenido scrollable */}
         <div className="modal-perfil-contenido">
           <p className="modal-perfil-subtitulo">
-            Edita tu información y preferencias
+            Aquí puedes cambiar tus datos
           </p>
 
           {/* SECCIÓN 1: NOMBRE */}
@@ -417,7 +417,7 @@ export default function ProfileModal({ isOpen, onClose, summary, onSave }) {
             className={`modal-perfil-btn-guardar ${hayChangios ? "con-cambios" : ""}`}
             onClick={handleGuardar}
           >
-            {hayChangios ? "Aplicar cambios" : "Guardar"}
+            {hayChangios ? "Guardar cambios" : "Guardar"}
           </button>
         </div>
 

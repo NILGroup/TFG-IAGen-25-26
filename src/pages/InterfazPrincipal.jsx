@@ -330,16 +330,14 @@ export default function InterfazPrincipal({
                 <div className="header-bar-container">
                     {/* Izquierda: botón Historial */}
                     <div className="header-bar-left">
-                        {chatHistory.length > 0 && (
-                            <button
-                                className="header-historial-btn"
+                        <button
+                            className="header-historial-btn"
                                 onClick={toggleHistory}
                                 aria-label={`Abrir historial de conversaciones. Chat ${currentNumber} de ${totalChats}`}
                                 aria-expanded={showHistory}
-                            >
-                                <span className="header-historial-texto">Historial</span>
-                            </button>
-                        )}
+                        >
+                            <span className="header-historial-texto">Historial</span>
+                        </button>
                     </div>
 
                     {/* Centro: título SofIA */}
