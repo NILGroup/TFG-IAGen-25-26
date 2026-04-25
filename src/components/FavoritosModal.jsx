@@ -10,6 +10,7 @@ import { useState } from "react";
 export default function FavoritosModal({ isOpen, onClose, favorites, onDelete }) {
     const ITEMS_PER_PAGE = 1; // Un favorito por página
     const [currentPage, setCurrentPage] = useState(1);
+    const [confirmDelete, setConfirmDelete] = useState(false);
 
     if (!isOpen) return null;
 
@@ -21,12 +22,14 @@ export default function FavoritosModal({ isOpen, onClose, favorites, onDelete })
     const handlePreviousPage = () => {
         if (currentPage > 1) {
             setCurrentPage(currentPage - 1);
+            setConfirmDelete(false);
         }
     };
 
     const handleNextPage = () => {
         if (currentPage < totalPages) {
             setCurrentPage(currentPage + 1);
+            setConfirmDelete(false);
         }
     };
 
@@ -76,19 +79,41 @@ export default function FavoritosModal({ isOpen, onClose, favorites, onDelete })
                                     {currentFavorito.timestamp}
                                 </span>
                                 {onDelete && (
-                                    <button
-                                        className="favorito-pagina-eliminar"
-                                        onClick={() => {
-                                            onDelete(currentFavorito.id);
-                                            // Si era el último de la página, retroceder
-                                            if (currentPage > 1 && startIndex >= totalFavoritos - 1) {
-                                                setCurrentPage(currentPage - 1);
-                                            }
-                                        }}
-                                        aria-label="Olvidar esta respuesta"
-                                    >
-                                        Olvidar
-                                    </button>
+                                    confirmDelete ? (
+                                        <div className="modal-historial-confirmar-eliminar">
+                                            <span className="modal-historial-confirmar-texto">
+                                                ¿Quieres olvidar esta respuesta?
+                                            </span>
+                                            <button
+                                                className="modal-historial-btn-confirmar"
+                                                onClick={() => {
+                                                    onDelete(currentFavorito.id);
+                                                    setConfirmDelete(false);
+                                                    if (currentPage > 1 && startIndex >= totalFavoritos - 1) {
+                                                        setCurrentPage(currentPage - 1);
+                                                    }
+                                                }}
+                                                aria-label="Sí, olvidar esta respuesta"
+                                            >
+                                                Sí, olvidar
+                                            </button>
+                                            <button
+                                                className="modal-historial-btn-cancelar"
+                                                onClick={() => setConfirmDelete(false)}
+                                                aria-label="No olvidar"
+                                            >
+                                                No
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <button
+                                            className="favorito-pagina-eliminar"
+                                            onClick={() => setConfirmDelete(true)}
+                                            aria-label="Olvidar esta respuesta"
+                                        >
+                                            Olvidar
+                                        </button>
+                                    )
                                 )}
                             </div>
 
