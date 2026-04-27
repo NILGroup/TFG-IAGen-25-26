@@ -325,11 +325,12 @@ export default function InterfazPrincipal({
     const totalChats = chatHistory.length;
 
     return (
-        <div className={`app-wrapper${showGlosario ? " glosario-abierto" : ""} config-abierto`}>
+        <div className={`app-wrapper config-abierto`}>
             <div className="header-bar">
                 <div className="header-bar-container">
-                    {/* Izquierda: botón Historial */}
+                    {/* Izquierda: botón Historial y diccionario */}
                     <div className="header-bar-left">
+                            {/*Botón Historial */}
                         <button
                             className="header-historial-btn"
                                 onClick={toggleHistory}
@@ -338,6 +339,18 @@ export default function InterfazPrincipal({
                         >
                             <span className="header-historial-texto">Historial</span>
                         </button>
+
+                         {/*Botón Diccionario */}
+                        <button
+                            className="header-diccionario-btn"
+                            onClick={() => setShowGlosario(!showGlosario)}
+                            aria-label={showGlosario ? "Cerrar diccionario" : "Abrir diccionario"}
+                            aria-expanded={showGlosario}
+                            aria-controls="panel-glosario"
+                        >
+                            <span className="header-diccionario-texto">Diccionario</span>
+                        </button>
+
                     </div>
 
                     {/* Centro: título SofIA */}
@@ -394,18 +407,6 @@ export default function InterfazPrincipal({
             />
 
             <main className="main-content" id="main-content" aria-label="Contenido principal">
-                {/* Botón de Diccionario */}
-                <div className="diccionario-dropdown-container">
-                    <button
-                        className="diccionario-dropdown-btn"
-                        onClick={() => setShowGlosario(!showGlosario)}
-                        aria-label={showGlosario ? "Cerrar diccionario" : "Abrir diccionario"}
-                        aria-expanded={showGlosario}
-                        aria-controls="panel-glosario"
-                    >
-                        <span className="diccionario-dropdown-texto">Diccionario</span>
-                    </button>
-                </div>
 
                 {/* Chat activo o panel de pregunta */}
                 {!showChat ? (

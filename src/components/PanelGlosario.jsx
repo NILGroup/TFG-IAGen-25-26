@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const ITEMS_POR_PAGINA = 2;
+const ITEMS_POR_PAGINA = 1;
 
 const formatSynonyms = (text) => {
   if (!text) return "";
@@ -22,6 +22,8 @@ const formatSynonyms = (text) => {
 export default function PanelGlosario({ isOpen, onClose, glossary = [] }) {
   const [busqueda, setBusqueda] = useState("");
   const [paginaActual, setPaginaActual] = useState(1);
+
+  if(!isOpen) return null;
 
   // visualizar glosario
   const palabrasGlosario = glossary.map((item, index) => ({
@@ -58,19 +60,28 @@ export default function PanelGlosario({ isOpen, onClose, glossary = [] }) {
     }
   };
 
-  return (
-    <div
-      className={`panel-glosario ${isOpen ? "abierto" : "cerrado"}`}
-      role="complementary"
-      aria-label="Panel de glosario"
+return (
+  /*  Fondo oscuro para cubrir la pantalla */
+  <div className="modal-overlay" onClick={onClose}>
+    
+    {/* con e.stopPropagation(), un clic dentro del cuadro no lo cierra */}
+    <div 
+      className="modal-glosario-container" 
+      onClick={(e) => e.stopPropagation()}
+      role="dialog"
+      aria-modal="true"
+      aria-label="Diccionario de palabras"
     >
+      
+      {/* Cabecera con botón de cerrar */}
       <div className="panel-glosario-top">
+        <h2 className="modal-glosario-titulo">Diccionario</h2>
         <button
           onClick={onClose}
           className="panel-glosario-cerrar"
           aria-label="Cerrar diccionario"
         >
-          ←
+          &times; 
         </button>
       </div>
 
@@ -87,6 +98,7 @@ export default function PanelGlosario({ isOpen, onClose, glossary = [] }) {
         </div>
       </div>
 
+      {/* Lista de palabras */}
       <div className="panel-glosario-lista">
         {palabrasActuales.length === 0 ? (
           <p className="panel-glosario-vacio">
@@ -122,6 +134,7 @@ export default function PanelGlosario({ isOpen, onClose, glossary = [] }) {
         )}
       </div>
 
+        {/* Paginación */}
       {palabrasFiltradas.length > 0 && (
         <div className="panel-glosario-paginacion">
           <div className="panel-glosario-paginacion-botones">
@@ -148,5 +161,6 @@ export default function PanelGlosario({ isOpen, onClose, glossary = [] }) {
         </div>
       )}
     </div>
+  </div>
   );
 }
