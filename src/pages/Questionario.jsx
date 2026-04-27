@@ -289,30 +289,30 @@ export default function Questionario({ onComplete }) {
             id: "lecturaFacil",
             label: "Lectura Fácil",
             description: "Te explico todo con palabras sencillas",
-            ejemplo: "Un planeta es una bola muy grande. Está en el cielo. Da vueltas alrededor del Sol."
+            ejemplo: "Un planeta es una bola muy grande. Los planetas estan en el cielo. Los planetas dan vueltas alrededor del Sol."
         },
         {
             id: "ejemplo",
             label: "Con ejemplos",
-            description: "Te lo explico con cosas que conoces",
+            description: "Te explico todo con cosas que conoces",
             ejemplo: "Un planeta es como una pelota grande que da vueltas al Sol."
         },
         {
             id: "bullet",
             label: "Con listas",
-            description: "Te lo cuento punto por punto",
+            description: "Te cuento las cosas punto por punto",
             ejemplo: "• Es muy grande\n• Da vueltas al Sol\n• Tiene forma de bola"
         },
         {
             id: "textocorto",
             label: "Respuestas cortas",
-            description: "Te lo cuento en pocas palabras",
+            description: "Te cuento las cosas en pocas palabras",
             ejemplo: "Un planeta es una bola grande que gira alrededor del Sol."
         },
         {
             id: "frasescortas",
             label: "Frases cortas",
-            description: "Cada idea es una frase corta",
+            description: "Te cuento cada idea en una frase",
             ejemplo: "Es una bola. Es muy grande. Da vueltas al Sol."
         }
     ];
@@ -426,9 +426,9 @@ export default function Questionario({ onComplete }) {
             case 3:
                 return (
                     <div className="question-page">
-                        <h2 id="titulo-dificultades">Cuéntanos lo qué te cuesta.</h2>
+                        <h2 id="titulo-dificultades">Cuéntanos las cosas que te cuestan.</h2>
                         <p className="instruction">
-                            <strong>Marca lo que te pase. Puedes elegir varias o escribir.</strong>
+                            <strong>Marca todas las cosas que te cuestan. También puedes escribir otra cosa que te cuesta.</strong>
                         </p>
 
                         <fieldset className="checkbox-list-vertical" aria-labelledby="titulo-dificultades">
@@ -478,7 +478,7 @@ export default function Questionario({ onComplete }) {
                     <div className="question-page">
                         <h2 id="titulo-como-ayudar">¿Cómo quieres que te ayude?</h2>
                         <p className="instruction">
-                            <strong>Marca lo que prefieras. Puedes elegir varias.</strong>
+                            <strong>Marca las ayudas que prefieras. Puedes elegir varias ayudas.</strong>
                         </p>
 
                         {/* Lista vertical con descripción y ejemplo */}
@@ -517,9 +517,9 @@ export default function Questionario({ onComplete }) {
             case 5:
                 return (
                     <div className="question-page">
-                        <h2>Ya casi terminas</h2>
+                        <h2>¡Ya casi terminas!</h2>
                         <p className="instruction">
-                            <strong>Mira lo que has elegido.</strong>
+                            <strong>Revisa las cosas que has elegido.</strong>
                         </p>
 
                         {generateSummary()}
@@ -552,8 +552,8 @@ export default function Questionario({ onComplete }) {
                 {page < 5 && <button className="next-btn" onClick={nextPage}>Siguiente</button>}
                 {page === 5 && (
                     <>
-                        <button className="back-btn" onClick={() => setPage(1)}>Cambiar algo</button>
-                        <button className="next-btn" onClick={() => onComplete(summary)}>Empezar</button>
+                        <button className="back-btn" onClick={() => setPage(1)}>Cambia algo</button>
+                        <button className="next-btn" onClick={() => onComplete(summary)}>Empezamos</button>
                     </>
                 )}
             </div>

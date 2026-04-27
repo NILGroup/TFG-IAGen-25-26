@@ -160,16 +160,6 @@ body {
   min-height: 100vh;
 }
 
-/* Cuando el diccionario está abierto, empuja el contenido a la derecha */
-.glosario-abierto .main-content {
-  margin-left: 340px;
-}
-
-/* El header también se ajusta */
-.glosario-abierto .header-bar-container {
-  padding-left: calc(340px + 16px);
-}
-
 /* Cuando la config está abierta, empuja el contenido a la izquierda */
 .config-abierto .main-content {
   margin-right: 320px;
@@ -185,16 +175,6 @@ body {
   padding-right: calc(320px + 16px);
 }
 
-/* Si los dos están abiertos a la vez */
-.glosario-abierto.config-abierto .main-content {
-  margin-left: 340px;
-  margin-right: 320px;
-}
-
-.glosario-abierto.config-abierto .header-bar-container {
-  padding-left: calc(340px + 16px);
-  padding-right: calc(320px + 16px);
-}
 
 /* Botón Historial dentro del header - mismo estilo que Perfil */
 .header-historial-btn, .header-diccionario-btn {
@@ -1937,7 +1917,7 @@ body {
 
 /* COGA: mensaje de estado claro */
 .panel-glosario-vacio {
-  text-align: center;
+  text-align: left;
   color: #555;
   font-size: 15px;
   line-height: 1.6;

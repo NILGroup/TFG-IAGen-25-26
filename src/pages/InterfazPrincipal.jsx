@@ -325,7 +325,7 @@ export default function InterfazPrincipal({
     const totalChats = chatHistory.length;
 
     return (
-        <div className={`app-wrapper${showGlosario ? " glosario-abierto" : ""} config-abierto`}>
+        <div className={`app-wrapper config-abierto`}>
             <div className="header-bar">
                 <div className="header-bar-container">
                     {/* Izquierda: botón Historial y diccionario */}
