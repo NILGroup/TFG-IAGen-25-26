@@ -7,12 +7,18 @@
 import { promptLF1, promptLF2 } from "../utils/promptLF";
 import { fetchFromGroq, fetchFromGemini, fetchFromOllama } from "./apiFunctions";
 
+const usesLecturaFacil = (formats = []) => {
+    const normalizedFormats = Array.isArray(formats) ? formats : [];
+    return normalizedFormats.includes("lectura-facil") || normalizedFormats.includes("lecturaFacil");
+};
+
 export const adaptToLecturaFacil = async ({
     response,
     summary,
+    responseConfig,
     setChatFlow,
 }) => {
-    if (!summary || !summary.herramientas?.includes("lecturaFacil")) {
+    if (!summary || !usesLecturaFacil(responseConfig || summary.herramientas)) {
         return response;
     }
 

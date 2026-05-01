@@ -72,7 +72,10 @@ export default function App() {
    * Guarda los datos del usuario y avanza a elegir rol.
    */
   const handleQuestionnaireComplete = (data) => {
-    setSummary(data);
+    setSummary({
+      ...data,
+      responseConfig: data.responseConfig || data.herramientas || [],
+    });
     setPaso("modo");
   };
 
@@ -180,7 +183,11 @@ export default function App() {
    * 10. Para guardar cambios en el perfil
    */
   const handleSaveProfile = (updatedSummary) => {
-    setSummary(updatedSummary);
+    setSummary({
+      ...updatedSummary,
+      responseConfig: updatedSummary.responseConfig || updatedSummary.herramientas || [],
+    });
+    setModoSeleccionado(updatedSummary?.rol || null);
   };
 
   // ========================================

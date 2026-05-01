@@ -23,6 +23,22 @@ import ChatActivePanel from "../components/ChatActivePanel";
 import ResponseConfigPanel from "../components/ResponseConfigPanel";
 import PanelGlosario from "../components/PanelGlosario";
 
+const DEFAULT_RESPONSE_FORMAT = ["lectura-facil", "ejemplos"];
+
+const normalizeResponseFormat = (formats = []) => {
+    if (!Array.isArray(formats)) return [];
+
+    const aliases = {
+        lecturaFacil: "lectura-facil",
+        ejemplo: "ejemplos",
+        bullet: "listas",
+        textocorto: "textos-cortos",
+        frasescortas: "frases-sencillas",
+    };
+
+    return [...new Set(formats.map((format) => aliases[format] || format).filter(Boolean))];
+};
+
 export default function InterfazPrincipal({
     summary,
     modoSeleccionado,
@@ -74,10 +90,17 @@ export default function InterfazPrincipal({
     };
 
     // Configuración de respuestas (panel siempre visible)
-    const [responseConfig, setResponseConfig] = useState(["lectura-facil", "ejemplos"]);
+    const [responseConfig, setResponseConfig] = useState(() =>
+        normalizeResponseFormat(summary?.herramientas || DEFAULT_RESPONSE_FORMAT)
+    );
 
     // Rol actual del ayudante (puede cambiar desde el panel lateral)
-    const [currentRole, setCurrentRole] = useState(modoSeleccionado || "profesor");
+    const [currentRole, setCurrentRole] = useState(summary?.rol || modoSeleccionado || "profesor");
+
+    useEffect(() => {
+        setResponseConfig(normalizeResponseFormat(summary?.responseConfig || summary?.herramientas || DEFAULT_RESPONSE_FORMAT));
+        setCurrentRole(summary?.rol || modoSeleccionado || "profesor");
+    }, [summary, modoSeleccionado]);
 
     // Estado para el panel de glosario
     const [showGlosario, setShowGlosario] = useState(false);
@@ -91,22 +114,22 @@ export default function InterfazPrincipal({
     const [showExitModal, setShowExitModal] = useState(false);
     const [exitAction, setExitAction] = useState(null); // 'sofia' o 'back'
 
-    const handleApplyResponseConfig = (newConfig) => {
-        setResponseConfig(newConfig);
-        // TODO: Regenerar la última respuesta de la IA con la nueva configuración
-        console.log("Nueva configuración de respuestas:", newConfig);
-    };
+    const handleApplyResponseConfig = (newConfig, newRole) => {
+        const normalizedConfig = normalizeResponseFormat(newConfig);
+        const normalizedRole = newRole || currentRole;
 
-    const handleRoleChange = (newRole) => {
-        setCurrentRole(newRole);
-        // TODO: Regenerar la última respuesta de la IA con el nuevo rol
-        console.log("Rol cambiado a:", newRole);
+        setResponseConfig(normalizedConfig);
+        setCurrentRole(normalizedRole);
+        console.log("Nueva configuración de respuestas:", normalizedConfig);
+
+        void regenerateLastResponse(normalizedConfig, normalizedRole);
     };
 
     const {
         sendPrompt,
         sendCustomPrompt,
         generateTitleFromChat,
+        regenerateLastResponse,
     } = usePromptFunctions({
         summary: summary,
         chatFlow,
@@ -119,7 +142,9 @@ export default function InterfazPrincipal({
         setShowTextInput,
         resetHelpOptions,
         setActiveSpeechId,
-        setSpeechState
+        setSpeechState,
+        responseConfig,
+        currentRole,
     });
 
     const {
@@ -446,7 +471,6 @@ export default function InterfazPrincipal({
                     currentConfig={responseConfig}
                     currentRole={currentRole}
                     onApply={handleApplyResponseConfig}
-                    onRoleChange={handleRoleChange}
                 />
 
                 {/* Modal de confirmación de salida */}

@@ -21,6 +21,7 @@ export const UserProfileSchema = {
     },
     retos: [],                               // string[]: dificultades seleccionadas
     herramientas: [],                        // string[]: herramientas de ayuda preferidas
+    responseConfig: [],                      // string[]: formato de respuesta preferido para el chat
     mostrarPorPartes: false,                 // boolean: dividir respuestas largas
 
     rol: "profesor"                          // "profesor" | "familiar": rol de Olivía
@@ -44,6 +45,7 @@ export const validateUserProfile = (profile) => {
         typeof profile.discapacidad.tieneDI === "string" &&
         typeof profile.discapacidad.grado === "string" &&
         Array.isArray(profile.retos) &&
-        Array.isArray(profile.herramientas)
+        Array.isArray(profile.herramientas) &&
+        Array.isArray(profile.responseConfig)
     );
 };

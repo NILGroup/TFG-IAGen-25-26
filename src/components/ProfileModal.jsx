@@ -8,6 +8,34 @@
 
 import { useState, useEffect } from "react";
 
+const RESPONSE_FORMAT_OPTIONS = [
+  {
+    id: "lectura-facil",
+    label: "Lectura Fácil",
+    description: "Te explico todo con palabras sencillas",
+  },
+  {
+    id: "ejemplos",
+    label: "Con ejemplos",
+    description: "Te explico todo con cosas que conoces",
+  },
+  {
+    id: "listas",
+    label: "Con listas",
+    description: "Te cuento las cosas punto por punto",
+  },
+  {
+    id: "textos-cortos",
+    label: "Respuestas cortas",
+    description: "Te cuento las cosas en pocas palabras",
+  },
+  {
+    id: "frases-sencillas",
+    label: "Frases cortas",
+    description: "Te cuento cada idea en una frase",
+  },
+];
+
 export default function ProfileModal({ isOpen, onClose, summary, onSave }) {
   // Estados para todos los campos del perfil
   const [nombre, setNombre] = useState("");
@@ -29,7 +57,7 @@ export default function ProfileModal({ isOpen, onClose, summary, onSave }) {
       setGrado(summary.discapacidad?.grado || "");
       setRetos(summary.retos || []);
       setRetoOtro(summary.retoOtro || "");
-      setHerramientas(summary.herramientas || []);
+      setHerramientas(summary.responseConfig || summary.herramientas || []);
       setRol(summary.rol || "profesor");
       setShowUnsavedWarning(false);
     }
@@ -46,7 +74,7 @@ export default function ProfileModal({ isOpen, onClose, summary, onSave }) {
     grado !== (summary?.discapacidad?.grado || "") ||
     JSON.stringify(retos) !== JSON.stringify(summary?.retos || []) ||
     retoOtro !== (summary?.retoOtro || "") ||
-    JSON.stringify(herramientas) !== JSON.stringify(summary?.herramientas || []) ||
+    JSON.stringify(herramientas) !== JSON.stringify(summary?.responseConfig || summary?.herramientas || []) ||
     rol !== (summary?.rol || "profesor");
 
   /**
@@ -91,6 +119,7 @@ export default function ProfileModal({ isOpen, onClose, summary, onSave }) {
       retos,
       retoOtro,
       herramientas,
+      responseConfig: herramientas,
       rol,
     };
     onSave(updatedSummary);
@@ -124,38 +153,20 @@ export default function ProfileModal({ isOpen, onClose, summary, onSave }) {
   };
 
   // Lista de herramientas
-  const tools = [
-    {
-      id: "lecturaFacil",
-      label: "Lectura Fácil",
-      description: "Te explico todo con palabras sencillas",
-      ejemplo: "Un planeta es una bola muy grande. Los planetas estan en el cielo. Los planetas dan vueltas alrededor del Sol.",
-    },
-    {
-      id: "ejemplo",
-      label: "Con ejemplos",
-      description: "Te explico todo con cosas que conoces",
-      ejemplo: "Un planeta es como una pelota grande que da vueltas al Sol.",
-    },
-    {
-      id: "bullet",
-      label: "Con listas",
-      description: "Te cuento las cosas punto por punto",
-      ejemplo: "• Es muy grande\n• Da vueltas al Sol\n• Tiene forma de bola",
-    },
-    {
-      id: "textocorto",
-      label: "Respuestas cortas",
-      description: "Te cuento las cosas en pocas palabras",
-      ejemplo: "Un planeta es una bola grande que gira alrededor del Sol.",
-    },
-    {
-      id: "frasescortas",
-      label: "Frases cortas",
-      description: "Te cuento cada idea en una frase",
-      ejemplo: "Es una bola. Es muy grande. Da vueltas al Sol.",
-    },
-  ];
+  const tools = RESPONSE_FORMAT_OPTIONS.map((option) => {
+    const exampleMap = {
+      "lectura-facil": "Un planeta es una bola muy grande. Los planetas estan en el cielo. Los planetas dan vueltas alrededor del Sol.",
+      "ejemplos": "Un planeta es como una pelota grande que da vueltas al Sol.",
+      "listas": "• Es muy grande\n• Da vueltas al Sol\n• Tiene forma de bola",
+      "textos-cortos": "Un planeta es una bola grande que gira alrededor del Sol.",
+      "frases-sencillas": "Es una bola. Es muy grande. Da vueltas al Sol.",
+    };
+
+    return {
+      ...option,
+      ejemplo: exampleMap[option.id],
+    };
+  });
 
   return (
     <>

@@ -25,7 +25,9 @@ const usePromptFunctions = ({
     setShowTextInput,          // Muestra el input para buscar sinónimos
     resetHelpOptions,          // Limpia todas las ayudas activas
     setActiveSpeechId,         // Cancela lectura por voz si hay una activa
-    setSpeechState             // Resetea el estado de voz a "idle"
+    setSpeechState,            // Resetea el estado de voz a "idle"
+    responseConfig,
+    currentRole,
 }) => {
 
     /*=============================
@@ -41,43 +43,67 @@ const usePromptFunctions = ({
         setSpeechState("idle");
         resetHelpOptions();
 
+        console.info("[SofIA] sendPrompt:start", {
+            promptPreview: prompt.slice(0, 80),
+            responseConfig,
+            currentRole,
+        });
+
         setLoading(true);
         setShowChat(true);
         setShowHelpOptions(false);
 
-        // Texto original tal como lo escribió el usuario
-        const rawUserText = selectedOption?.id && selectedOption.id <= 6
-            ? `${selectedOption.text} ${prompt}${selectedOption.needsQuestionMark ? "?" : ""}`
-            : prompt;
+        let nextResponse = null;
 
-        // Mostrar inmediatamente el mensaje del usuario en el chat
-        setChatFlow((prev) => [
-            ...prev,
-            { type: "user", content: rawUserText, timestamp: new Date().toISOString() },
-            { type: "loading", content: "⌛ Cargando...", timestamp: new Date().toISOString() },
-        ]);
+        try {
+            // Texto original tal como lo escribió el usuario
+            const rawUserText = selectedOption?.id && selectedOption.id <= 6
+                ? `${selectedOption.text} ${prompt}${selectedOption.needsQuestionMark ? "?" : ""}`
+                : prompt;
 
-        // Construir el prompt con estructura CO-STAR
-        const { apiPrompt } = buildPrompt(summary, rawUserText);
+            // Mostrar inmediatamente el mensaje del usuario en el chat
+            setChatFlow((prev) => [
+                ...prev,
+                { type: "user", content: rawUserText, timestamp: new Date().toISOString() },
+                { type: "loading", content: "⌛ Cargando...", timestamp: new Date().toISOString() },
+            ]);
 
-        const messages = [
-            ...buildConversationMessages(chatFlow),
-            { role: "user", content: apiPrompt }
-        ];
+            // Construir el prompt con estructura CO-STAR
+            const { apiPrompt } = buildPrompt(summary, rawUserText, responseConfig, currentRole);
+            console.info("[SofIA] sendPrompt:builtPrompt", {
+                promptLength: apiPrompt.length,
+            });
 
-        let response = await fetchFromGroq(messages); // cambio const por let por si la tengo que adaptar a LF
+            const messages = [
+                ...buildConversationMessages(chatFlow),
+                { role: "user", content: apiPrompt }
+            ];
 
-        // Adaptar respuesta a LF
-        response = await adaptToLecturaFacil({ response, summary, setChatFlow });
+            nextResponse = await fetchFromGroq(messages);
+            console.info("[SofIA] sendPrompt:rawResponse", {
+                type: typeof nextResponse,
+                length: nextResponse?.length ?? 0,
+            });
 
-        setChatFlow((prev) => [
-            ...prev.filter((entry) => entry.type !== "loading"),
-            { type: "ai", content: response, timestamp: new Date().toISOString() },
-        ]);
-        
-        setShowHelpOptions(true);
-        setLoading(false);
-        setPrompt("");
+            // Adaptar respuesta a LF
+            nextResponse = await adaptToLecturaFacil({ response: nextResponse, summary, responseConfig, setChatFlow });
+            console.info("[SofIA] sendPrompt:adaptedResponse", {
+                length: nextResponse?.length ?? 0,
+            });
+
+            setChatFlow((prev) => [
+                ...prev.filter((entry) => entry.type !== "loading"),
+                { type: "ai", content: nextResponse, timestamp: new Date().toISOString() },
+            ]);
+
+            setShowHelpOptions(true);
+            setPrompt("");
+        } catch (error) {
+            console.error("Error al enviar el prompt:", error);
+            setChatFlow((prev) => prev.filter((entry) => entry.type !== "loading"));
+        } finally {
+            setLoading(false);
+        }
 
     }, [
         chatFlow,
@@ -91,6 +117,8 @@ const usePromptFunctions = ({
         setShowHelpOptions,
         setChatFlow,
         setPrompt,
+        responseConfig,
+        currentRole,
     ]);
 
     // Enviar un mensaje personalizado (texto libre o contextual)
@@ -103,42 +131,67 @@ const usePromptFunctions = ({
             setSpeechState("idle");
 
             resetHelpOptions();
+            console.info("[SofIA] sendCustomPrompt:start", {
+                promptPreview: customPrompt.slice(0, 80),
+                contextPreview: context.slice(0, 80),
+                responseConfig,
+                currentRole,
+            });
             setLoading(true);
             setShowChat(true);
 
-            const displayPrompt = displayOverride || customPrompt;
+            try {
+                const displayPrompt = displayOverride || customPrompt;
 
-            // Mostrar inmediatamente el mensaje del usuario en el chat
-            setChatFlow((prev) => [
-                ...prev,
-                { type: "user", content: displayPrompt, timestamp: new Date().toISOString() },
-                { type: "loading", content: "Cargando...", timestamp: new Date().toISOString() }
-            ]);
+                // Mostrar inmediatamente el mensaje del usuario en el chat
+                setChatFlow((prev) => [
+                    ...prev,
+                    { type: "user", content: displayPrompt, timestamp: new Date().toISOString() },
+                    { type: "loading", content: "Cargando...", timestamp: new Date().toISOString() }
+                ]);
 
-            // Construir el prompt con estructura CO-STAR
-            const rawText = context ? `${context} ${customPrompt}` : customPrompt;
-            const { apiPrompt } = buildPrompt(summary, rawText);
+                // Construir el prompt con estructura CO-STAR
+                const rawText = context ? `${context} ${customPrompt}` : customPrompt;
+                const { apiPrompt } = buildPrompt(summary, rawText, responseConfig, currentRole);
+                console.info("[SofIA] sendCustomPrompt:builtPrompt", {
+                    promptLength: apiPrompt.length,
+                });
 
-            // Pre-procesado transparente: llama3-versatile mejora el prompt CO-STAR ya construido
-            const enhancedPrompt = await enhancePromptWithCoStar(apiPrompt, summary);
+                // Pre-procesado transparente: llama3-versatile mejora el prompt CO-STAR ya construido
+                const enhancedPrompt = await enhancePromptWithCoStar(apiPrompt, summary);
+                console.info("[SofIA] sendCustomPrompt:enhancedPrompt", {
+                    promptLength: enhancedPrompt.length,
+                });
 
-            const messages = [
-                ...buildConversationMessages(chatFlow),
-                { role: "user", content: enhancedPrompt }
-            ];
+                const messages = [
+                    ...buildConversationMessages(chatFlow),
+                    { role: "user", content: enhancedPrompt }
+                ];
 
-            let response = await fetchFunction(messages); 
+                let response = await fetchFunction(messages);
+                console.info("[SofIA] sendCustomPrompt:rawResponse", {
+                    type: typeof response,
+                    length: response?.length ?? 0,
+                });
 
-            // Adaptar respuesta a LF
-            response = await adaptToLecturaFacil({ response, summary, setChatFlow });
+                // Adaptar respuesta a LF
+                response = await adaptToLecturaFacil({ response, summary, responseConfig, setChatFlow });
+                console.info("[SofIA] sendCustomPrompt:adaptedResponse", {
+                    length: response?.length ?? 0,
+                });
 
-            setChatFlow((prev) => [
-                ...prev.filter((entry) => entry.type !== "loading"),
-                { type: "ai", content: response, timestamp: new Date().toISOString() },
-            ]);
+                setChatFlow((prev) => [
+                    ...prev.filter((entry) => entry.type !== "loading"),
+                    { type: "ai", content: response, timestamp: new Date().toISOString() },
+                ]);
 
-            setShowHelpOptions(true);
-            setLoading(false);
+                setShowHelpOptions(true);
+            } catch (error) {
+                console.error("Error al enviar el prompt personalizado:", error);
+                setChatFlow((prev) => prev.filter((entry) => entry.type !== "loading"));
+            } finally {
+                setLoading(false);
+            }
         },
         [
             chatFlow,
@@ -150,7 +203,113 @@ const usePromptFunctions = ({
             resetHelpOptions,
             setActiveSpeechId,
             setSpeechState,
+            responseConfig,
+            currentRole,
         ]
+    );
+
+    const regenerateLastResponse = useCallback(
+        async (overrideResponseConfig = responseConfig, overrideRole = currentRole) => {
+            const lastAIIndex = chatFlow
+                .map((entry, index) => ({ entry, index }))
+                .reverse()
+                .find(({ entry }) => entry.type === "ai")?.index;
+
+            if (lastAIIndex === undefined) return;
+
+            const lastUserMessage = chatFlow
+                .slice(0, lastAIIndex)
+                .slice()
+                .reverse()
+                .find((entry) => entry.type === "user");
+
+            if (!lastUserMessage?.content?.trim()) return;
+
+            window.speechSynthesis.cancel();
+            setActiveSpeechId(null);
+            setSpeechState("idle");
+
+            console.info("[SofIA] regenerateLastResponse:start", {
+                overrideResponseConfig,
+                overrideRole,
+                lastAIIndex,
+            });
+
+            setLoading(true);
+            setShowHelpOptions(false);
+
+            try {
+                setChatFlow((prev) => [
+                    ...prev,
+                    { type: "loading", content: "Regenerando respuesta...", timestamp: new Date().toISOString() },
+                ]);
+
+                const { apiPrompt } = buildPrompt(
+                    summary,
+                    lastUserMessage.content,
+                    overrideResponseConfig,
+                    overrideRole
+                );
+                console.info("[SofIA] regenerateLastResponse:builtPrompt", {
+                    promptLength: apiPrompt.length,
+                });
+
+                const enhancedPrompt = await enhancePromptWithCoStar(apiPrompt, summary);
+
+                const messages = [
+                    ...buildConversationMessages(
+                        chatFlow
+                            .slice(0, lastAIIndex)
+                            .filter((entry) => entry.type === "user" || entry.type === "ai")
+                    ),
+                    { role: "user", content: enhancedPrompt },
+                ];
+
+                let response = await fetchFromGroq(messages);
+                console.info("[SofIA] regenerateLastResponse:rawResponse", {
+                    type: typeof response,
+                    length: response?.length ?? 0,
+                });
+
+                response = await adaptToLecturaFacil({
+                    response,
+                    summary,
+                    responseConfig: overrideResponseConfig,
+                    setChatFlow,
+                });
+                console.info("[SofIA] regenerateLastResponse:adaptedResponse", {
+                    length: response?.length ?? 0,
+                });
+
+                setChatFlow((prev) => {
+                    const nextFlow = prev.filter((entry) => entry.type !== "loading");
+                    const nextAIIndex = nextFlow
+                        .map((entry, index) => ({ entry, index }))
+                        .reverse()
+                        .find(({ entry }) => entry.type === "ai")?.index;
+
+                    const aiMessage = {
+                        type: "ai",
+                        content: response,
+                        timestamp: new Date().toISOString(),
+                    };
+
+                    if (nextAIIndex === undefined) {
+                        return [...nextFlow, aiMessage];
+                    }
+
+                    return nextFlow.map((entry, index) => (index === nextAIIndex ? aiMessage : entry));
+                });
+
+                setShowHelpOptions(true);
+            } catch (error) {
+                console.error("Error al regenerar la respuesta:", error);
+                setChatFlow((prev) => prev.filter((entry) => entry.type !== "loading"));
+            } finally {
+                setLoading(false);
+            }
+        },
+        [chatFlow, currentRole, responseConfig, summary, setActiveSpeechId, setChatFlow, setLoading, setShowHelpOptions, setSpeechState]
     );
 
 
@@ -239,6 +398,7 @@ const usePromptFunctions = ({
         requestSimplifiedResponse,
         requestSynonyms,
         generateTitleFromChat,
+        regenerateLastResponse,
     };
 };
 
