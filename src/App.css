@@ -1673,7 +1673,7 @@ body {
 /* Mensaje de advertencia */
 .response-config-warning {
   background-color: #B1E6D1;
-  border-left: 4px solid #ffc107;
+  border-left: 4px solid #3D7B80;
   padding: 12px 14px;
   margin-bottom: 16px;
   border-radius: 8px;
@@ -3347,7 +3347,7 @@ body {
 }
 
 .modal-perfil-header {
-  background-color: #0d0b3f;
+  background-color: #270A33;
   color: white;
   display: flex;
   align-items: center;
@@ -3412,7 +3412,7 @@ body {
 }
 
 .modal-perfil-btn-guardar {
-  background-color: #1f4189;
+  background-color: #3D7B80;
   color: white;
   border: none;
   font-size: 16px;
@@ -3433,7 +3433,7 @@ body {
 }
 
 .modal-perfil-btn-guardar.con-cambios {
-  background-color: #4caf50;
+  background-color: #3D7B80;
   animation: pulse-save 2s infinite;
 }
 
