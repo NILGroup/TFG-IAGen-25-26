@@ -19,10 +19,41 @@ export default function useTooltipController({ chatFlow, setChatFlow }) {
 
   const handleTextSelection = useCallback(async () => {
     const selection = window.getSelection();
-    const text = selection.toString().trim();
+    if (!selection || selection.rangeCount === 0) return;
+
+    let text = selection.toString().trim();
 
     if (text.length > 0) {
       const range = selection.getRangeAt(0);
+
+      // Expandir selección a palabras completas
+      const isWordChar = (char) => /[a-zA-Z0-9áéíóúÁÉÍÓÚñÑüÜ]/.test(char);
+
+      // Expandir hacia la izquierda
+      if (range.startContainer.nodeType === Node.TEXT_NODE) {
+        const textContent = range.startContainer.textContent;
+        let startOffset = range.startOffset;
+        while (startOffset > 0 && isWordChar(textContent[startOffset - 1])) {
+          startOffset--;
+        }
+        range.setStart(range.startContainer, startOffset);
+      }
+
+      // Expandir hacia la derecha
+      if (range.endContainer.nodeType === Node.TEXT_NODE) {
+        const textContent = range.endContainer.textContent;
+        let endOffset = range.endOffset;
+        while (endOffset < textContent.length && isWordChar(textContent[endOffset])) {
+          endOffset++;
+        }
+        range.setEnd(range.endContainer, endOffset);
+      }
+
+      selection.removeAllRanges();
+      selection.addRange(range);
+
+      text = selection.toString().trim();
+      
       const rect = range.getBoundingClientRect();
 
       setTooltipInfo({
