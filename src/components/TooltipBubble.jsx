@@ -17,7 +17,7 @@ export const TooltipBubble = ({ tooltipInfo, handleButtonClick, handleReplaceTex
                 left: `clamp(135px, ${tooltipInfo.x}px, calc(100vw - 135px))`,
                 transform: "translate(-50%, -100%)",
                 backgroundColor: "white",
-                border: "2px solid #5C32A8",
+                border: "2px solid #451A3E",
                 borderRadius: "10px",
                 padding: "10px",
                 boxShadow: "0px 4px 6px rgba(0,0,0,0.1)",
@@ -48,10 +48,10 @@ export const TooltipBubble = ({ tooltipInfo, handleButtonClick, handleReplaceTex
                                 padding: "5px 10px", 
                                 cursor: "pointer", 
                                 borderRadius: "5px", 
-                                border: "1px solid #008000", 
-                                backgroundColor: "#e6ffe6", 
+                                border: "1px solid #3D7B80", 
+                                backgroundColor: "#EEF8F6", 
                                 fontWeight: "bold", 
-                                color: "#006600" 
+                                color: "#270A33" 
                             }}
                         >
                             Cambiar en el texto
@@ -67,8 +67,8 @@ export const TooltipBubble = ({ tooltipInfo, handleButtonClick, handleReplaceTex
                             padding: "5px 10px", 
                             cursor: "pointer", 
                             borderRadius: "5px", 
-                            border: "1px solid #5C32A8", 
-                            backgroundColor: "#f0e6ff" 
+                            border: "1px solid #451A3E", 
+                            backgroundColor: "#B1E6D1" 
                         }}
                     >
                         1. ¿Qué significa?
@@ -79,8 +79,8 @@ export const TooltipBubble = ({ tooltipInfo, handleButtonClick, handleReplaceTex
                             padding: "5px 10px", 
                             cursor: "pointer", 
                             borderRadius: "5px", 
-                            border: "1px solid #5C32A8", 
-                            backgroundColor: "#f0e6ff" 
+                            border: "1px solid #451A3E", 
+                            backgroundColor: "#B1E6D1" 
                         }}
                     >
                         2. Palabra parecida
@@ -94,8 +94,8 @@ export const TooltipBubble = ({ tooltipInfo, handleButtonClick, handleReplaceTex
                         padding: "5px 10px", 
                         cursor: "pointer", 
                         borderRadius: "5px", 
-                        border: "1px solid #5C32A8", 
-                        backgroundColor: "#f0e6ff" 
+                        border: "1px solid #451A3E", 
+                        backgroundColor: "#B1E6D1" 
                     }}
                 >
                     Explícalo de otra forma
