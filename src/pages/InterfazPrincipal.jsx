@@ -5,12 +5,6 @@
  * Administra la lógica y estados globales: chat, historial, configuración,
  * generación de preguntas y respuestas, interacción con la IA, y personalización
  * basada en el cuestionario inicial (`summary`).
- *
- * Contiene la lógica para:
- * - Mostrar preguntas predefinidas o personalizadas
- * - Procesar y mostrar respuestas generadas por IA
- * - Controlar botones de ayuda, resumen, ejemplos, sinónimos y simplificación
- * - Gestionar historial de conversaciones y configuración del perfil del usuario
  */
 
 import { useState, useEffect, useRef } from "react";
@@ -22,6 +16,8 @@ import useSpeechController from "../hooks/useSpeechController";
 import useHelpOptionsController from "../hooks/useHelpOptionsController";
 import useTooltipController from "../hooks/useTooltipController";
 import HistoryModal from "../components/HistoryModal";
+import FavoritosModal from "../components/FavoritosModal";
+import ExitConfirmModal from "../components/ExitConfirmModal";
 import QuestionPromptPanel from "../components/QuestionPromptPanel";
 import ChatActivePanel from "../components/ChatActivePanel";
 import ResponseConfigPanel from "../components/ResponseConfigPanel";
@@ -31,13 +27,14 @@ export default function InterfazPrincipal({
     summary,
     modoSeleccionado,
     promptInicial,
-    flujoElegido,
     onBack,
     onIrAPerfil,
     chatHistoryGlobal = [],
     setChatHistoryGlobal,
     chatToResume = null,
-    onFinalizarConversacion
+    onFinalizarConversacion,
+    favoritesGlobal = [],
+    setFavoritesGlobal,
 }) {
     const {
         selectedOption,
@@ -76,21 +73,35 @@ export default function InterfazPrincipal({
         }));
     };
 
-    // Estados para el panel de configuración de respuestas
-    const [showResponseConfig, setShowResponseConfig] = useState(false);
+    // Configuración de respuestas (panel siempre visible)
     const [responseConfig, setResponseConfig] = useState(["lectura-facil", "ejemplos"]);
+
+    // Rol actual del ayudante (puede cambiar desde el panel lateral)
+    const [currentRole, setCurrentRole] = useState(modoSeleccionado || "profesor");
 
     // Estado para el panel de glosario
     const [showGlosario, setShowGlosario] = useState(false);
 
+    // ========================================
+    // ESTADOS PARA DETECCIÓN DE CAMBIOS
+    // ========================================
+    const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+    const [originalChatFlow, setOriginalChatFlow] = useState(null);
+    const [originalChatId, setOriginalChatId] = useState(null);
+    const [showExitModal, setShowExitModal] = useState(false);
+    const [exitAction, setExitAction] = useState(null); // 'sofia' o 'back'
+
     const handleApplyResponseConfig = (newConfig) => {
         setResponseConfig(newConfig);
+        // TODO: Regenerar la última respuesta de la IA con la nueva configuración
         console.log("Nueva configuración de respuestas:", newConfig);
     };
-    /** ================================
-    *  ESTADOS PARA CARGAR A LOS PROMPTS
-    *  ================================
-    */
+
+    const handleRoleChange = (newRole) => {
+        setCurrentRole(newRole);
+        // TODO: Regenerar la última respuesta de la IA con el nuevo rol
+        console.log("Rol cambiado a:", newRole);
+    };
 
     const {
         sendPrompt,
@@ -122,7 +133,6 @@ export default function InterfazPrincipal({
         setChatFlow,
     });
 
-
     const {
         chatHistory,
         setChatHistory,
@@ -140,98 +150,228 @@ export default function InterfazPrincipal({
         setSelectedOption,
         setShowUsefulQuestion,
         generateTitleFromChat,
-        initialHistory: chatHistoryGlobal, // Usar historial global
+        initialHistory: chatHistoryGlobal,
     });
 
-    // Función personalizada para finalizar y volver a elección
+    // Favoritos (usando estado global desde App.jsx)
+    const favorites = favoritesGlobal;
+    const setFavorites = setFavoritesGlobal;
+    const [showFavoritos, setShowFavoritos] = useState(false);
+
+    /**
+     * Guarda un par pregunta-respuesta específico en favoritos.
+     */
+    const handleGuardarFavorito = (aiIndex) => {
+        const aiMessage = chatFlow[aiIndex];
+        if (!aiMessage || aiMessage.type !== "ai") return;
+
+        let userMessage = null;
+        for (let i = aiIndex - 1; i >= 0; i--) {
+            if (chatFlow[i].type === "user") {
+                userMessage = chatFlow[i];
+                break;
+            }
+        }
+
+        if (!userMessage) return;
+
+        const yaGuardado = favorites.some(
+            f => f.question === userMessage.content && f.answer === aiMessage.content
+        );
+
+        if (yaGuardado) return;
+
+        setFavorites(prev => [...prev, {
+            id: Date.now(),
+            question: userMessage.content,
+            answer: aiMessage.content,
+            timestamp: new Date().toLocaleString(),
+        }]);
+    };
+
+    /**
+     * Verifica si una respuesta ya está guardada en favoritos.
+     */
+    const isResponseSaved = (aiIndex) => {
+        const aiMessage = chatFlow[aiIndex];
+        if (!aiMessage || aiMessage.type !== "ai") return false;
+
+        let userMessage = null;
+        for (let i = aiIndex - 1; i >= 0; i--) {
+            if (chatFlow[i].type === "user") {
+                userMessage = chatFlow[i];
+                break;
+            }
+        }
+
+        if (!userMessage) return false;
+
+        return favorites.some(
+            f => f.question === userMessage.content && f.answer === aiMessage.content
+        );
+    };
+
+    /**
+     * Guarda la conversación actual y vuelve a QuestionPromptPanel.
+     */
     const handleFinalizarYVolver = async () => {
         if (chatFlow.length === 0) {
             onFinalizarConversacion(null, null);
+            onBack();
             return;
         }
 
-        // Generar título para el chat (solo si es nuevo, no al retomar)
-        const aiGeneratedTitle = chatToResume
-            ? chatToResume.title
+        const title = originalChatId && activeChat
+            ? activeChat.title
             : await generateTitleFromChat();
 
-        // Crear entrada del historial
         const chatEntry = {
-            title: aiGeneratedTitle,
-            flow: [...chatFlow],
+            title: title,
+            flow: JSON.parse(JSON.stringify(chatFlow)), // Deep copy
             timestamp: new Date().toLocaleString(),
-            isNew: !chatToResume, // Solo es nuevo si no estamos retomando
         };
 
-        // Llamar a la función de App.jsx para guardar y volver a elección
-        // Pasamos el chat original si estamos retomando para poder actualizarlo
-        onFinalizarConversacion(chatEntry, chatToResume);
+        // Pasar el chat original si existe (para actualizar en lugar de duplicar)
+        onFinalizarConversacion(chatEntry, originalChatId ? activeChat : null);
+        onBack();
     };
 
-    /** =============================================
-     *  EFECTO PARA CARGAR PROMPT INICIAL
-     *  =============================================
+    /**
+     * Maneja la salida sin guardar.
      */
+    const handleSalirSinGuardar = () => {
+        setShowExitModal(false);
+        onBack();
+    };
+
+    /**
+     * Maneja la confirmación de salida (clic en SofIA o botón volver).
+     */
+    const handleExitRequest = (action) => {
+        if (!showChat || chatFlow.length === 0) {
+            onBack();
+            return;
+        }
+
+        if (hasUnsavedChanges) {
+            setExitAction(action);
+            setShowExitModal(true);
+        } else {
+            onBack();
+        }
+    };
+
+    /**
+     * Maneja la opción "Guardar y salir" del modal.
+     */
+    const handleGuardarYSalir = async () => {
+        setShowExitModal(false);
+        await handleFinalizarYVolver();
+    };
+
+    // ========================================
+    // EFECTOS PARA DETECCIÓN DE CAMBIOS
+    // ========================================
+
     const promptInicialEnviado = useRef(false);
 
     useEffect(() => {
-        // Si hay un promptInicial y no se ha enviado todavía
         if (promptInicial && !promptInicialEnviado.current) {
             promptInicialEnviado.current = true;
             setShowChat(true);
-            // Enviar el prompt automáticamente como pregunta personalizada
             sendCustomPrompt(promptInicial);
-            // Dejar el input vacío para la siguiente pregunta
             setPrompt("");
         }
-    }, [promptInicial]); // Solo se ejecuta cuando cambia promptInicial
+    }, [promptInicial]);
 
-    /** =============================================
-     *  EFECTO PARA RETOMAR CONVERSACIÓN DEL HISTORIAL
-     *  =============================================
-     */
     const lastResumedChat = useRef(null);
 
     useEffect(() => {
-        // Si hay un chat a retomar y es diferente al último procesado
         if (chatToResume && chatToResume !== lastResumedChat.current) {
             lastResumedChat.current = chatToResume;
-            setChatFlow([...chatToResume.flow]);
+            const flowCopy = JSON.parse(JSON.stringify(chatToResume.flow));
+            setChatFlow(flowCopy);
+            setOriginalChatFlow(flowCopy);
+            setOriginalChatId(chatToResume.id);
             setActiveChat(chatToResume);
             setShowChat(true);
             setShowHelpOptions(true);
+            setHasUnsavedChanges(false);
         }
     }, [chatToResume, setChatFlow, setActiveChat, setShowChat, setShowHelpOptions]);
 
-    /** ================================
-     *     RETORNO DE LA INTERFAZ
-     *  ================================
-     */
+    // Detectar cambios en el chatFlow
+    useEffect(() => {
+        if (showChat && chatFlow.length > 0) {
+            if (originalChatFlow) {
+                const hasChanges = JSON.stringify(chatFlow) !== JSON.stringify(originalChatFlow);
+                setHasUnsavedChanges(hasChanges);
+            } else {
+                setHasUnsavedChanges(chatFlow.length > 0);
+            }
+        }
+    }, [chatFlow, originalChatFlow, showChat]);
+
+    // Sincronizar chatHistory con el estado global
+    useEffect(() => {
+        if (setChatHistoryGlobal && chatHistory.length > 0) {
+            setChatHistoryGlobal(chatHistory);
+        }
+    }, [chatHistory, setChatHistoryGlobal]);
 
     // Calcular posición de la conversación actual en el historial
-    const currentChatIndex = activeChat ? chatHistory.findIndex(entry => entry === activeChat) : -1;
+    const currentChatIndex = activeChat ? chatHistory.findIndex(entry => entry.id === activeChat.id) : -1;
     const currentNumber = currentChatIndex !== -1 ? currentChatIndex + 1 : 0;
     const totalChats = chatHistory.length;
 
     return (
-
-        <div className="app-wrapper">
+        <div className={`app-wrapper config-abierto`}>
             <div className="header-bar">
                 <div className="header-bar-container">
+                    {/* Izquierda: botón Historial y diccionario */}
+                    <div className="header-bar-left">
+                            {/*Botón Historial */}
+                        <button
+                            className="header-historial-btn"
+                                onClick={toggleHistory}
+                                aria-label={`Abrir historial de conversaciones. Chat ${currentNumber} de ${totalChats}`}
+                                aria-expanded={showHistory}
+                        >
+                            <span className="header-historial-texto">Historial</span>
+                        </button>
+
+                         {/*Botón Diccionario */}
+                        <button
+                            className="header-diccionario-btn"
+                            onClick={() => setShowGlosario(!showGlosario)}
+                            aria-label={showGlosario ? "Cerrar diccionario" : "Abrir diccionario"}
+                            aria-expanded={showGlosario}
+                            aria-controls="panel-glosario"
+                        >
+                            <span className="header-diccionario-texto">Diccionario</span>
+                        </button>
+
+                    </div>
+
+                    {/* Centro: título SofIA */}
                     <h1
                         className="header-bar-title"
-                        onClick={onBack}
+                        onClick={() => handleExitRequest('sofia')}
                         role="button"
                         tabIndex={0}
                         onKeyPress={(e) => {
                             if (e.key === 'Enter' || e.key === ' ') {
-                                onBack();
+                                e.preventDefault();
+                                handleExitRequest('sofia');
                             }
                         }}
+                        aria-label="SofIA. Haz clic para volver al inicio"
+                        title="Volver al inicio"
                     >
                         SofIA
                     </h1>
 
+                    {/* Derecha: botón Perfil */}
                     <div className="header-bar-right">
                         <button
                             className="boton-perfil"
@@ -241,140 +381,118 @@ export default function InterfazPrincipal({
                             Perfil
                         </button>
                     </div>
-
                 </div>
             </div>
 
-            {/* Botón de Diccionario tipo dropdown - izquierda */}
-            <div className="diccionario-dropdown-container">
-                <button
-                    className="diccionario-dropdown-btn"
-                    onClick={() => setShowGlosario(!showGlosario)}
-                    aria-label="Abrir diccionario"
-                    aria-expanded={showGlosario}
-                >
-                    <span className="diccionario-dropdown-texto">Diccionario</span>
-                    <span className="diccionario-dropdown-icono">▼</span>
-                </button>
-            </div>
-
-            {/* Botón de Historial tipo dropdown - centrado debajo de SofIA */}
-            {chatHistory.length > 0 && (
-                <div className="historial-dropdown-container">
+            {/* Botón de respuestas recordadas */}
+            {favorites.length > 0 && (
+                <div className="favoritos-btn-container">
                     <button
-                        className="historial-dropdown-btn"
-                        onClick={toggleHistory}
-                        aria-label={`Abrir historial de conversaciones. Chat ${currentNumber} de ${totalChats}`}
-                        aria-expanded={showHistory}
+                        className="favoritos-btn"
+                        onClick={() => setShowFavoritos(true)}
+                        aria-label={`Ver ${favorites.length} ${favorites.length === 1 ? "respuesta recordada" : "respuestas recordadas"}`}
                     >
-                        <span className="historial-dropdown-contador">
-                            {currentNumber}/{totalChats}
+                        <span className="favoritos-btn-texto">
+                            {favorites.length} {favorites.length === 1 ? "respuesta recordada" : "respuestas recordadas"}
                         </span>
-                        <span className="historial-dropdown-separador">|</span>
-                        <span className="historial-dropdown-texto">Historial</span>
-                        <span className="historial-dropdown-icono">▼</span>
                     </button>
                 </div>
             )}
 
-            {/* Botón de Configuración de Ayuda - derecha debajo de Perfil */}
-            {flujoElegido === "formulario" && (
-                <div className="config-ayuda-dropdown-container">
-                    <button
-                        className="config-ayuda-dropdown-btn"
-                        onClick={() => setShowResponseConfig(!showResponseConfig)}
-                        aria-label="Configurar cómo quieres que aparezcan las respuestas"
-                        aria-expanded={showResponseConfig}
-                    >
-                        <span className="config-ayuda-dropdown-texto">Cómo quieres que aparezcan las respuestas</span>
-                        <span className="config-ayuda-dropdown-icono">▼</span>
-                    </button>
-                </div>
-            )}
-            {activeChat && (
-                <div className="chat-wrapper">
-                    <div className="chat-container">
-                        <div className="chat-message user-message">
-                            {activeChat.prompt}
-                        </div>
-                        <div className="chat-message ai-message">
-                            {activeChat.response}
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {/*GENERADOR/SELECCIONADOR DE PREGUNTA*/}
-            {!showChat ? (
-                <QuestionPromptPanel
-                    onBack={onBack}
-                    userName={summary?.nombre}
-                    selectedOption={selectedOption}
-                    prompt={prompt}
-                    setPrompt={setPrompt}
-                    sendPrompt={sendPrompt}
-                />
-            ) : (
-                <ChatActivePanel
-                    chatFlow={chatFlow}
-                    expandedResponses={expandedResponses}
-                    toggleExpanded={toggleExpanded}
-                    toggleSpeech={toggleSpeech}
-                    activeSpeechId={activeSpeechId}
-                    speechState={speechState}
-                    avatarMode={modoSeleccionado}
-                    tooltipInfo={tooltipInfo}
-                    handleTextSelection={handleTextSelection}
-                    handleButtonClick={handleButtonClick}
-                    handleReplaceText={handleReplaceText}
-                    prompt={prompt}
-                    setPrompt={setPrompt}
-                    sendCustomPrompt={sendCustomPrompt}
-                    saveChatToHistory={handleFinalizarYVolver}
-                />
-            )}
-
-            {/* Panel de configuración de respuestas - Solo en flujo "con ayuda" */}
-            {flujoElegido === "formulario" && (
-                <ResponseConfigPanel
-                    isOpen={showResponseConfig}
-                    onClose={() => setShowResponseConfig(false)}
-                    currentConfig={responseConfig}
-                    onApply={handleApplyResponseConfig}
-                />
-            )}
-
+            {/* Panel del Diccionario */}
             <PanelGlosario
                 isOpen={showGlosario}
                 onClose={() => setShowGlosario(false)}
                 glossary={glossary}
             />
 
-            {/* Modal de Historial */}
-            <HistoryModal
-                isOpen={showHistory}
-                onClose={toggleHistory}
-                chatHistory={chatHistory}
-                activeChat={activeChat}
-                onSelectChat={(entry) => {
-                    setActiveChat(entry);
-                    setChatFlow([...entry.flow]);
-                    setShowChat(true);
-                    setShowHelpOptions(true);
-                }}
-                onDeleteChat={(entryToDelete) => {
-                    setChatHistory(prev => prev.filter(entry => entry !== entryToDelete));
-                    // Si eliminamos el chat activo, limpiar
-                    if (activeChat === entryToDelete) {
-                        setActiveChat(null);
-                    }
-                    // Sincronizar con el historial global
-                    if (setChatHistoryGlobal) {
-                        setChatHistoryGlobal(prev => prev.filter(entry => entry !== entryToDelete));
-                    }
-                }}
-            />
+            <main className="main-content" id="main-content" aria-label="Contenido principal">
 
+                {/* Chat activo o panel de pregunta */}
+                {!showChat ? (
+                    <QuestionPromptPanel
+                        onBack={onBack}
+                        userName={summary?.nombre}
+                        prompt={prompt}
+                        setPrompt={setPrompt}
+                        sendPrompt={sendPrompt}
+                        favorites={favorites}
+                        onOpenFavoritos={() => setShowFavoritos(true)}
+                    />
+                ) : (
+                    <ChatActivePanel
+                        chatFlow={chatFlow}
+                        expandedResponses={expandedResponses}
+                        toggleExpanded={toggleExpanded}
+                        toggleSpeech={toggleSpeech}
+                        activeSpeechId={activeSpeechId}
+                        speechState={speechState}
+                        avatarMode={currentRole}
+                        tooltipInfo={tooltipInfo}
+                        handleTextSelection={handleTextSelection}
+                        handleButtonClick={handleButtonClick}
+                        handleReplaceText={handleReplaceText}
+                        prompt={prompt}
+                        setPrompt={setPrompt}
+                        sendCustomPrompt={sendCustomPrompt}
+                        saveChatToHistory={handleFinalizarYVolver}
+                        onGuardarFavorito={handleGuardarFavorito}
+                        isResponseSaved={isResponseSaved}
+                    />
+                )}
+
+                {/* Panel de configuración de respuestas (siempre visible) */}
+                <ResponseConfigPanel
+                    currentConfig={responseConfig}
+                    currentRole={currentRole}
+                    onApply={handleApplyResponseConfig}
+                    onRoleChange={handleRoleChange}
+                />
+
+                {/* Modal de confirmación de salida */}
+                <ExitConfirmModal
+                    isOpen={showExitModal}
+                    onClose={() => setShowExitModal(false)}
+                    onSaveAndExit={handleGuardarYSalir}
+                    onExitWithoutSaving={handleSalirSinGuardar}
+                />
+
+                {/* Modal de Historial */}
+                <HistoryModal
+                    isOpen={showHistory}
+                    onClose={toggleHistory}
+                    chatHistory={chatHistory}
+                    activeChat={activeChat}
+                    onSelectChat={(entry) => {
+                        setActiveChat(entry);
+                        setChatFlow(JSON.parse(JSON.stringify(entry.flow)));
+                        setOriginalChatFlow(JSON.parse(JSON.stringify(entry.flow)));
+                        setOriginalChatId(entry.id);
+                        setShowChat(true);
+                        setShowHelpOptions(true);
+                        setHasUnsavedChanges(false);
+                    }}
+                    onDeleteChat={(entryToDelete) => {
+                        setChatHistory(prev => prev.filter(entry => entry.id !== entryToDelete.id));
+                        if (activeChat?.id === entryToDelete.id) {
+                            setActiveChat(null);
+                            setOriginalChatFlow(null);
+                            setOriginalChatId(null);
+                        }
+                        if (setChatHistoryGlobal) {
+                            setChatHistoryGlobal(prev => prev.filter(entry => entry.id !== entryToDelete.id));
+                        }
+                    }}
+                />
+
+                {/* Modal de Favoritos */}
+                <FavoritosModal
+                    isOpen={showFavoritos}
+                    onClose={() => setShowFavoritos(false)}
+                    favorites={favorites}
+                    onDelete={(id) => setFavorites(prev => prev.filter(f => f.id !== id))}
+                />
+            </main>
         </div>
     );
 }

@@ -25,7 +25,9 @@ export default function Chat({
     toggleSpeech,        // Función para reproducir/pausar/reanudar el texto con síntesis de voz
     activeSpeechId,      // ID del mensaje actualmente siendo leído por voz
     speechState,         // Estado de la reproducción de voz: "idle" (inactivo), "playing" (leyendo) o "paused" (esperando reanudación)
-    avatarMode           // Modo seleccionado: "profesor" | "familiar"
+    avatarMode,          // Modo seleccionado: "profesor" | "familiar"
+    onGuardarFavorito,   // Función para guardar un par pregunta-respuesta
+    isResponseSaved,     // Función que verifica si una respuesta ya está guardada
 }) {
     const avatarSrc = avatarMode ? AVATAR_IMAGES[avatarMode] : null;
     const messagesEndRef = useRef(null);
@@ -144,21 +146,22 @@ export default function Chat({
                                                 ? "Pausar lectura"
                                                 : "Reanudar lectura"
                                     }
-                                    title={
-                                        activeSpeechId !== index || speechState === "idle"
-                                            ? "Reproducir"
-                                            : speechState === "playing"
-                                                ? "Pausar"
-                                                : "Reanudar"
-                                    }
                                 >
-                                    <span aria-hidden="true">
                                     {activeSpeechId !== index || speechState === "idle"
-                                        ? "🔊"
+                                        ? "Reproducir"
                                         : speechState === "playing"
-                                            ? "⏸️"
-                                            : "▶️"}
-                                    </span>
+                                            ? "Pausar"
+                                            : "Reanudar"}
+                                </button>
+
+                                {/* Botón para recordar esta respuesta */}
+                                <button
+                                    className={`guardar-respuesta-btn ${isResponseSaved(index) ? "guardado" : ""}`}
+                                    onClick={() => onGuardarFavorito(index)}
+                                    disabled={isResponseSaved(index)}
+                                    aria-label={isResponseSaved(index) ? "Ya está recordado" : "Recordar esta respuesta"}
+                                >
+                                    {isResponseSaved(index) ? "Recordado" : "Recordar"}
                                 </button>
                             </div>
                         )}

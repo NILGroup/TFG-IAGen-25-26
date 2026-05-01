@@ -6,16 +6,16 @@ export default function HistoryModal({
   chatHistory,
   activeChat,
   onSelectChat,
-  onDeleteChat, // Nueva prop para eliminar conversaciones
+  onDeleteChat,
 }) {
   const ITEMS_PER_PAGE = 5;
   const [currentPage, setCurrentPage] = useState(1);
-  const [confirmDelete, setConfirmDelete] = useState(null); // ID del chat a confirmar eliminación
+  const [confirmDelete, setConfirmDelete] = useState(null);
 
   if (!isOpen) return null;
 
-  // Calcular índice del chat actual
-  const currentIndex = chatHistory.findIndex((entry) => entry === activeChat);
+  // Calcular índice del chat actual usando ID
+  const currentIndex = chatHistory.findIndex((entry) => entry.id === activeChat?.id);
   const currentNumber = currentIndex !== -1 ? currentIndex + 1 : 0;
   const totalChats = chatHistory.length;
 
@@ -27,15 +27,12 @@ export default function HistoryModal({
 
   /**
    * Formatea la fecha de forma humana y accesible
-   * Ejemplos: "Hoy, 14:30", "Ayer, 10:15", "Lunes, 9:00", "3 de abril"
    */
   const formatDate = (timestampString) => {
     if (!timestampString) return "";
 
-    // Intentar parsear la fecha
     const date = new Date(timestampString);
     if (isNaN(date.getTime())) {
-      // Si no se puede parsear, devolver el string original simplificado
       return timestampString.split(",")[0] || timestampString;
     }
 
@@ -45,24 +42,20 @@ export default function HistoryModal({
     yesterday.setDate(yesterday.getDate() - 1);
     const chatDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
 
-    // Formatear hora
     const hours = date.getHours().toString().padStart(2, "0");
     const minutes = date.getMinutes().toString().padStart(2, "0");
     const timeStr = `${hours}:${minutes}`;
 
-    // Comparar fechas
     if (chatDate.getTime() === today.getTime()) {
       return `Hoy, ${timeStr}`;
     } else if (chatDate.getTime() === yesterday.getTime()) {
       return `Ayer, ${timeStr}`;
     } else {
-      // Mostrar día de la semana si es de esta semana
       const diffDays = Math.floor((today - chatDate) / (1000 * 60 * 60 * 24));
       if (diffDays < 7) {
         const days = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
         return `${days[date.getDay()]}, ${timeStr}`;
       } else {
-        // Fecha completa para más antiguas
         const months = ["enero", "febrero", "marzo", "abril", "mayo", "junio",
                        "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
         return `${date.getDate()} de ${months[date.getMonth()]}`;
@@ -70,9 +63,8 @@ export default function HistoryModal({
     }
   };
 
-  // Manejar eliminación de chat
   const handleDeleteClick = (e, entry, index) => {
-    e.stopPropagation(); // Evitar que se seleccione el chat
+    e.stopPropagation();
     setConfirmDelete(index);
   };
 
@@ -103,14 +95,12 @@ export default function HistoryModal({
 
   return (
     <>
-      {/* Fondo oscuro */}
       <div
         className="modal-historial-backdrop"
         onClick={onClose}
         aria-hidden="true"
       />
 
-      {/* Modal */}
       <div
         className="modal-historial"
         role="dialog"
@@ -120,18 +110,17 @@ export default function HistoryModal({
         {/* Header */}
         <div className="modal-historial-header">
           <h2 id="history-modal-title" className="modal-historial-titulo">
-            Conversaciones anteriores
+            Mis conversaciones
           </h2>
           <button
             onClick={onClose}
             className="modal-historial-cerrar"
-            aria-label="Cerrar historial"
+            aria-label="Cerrar mis conversaciones"
           >
             Cerrar
           </button>
         </div>
 
-        {/* Contenido - Lista scrollable */}
         <div className="modal-historial-contenido">
           {chatHistory.length === 0 ? (
             <div className="modal-historial-vacio">
@@ -143,19 +132,18 @@ export default function HistoryModal({
             <div className="modal-historial-lista">
               {currentChats.map((entry, index) => {
                 const globalIndex = startIndex + index;
-                const isCurrentChat = entry === activeChat;
+                const isCurrentChat = entry.id === activeChat?.id;
                 const isConfirmingDelete = confirmDelete === globalIndex;
 
                 // Obtener el primer mensaje del usuario (la pregunta)
-                const firstMessage = entry.flow?.find((msg) => msg.type === "user-message");
-                const question = firstMessage?.text || entry.title || "Sin título";
+                const firstMessage = entry.flow?.find((msg) => msg.type === "user");
+                const question = firstMessage?.content || entry.title || "Sin título";
 
-                // Formatear fecha de forma humana
                 const dateString = formatDate(entry.timestamp);
 
                 return (
                   <div
-                    key={globalIndex}
+                    key={entry.id || globalIndex}
                     className={`modal-historial-item ${isCurrentChat ? "actual" : ""}`}
                   >
                     {/* Contenido clickeable para seleccionar */}
@@ -190,19 +178,19 @@ export default function HistoryModal({
                         {isConfirmingDelete ? (
                           <div className="modal-historial-confirmar-eliminar">
                             <span className="modal-historial-confirmar-texto">
-                              ¿Eliminar?
+                              ¿Borrar esta conversación?
                             </span>
                             <button
                               className="modal-historial-btn-confirmar"
                               onClick={(e) => handleConfirmDelete(e, entry)}
-                              aria-label="Confirmar eliminar"
+                              aria-label="Sí, borrar esta conversación"
                             >
-                              Sí
+                              Sí, borrar
                             </button>
                             <button
                               className="modal-historial-btn-cancelar"
                               onClick={handleCancelDelete}
-                              aria-label="Cancelar eliminar"
+                              aria-label="No borrar"
                             >
                               No
                             </button>
@@ -211,9 +199,9 @@ export default function HistoryModal({
                           <button
                             className="modal-historial-btn-eliminar"
                             onClick={(e) => handleDeleteClick(e, entry, globalIndex)}
-                            aria-label="Eliminar conversación"
+                            aria-label="Borrar conversación"
                           >
-                            Eliminar
+                            Borrar
                           </button>
                         )}
                       </div>
@@ -238,14 +226,14 @@ export default function HistoryModal({
                 onClick={handlePreviousPage}
                 disabled={currentPage === 1}
                 className="modal-historial-paginacion-btn"
-                aria-label="Página anterior"
+                aria-label="Ver anterior"
               >
-                ← Anterior
+                Anterior
               </button>
 
               {/* Indicador de página */}
               <span className="modal-historial-paginacion-texto">
-                Página {currentPage} de {totalPages}
+                Viendo {currentPage} de {totalPages}
               </span>
 
               {/* Botón Siguiente */}
@@ -253,9 +241,9 @@ export default function HistoryModal({
                 onClick={handleNextPage}
                 disabled={currentPage === totalPages}
                 className="modal-historial-paginacion-btn"
-                aria-label="Página siguiente"
+                aria-label="Ver siguiente"
               >
-                Siguiente →
+                Siguiente
               </button>
             </div>
           )}

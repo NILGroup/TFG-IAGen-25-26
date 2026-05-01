@@ -1,7 +1,7 @@
 import { useState, useCallback } from "react";
 
 /**
- * Controlador para los bloques de ayuda posteriores a cada respuesta. (eliminar?)
+ * Controlador para los bloques de ayuda posteriores a cada respuesta.
  */
 export default function useHelpOptionsController() {
   const [showHelpOptions, setShowHelpOptions] = useState(false);

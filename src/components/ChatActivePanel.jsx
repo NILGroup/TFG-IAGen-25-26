@@ -14,6 +14,7 @@
  * - Tooltip para seleccionar texto y obtener ayuda
  */
 
+import { useEffect, useRef } from "react";
 import Chat from "./Chat";
 import { TooltipBubble } from "./TooltipBubble";
 
@@ -44,7 +45,35 @@ export default function ChatActivePanel({
 
     // Gestión del historial
     saveChatToHistory,           // Guarda la conversación actual en el historial
+
+    // Favoritos
+    onGuardarFavorito,           // Guarda un par pregunta-respuesta específico
+    isResponseSaved,             // Verifica si una respuesta ya está guardada
 }) {
+    // Ref para el contenedor del chat (para forzar repaint en Safari)
+    const wrapperRef = useRef(null);
+
+    /**
+     * Fix para Safari: fuerza un repaint cuando el contenido cambia.
+     * Safari no recalcula el layout automáticamente con flexbox dinámico.
+     */
+    useEffect(() => {
+        if (wrapperRef.current) {
+            // Forzar repaint en Safari
+            const element = wrapperRef.current;
+
+            // Técnica 1: Forzar reflow leyendo offsetHeight
+            void element.offsetHeight;
+
+            // Técnica 2: Cambiar display momentáneamente
+            requestAnimationFrame(() => {
+                element.style.display = 'none';
+                void element.offsetHeight; // Forzar reflow
+                element.style.display = '';
+            });
+        }
+    }, [chatFlow]);
+
     /**
      * Envía una pregunta de seguimiento al chat.
      * Se ejecuta cuando el usuario presiona el botón de enviar o Enter.
@@ -61,7 +90,7 @@ export default function ChatActivePanel({
     };
 
     return (
-        <div className="chat-active-wrapper">
+        <div className="chat-active-wrapper" ref={wrapperRef}>
             {/* ========================================
                 CUADRO BLANCO: ÁREA DE MENSAJES
                 ========================================
@@ -69,17 +98,22 @@ export default function ChatActivePanel({
                 - Tiene scroll independiente (solo esta área)
                 - Incluye tooltip para seleccionar texto y obtener ayuda
             */}
-            <div className="chat-selection-area" onMouseUp={handleTextSelection}>
-                {/* Componente Chat: renderiza todos los mensajes */}
-                <Chat
-                    chatFlow={chatFlow}
-                    expandedResponses={expandedResponses}
-                    toggleExpanded={toggleExpanded}
-                    toggleSpeech={toggleSpeech}
-                    activeSpeechId={activeSpeechId}
-                    speechState={speechState}
-                    avatarMode={avatarMode}
-                />
+            <div className="chat-selection-area">
+                {/* Contenedor con scroll interno */}
+                <div className="chat-mensajes-container" onMouseUp={handleTextSelection}>
+                    {/* Componente Chat: renderiza todos los mensajes */}
+                    <Chat
+                        chatFlow={chatFlow}
+                        expandedResponses={expandedResponses}
+                        toggleExpanded={toggleExpanded}
+                        toggleSpeech={toggleSpeech}
+                        activeSpeechId={activeSpeechId}
+                        speechState={speechState}
+                        avatarMode={avatarMode}
+                        onGuardarFavorito={onGuardarFavorito}
+                        isResponseSaved={isResponseSaved}
+                    />
+                </div>
 
                 {/* Tooltip que aparece al seleccionar texto en los mensajes */}
                 <TooltipBubble
@@ -90,22 +124,19 @@ export default function ChatActivePanel({
             </div>
 
             {/* ========================================
-                BOTÓN FINALIZAR CONVERSACIÓN
+                BOTÓN FINALIZAR CONVERSACIÓN (flotante)
                 ========================================
-                - Fuera del cuadro blanco, fijo en pantalla
-                - Solo aparece cuando hay mensajes en el chat
-                - Al hacer clic, guarda la conversación en el historial
             */}
             {chatFlow.length > 0 && (
                 <div className="chat-actions-bottom">
                     <button
-                        className="finalizar-conversacion-btn-bottom"
+                        className="finalizar-conversacion-btn"
                         onClick={async () => {
                             await saveChatToHistory();
                         }}
-                        aria-label="Finalizar y guardar conversación"
+                        aria-label="He terminado"
                     >
-                        Finalizar conversación
+                        He terminado
                     </button>
                 </div>
             )}
@@ -113,18 +144,9 @@ export default function ChatActivePanel({
             {/* ========================================
                 BARRA DE ENTRADA (INPUT)
                 ========================================
-                - Fuera del cuadro blanco, fija en la parte inferior
-                - Siempre visible, no afectada por el scroll
-                - Estilo similar a WhatsApp/ChatGPT
-                - Presionar Enter envía la pregunta
             */}
             <div className="chat-input-bar">
                 <div className="chat-input-container">
-                    {/* Label oculto para accesibilidad (lectores de pantalla) */}
-                    <label htmlFor="chat-input" className="sr-only">
-                        Escribe tu siguiente pregunta para SofIA
-                    </label>
-
                     {/* Campo de texto para escribir la pregunta */}
                     <input
                         id="chat-input"
@@ -134,23 +156,22 @@ export default function ChatActivePanel({
                         value={prompt}
                         onChange={(e) => setPrompt(e.target.value)}
                         onKeyDown={(e) => {
-                            // Enviar pregunta al presionar Enter
                             if (e.key === "Enter") {
                                 e.preventDefault();
                                 submitFollowup();
                             }
                         }}
-                        aria-label="Campo para escribir tu pregunta a SofIA"
+                        aria-label="Escribe tu pregunta aquí"
                     />
 
-                    {/* Botón de enviar (deshabilitado si no hay texto) */}
+                    {/* Botón de enviar */}
                     <button
                         className="chat-send-btn"
                         onClick={submitFollowup}
                         disabled={!prompt.trim()}
                         aria-label="Enviar pregunta"
                     >
-                        ➤
+                        Enviar
                     </button>
                 </div>
             </div>
