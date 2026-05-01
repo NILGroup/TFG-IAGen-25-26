@@ -90,6 +90,7 @@ export default function InterfazPrincipal({
     const [originalChatId, setOriginalChatId] = useState(null);
     const [showExitModal, setShowExitModal] = useState(false);
     const [exitAction, setExitAction] = useState(null); // 'sofia' o 'back'
+    const [pendingHistorySelection, setPendingHistorySelection] = useState(null);
 
     const handleApplyResponseConfig = (newConfig) => {
         setResponseConfig(newConfig);
@@ -237,14 +238,6 @@ export default function InterfazPrincipal({
     };
 
     /**
-     * Maneja la salida sin guardar.
-     */
-    const handleSalirSinGuardar = () => {
-        setShowExitModal(false);
-        onBack();
-    };
-
-    /**
      * Maneja la confirmación de salida (clic en SofIA o botón volver).
      */
     const handleExitRequest = (action) => {
@@ -264,9 +257,86 @@ export default function InterfazPrincipal({
     /**
      * Maneja la opción "Guardar y salir" del modal.
      */
+    const saveCurrentChatToHistory = async () => {
+        if (chatFlow.length === 0) return;
+
+        const title = originalChatId && activeChat
+            ? activeChat.title
+            : await generateTitleFromChat();
+
+        const chatEntry = {
+            title,
+            flow: JSON.parse(JSON.stringify(chatFlow)),
+            timestamp: new Date().toLocaleString(),
+            id: originalChatId && activeChat
+                ? activeChat.id
+                : `chat_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        };
+
+        if (originalChatId && activeChat) {
+            setChatHistory((prev) => prev.map((entry) =>
+                entry.id === activeChat.id ? chatEntry : entry
+            ));
+            if (setChatHistoryGlobal) {
+                setChatHistoryGlobal((prev) => prev.map((entry) =>
+                    entry.id === activeChat.id ? chatEntry : entry
+                ));
+            }
+        } else {
+            setChatHistory((prev) => [...prev, chatEntry]);
+            if (setChatHistoryGlobal) {
+                setChatHistoryGlobal((prev) => [...prev, chatEntry]);
+            }
+            setOriginalChatId(chatEntry.id);
+        }
+    };
+
+    const selectHistoryChat = (entry) => {
+        const flowCopy = JSON.parse(JSON.stringify(entry.flow));
+        setActiveChat(entry);
+        setChatFlow(flowCopy);
+        setOriginalChatFlow(flowCopy);
+        setOriginalChatId(entry.id);
+        setShowChat(true);
+        setShowHelpOptions(true);
+        setHasUnsavedChanges(false);
+    };
+
+    const handleSelectHistoryChat = (entry) => {
+        if (entry.id === activeChat?.id) return;
+        if (hasUnsavedChanges) {
+            setPendingHistorySelection(entry);
+            setExitAction('history');
+            setShowExitModal(true);
+            return;
+        }
+        selectHistoryChat(entry);
+    };
+
     const handleGuardarYSalir = async () => {
         setShowExitModal(false);
+        if (pendingHistorySelection) {
+            await saveCurrentChatToHistory();
+            const entry = pendingHistorySelection;
+            setPendingHistorySelection(null);
+            selectHistoryChat(entry);
+            return;
+        }
         await handleFinalizarYVolver();
+    };
+
+    /**
+     * Maneja la salida sin guardar.
+     */
+    const handleSalirSinGuardar = () => {
+        setShowExitModal(false);
+        if (pendingHistorySelection) {
+            const entry = pendingHistorySelection;
+            setPendingHistorySelection(null);
+            selectHistoryChat(entry);
+            return;
+        }
+        onBack();
     };
 
     // ========================================
@@ -452,7 +522,10 @@ export default function InterfazPrincipal({
                 {/* Modal de confirmación de salida */}
                 <ExitConfirmModal
                     isOpen={showExitModal}
-                    onClose={() => setShowExitModal(false)}
+                    onClose={() => {
+                        setShowExitModal(false);
+                        setPendingHistorySelection(null);
+                    }}
                     onSaveAndExit={handleGuardarYSalir}
                     onExitWithoutSaving={handleSalirSinGuardar}
                 />
@@ -463,15 +536,7 @@ export default function InterfazPrincipal({
                     onClose={toggleHistory}
                     chatHistory={chatHistory}
                     activeChat={activeChat}
-                    onSelectChat={(entry) => {
-                        setActiveChat(entry);
-                        setChatFlow(JSON.parse(JSON.stringify(entry.flow)));
-                        setOriginalChatFlow(JSON.parse(JSON.stringify(entry.flow)));
-                        setOriginalChatId(entry.id);
-                        setShowChat(true);
-                        setShowHelpOptions(true);
-                        setHasUnsavedChanges(false);
-                    }}
+                    onSelectChat={handleSelectHistoryChat}
                     onDeleteChat={(entryToDelete) => {
                         setChatHistory(prev => prev.filter(entry => entry.id !== entryToDelete.id));
                         if (activeChat?.id === entryToDelete.id) {
