@@ -840,7 +840,7 @@
 }
 
 .exit-modal-header {
-  background-color: #0d0b3f;
+  background-color: #270A33;
   padding: 24px 28px;
 }
 
@@ -885,16 +885,16 @@
 }
 
 .exit-modal-btn-primary {
-  background-color: #2e7d32;
+  background-color: #270A33;
   color: white;
 }
 
 .exit-modal-btn-primary:hover {
-  background-color: #1b5e20;
+  background-color: #270A33;
 }
 
 .exit-modal-btn-primary:focus-visible {
-  outline: 3px solid #2196f3;
+  outline: 3px solid #8021f3;
   outline-offset: 2px;
 }
 
