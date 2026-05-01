@@ -116,7 +116,7 @@ export default function Questionario({ onComplete }) {
         retoOtro: "",                            // string: texto personalizado de "Otra opción"
         herramientas: [],                        // array: herramientas de ayuda preferidas
         mostrarPorPartes: false,                 // boolean: dividir respuestas largas
-        rol: "profesor"                          // string: rol de Olivía
+        rol: "profesor"                          // string: rol de SofIA (profesor, familiar)
     });
 
     // PASO 1 - Nombre
