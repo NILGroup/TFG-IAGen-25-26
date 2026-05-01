@@ -704,7 +704,7 @@
   padding: 18px 24px;
   font-size: clamp(1.25rem, 3vw, 1.5rem);
   font-weight: bold;
-  background-color: #4caf50;
+  background-color: #3D7B80;
   color: white;
   border: none;
   border-radius: 12px;
@@ -717,7 +717,7 @@
 }
 
 .question-prompt-submit-btn:hover:not(:disabled) {
-  background-color: #45a049;
+  background-color: #3D7B80;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
 }
@@ -728,7 +728,7 @@
 }
 
 .question-prompt-submit-btn:focus-visible {
-  outline: 3px solid #2196f3;
+  outline: 3px solid #50999e;
   outline-offset: 2px;
 }
 
