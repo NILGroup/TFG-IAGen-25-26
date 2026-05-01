@@ -1927,7 +1927,7 @@ body {
 /* COGA: tarjetas con acento lateral - más fácil de escanear */
 .panel-glosario-palabra {
   border: 1px solid #e8e8e8;
-  border-left: 4px solid #1f4189;
+  border-left: 4px solid #3D7B80;
   border-radius: 8px;
   padding: 14px 16px;
   background-color: white;
@@ -1935,7 +1935,7 @@ body {
 }
 
 .panel-glosario-palabra:hover {
-  border-left-color: #4caf50;
+  border-left-color: #B1E6D1;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
