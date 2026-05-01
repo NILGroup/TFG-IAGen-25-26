@@ -10,8 +10,7 @@
 
 import { useState, useEffect } from "react";
 
-// Opciones de formato de respuesta
-const RESPONSE_OPTIONS = [
+const RESPONSE_FORMAT_OPTIONS = [
   {
     id: "lectura-facil",
     label: "Lectura Fácil",
@@ -39,6 +38,20 @@ const RESPONSE_OPTIONS = [
   },
 ];
 
+const normalizeResponseFormat = (formats = []) => {
+  if (!Array.isArray(formats)) return [];
+
+  const aliases = {
+    lecturaFacil: "lectura-facil",
+    ejemplo: "ejemplos",
+    bullet: "listas",
+    textocorto: "textos-cortos",
+    frasescortas: "frases-sencillas",
+  };
+
+  return [...new Set(formats.map((format) => aliases[format] || format).filter(Boolean))];
+};
+
 // Opciones de rol
 const ROLE_OPTIONS = [
   {
@@ -59,22 +72,25 @@ export default function ResponseConfigPanel({
   onApply,
   onRoleChange,
 }) {
-  const [selectedOptions, setSelectedOptions] = useState(currentConfig);
+  const [selectedOptions, setSelectedOptions] = useState(
+    normalizeResponseFormat(currentConfig)
+  );
   const [selectedRole, setSelectedRole] = useState(currentRole);
   const [hasChanges, setHasChanges] = useState(false);
 
   // Sincronizar con la configuración actual
   useEffect(() => {
-    setSelectedOptions(currentConfig);
+    setSelectedOptions(normalizeResponseFormat(currentConfig));
     setSelectedRole(currentRole);
     setHasChanges(false);
   }, [currentConfig, currentRole]);
 
   // Detectar cambios
   useEffect(() => {
+    const normalizedCurrentConfig = normalizeResponseFormat(currentConfig);
     const configChanged =
       JSON.stringify([...selectedOptions].sort()) !==
-      JSON.stringify([...currentConfig].sort());
+      JSON.stringify([...normalizedCurrentConfig].sort());
     const roleChanged = selectedRole !== currentRole;
 
     setHasChanges(configChanged || roleChanged);
@@ -88,7 +104,7 @@ export default function ResponseConfigPanel({
 
   const handleApply = () => {
     if (onApply) {
-      onApply(selectedOptions);
+      onApply(normalizeResponseFormat(selectedOptions), selectedRole);
     }
     if (onRoleChange && selectedRole !== currentRole) {
       onRoleChange(selectedRole);
@@ -97,7 +113,7 @@ export default function ResponseConfigPanel({
   };
 
   const handleReset = () => {
-    setSelectedOptions(currentConfig);
+    setSelectedOptions(normalizeResponseFormat(currentConfig));
     setSelectedRole(currentRole);
     setHasChanges(false);
   };
@@ -125,7 +141,7 @@ export default function ResponseConfigPanel({
 
         {/* Lista de opciones de formato */}
         <div className="response-config-options">
-          {RESPONSE_OPTIONS.map((option) => {
+          {RESPONSE_FORMAT_OPTIONS.map((option) => {
             const isSelected = selectedOptions.includes(option.id);
 
             return (

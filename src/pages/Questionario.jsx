@@ -22,6 +22,39 @@ import "../App.css";
 import robotLogo from "../assets/AventurIA_robot_sinfondo.png";
 import robotLogoCuerpo from "../assets/AventurIA_robotCuerposinfondo.png";
 
+const RESPONSE_FORMAT_OPTIONS = [
+    {
+        id: "lectura-facil",
+        label: "Lectura Fácil",
+        description: "Te explico todo con palabras sencillas",
+        ejemplo: "Un planeta es una bola muy grande. Los planetas estan en el cielo. Los planetas dan vueltas alrededor del Sol.",
+    },
+    {
+        id: "ejemplos",
+        label: "Con ejemplos",
+        description: "Te explico todo con cosas que conoces",
+        ejemplo: "Un planeta es como una pelota grande que da vueltas al Sol.",
+    },
+    {
+        id: "listas",
+        label: "Con listas",
+        description: "Te cuento las cosas punto por punto",
+        ejemplo: "• Es muy grande\n• Da vueltas al Sol\n• Tiene forma de bola",
+    },
+    {
+        id: "textos-cortos",
+        label: "Respuestas cortas",
+        description: "Te cuento las cosas en pocas palabras",
+        ejemplo: "Un planeta es una bola grande que gira alrededor del Sol.",
+    },
+    {
+        id: "frases-sencillas",
+        label: "Frases cortas",
+        description: "Te cuento cada idea en una frase",
+        ejemplo: "Es una bola. Es muy grande. Da vueltas al Sol.",
+    },
+];
+
 /** =================================
  *  BARRA DE PROGRESO DEL CUESTIONARIO
  *  =================================
@@ -115,6 +148,7 @@ export default function Questionario({ onComplete }) {
         retos: [],                               // array: dificultades seleccionadas
         retoOtro: "",                            // string: texto personalizado de "Otra opción"
         herramientas: [],                        // array: herramientas de ayuda preferidas
+        responseConfig: [],                      // array: formato de respuesta preferido
         mostrarPorPartes: false,                 // boolean: dividir respuestas largas
         rol: "profesor"                          // string: rol de Olivía
     });
@@ -205,11 +239,11 @@ export default function Questionario({ onComplete }) {
         "escribir_largo": "Escribir frases largas",
         "otra": "Otra dificultad",
         // Herramientas
-        "lecturaFacil": "Lectura Fácil",
-        "ejemplo": "Con ejemplos",
-        "bullet": "Con listas",
-        "textocorto": "Respuestas cortas",
-        "frasescortas": "Frases sencillas"
+        "lectura-facil": "Lectura Fácil",
+        "ejemplos": "Con ejemplos",
+        "listas": "Con listas",
+        "textos-cortos": "Respuestas cortas",
+        "frases-sencillas": "Frases sencillas"
     };
 
     // PÁGINA 5 - Resumen con etiquetas claras
@@ -284,38 +318,20 @@ export default function Questionario({ onComplete }) {
      */
 
     // Lista de herramientas disponibles (Lectura Fácil: sin anglicismos, sin emojis)
-    const tools = [
-        {
-            id: "lecturaFacil",
-            label: "Lectura Fácil",
-            description: "Te explico todo con palabras sencillas",
-            ejemplo: "Un planeta es una bola muy grande. Los planetas estan en el cielo. Los planetas dan vueltas alrededor del Sol."
-        },
-        {
-            id: "ejemplo",
-            label: "Con ejemplos",
-            description: "Te explico todo con cosas que conoces",
-            ejemplo: "Un planeta es como una pelota grande que da vueltas al Sol."
-        },
-        {
-            id: "bullet",
-            label: "Con listas",
-            description: "Te cuento las cosas punto por punto",
-            ejemplo: "• Es muy grande\n• Da vueltas al Sol\n• Tiene forma de bola"
-        },
-        {
-            id: "textocorto",
-            label: "Respuestas cortas",
-            description: "Te cuento las cosas en pocas palabras",
-            ejemplo: "Un planeta es una bola grande que gira alrededor del Sol."
-        },
-        {
-            id: "frasescortas",
-            label: "Frases cortas",
-            description: "Te cuento cada idea en una frase",
-            ejemplo: "Es una bola. Es muy grande. Da vueltas al Sol."
-        }
-    ];
+    const tools = RESPONSE_FORMAT_OPTIONS.map((option) => {
+        const exampleMap = {
+            "lectura-facil": "Un planeta es una bola muy grande. Los planetas estan en el cielo. Los planetas dan vueltas alrededor del Sol.",
+            "ejemplos": "Un planeta es como una pelota grande que da vueltas al Sol.",
+            "listas": "• Es muy grande\n• Da vueltas al Sol\n• Tiene forma de bola",
+            "textos-cortos": "Un planeta es una bola grande que gira alrededor del Sol.",
+            "frases-sencillas": "Es una bola. Es muy grande. Da vueltas al Sol.",
+        };
+
+        return {
+            ...option,
+            ejemplo: exampleMap[option.id],
+        };
+    });
 
 
     /* ========================
