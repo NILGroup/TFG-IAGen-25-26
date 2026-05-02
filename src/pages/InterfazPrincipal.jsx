@@ -51,6 +51,7 @@ export default function InterfazPrincipal({
     onFinalizarConversacion,
     favoritesGlobal = [],
     setFavoritesGlobal,
+    onRoleChange,
 }) {
     const {
         selectedOption,
@@ -95,11 +96,12 @@ export default function InterfazPrincipal({
     );
 
     // Rol actual del ayudante (puede cambiar desde el panel lateral)
-    const [currentRole, setCurrentRole] = useState(summary?.rol || modoSeleccionado || "profesor");
+    // Prioridad: modoSeleccionado (elección actual) > summary.rol (perfil guardado) > "profesor" (defecto)
+    const [currentRole, setCurrentRole] = useState(modoSeleccionado || summary?.rol || "profesor");
 
     useEffect(() => {
         setResponseConfig(normalizeResponseFormat(summary?.responseConfig || summary?.herramientas || DEFAULT_RESPONSE_FORMAT));
-        setCurrentRole(summary?.rol || modoSeleccionado || "profesor");
+        setCurrentRole(modoSeleccionado || summary?.rol || "profesor");
     }, [summary, modoSeleccionado]);
 
     // Estado para el panel de glosario
@@ -121,7 +123,11 @@ export default function InterfazPrincipal({
 
         setResponseConfig(normalizedConfig);
         setCurrentRole(normalizedRole);
-        console.log("Nueva configuración de respuestas:", normalizedConfig);
+
+        // Sincronizar el rol con el estado global (App.jsx)
+        if (newRole && onRoleChange) {
+            onRoleChange(newRole);
+        }
 
         void regenerateLastResponse(normalizedConfig, normalizedRole);
     };
@@ -211,7 +217,7 @@ export default function InterfazPrincipal({
             id: Date.now(),
             question: userMessage.content,
             answer: aiMessage.content,
-            timestamp: new Date().toLocaleString(),
+            timestamp: new Date().toISOString(),
         }]);
     };
 
@@ -254,7 +260,7 @@ export default function InterfazPrincipal({
         const chatEntry = {
             title: title,
             flow: JSON.parse(JSON.stringify(chatFlow)), // Deep copy
-            timestamp: new Date().toLocaleString(),
+            timestamp: new Date().toISOString(),
         };
 
         // Pasar el chat original si existe (para actualizar en lugar de duplicar)
@@ -292,7 +298,7 @@ export default function InterfazPrincipal({
         const chatEntry = {
             title,
             flow: JSON.parse(JSON.stringify(chatFlow)),
-            timestamp: new Date().toLocaleString(),
+            timestamp: new Date().toISOString(),
             id: originalChatId && activeChat
                 ? activeChat.id
                 : `chat_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
