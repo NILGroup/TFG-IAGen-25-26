@@ -220,8 +220,8 @@ body {
   flex-direction: column;
   align-items: center;
   min-height: 100vh;
-  padding-top: 91px;
-  padding-bottom: 20px;
+  padding-top: 0px;
+  padding-bottom: 24px;
 }
 
 @media (max-width: 768px) {
@@ -2759,6 +2759,7 @@ body {
   flex: 1;
   overflow-y: auto;
   padding-right: 8px; /* Espacio para scrollbar */
+  padding-bottom: 100px; /* Espacio para que el último mensaje no quede oculto por la barra de input */
   background-color: white;
   min-height: 0; /* Fix para Safari */
   -webkit-overflow-scrolling: touch; /* Scroll suave en Safari iOS */

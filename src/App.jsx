@@ -7,12 +7,6 @@
  *
  * Flujo simplificado para accesibilidad cognitiva (COGA):
  * Cuestionario → Elegir Rol → Pregunta Directa → Chat
- *
- * Características de accesibilidad:
- * - Navegación lineal y predecible (COGA 3.3.2)
- * - Reducción de pasos intermedios (COGA 2.4.1)
- * - Lenguaje claro en cada pantalla (COGA 4.2.1)
- * - Consistencia en botones de navegación (WCAG 3.2.3)
  */
 
 import { useState } from "react";
