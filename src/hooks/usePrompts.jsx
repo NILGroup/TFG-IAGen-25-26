@@ -7,7 +7,7 @@
  * un título que englobe toda la conversación.
  */
 
-import { fetchFromGroq, enhancePromptWithCoStar } from '../services/apiFunctions';
+import { fetchFromGroq, fetchWithDynamicRouting, enhancePromptWithCoStar } from '../services/apiFunctions';
 import { buildConversationMessages, buildPrompt } from '../services/promptBuilders';
 import { adaptToLecturaFacil } from '../services/responseAdapters';
 import { useCallback } from "react";
@@ -79,7 +79,8 @@ const usePromptFunctions = ({
                 { role: "user", content: apiPrompt }
             ];
 
-            nextResponse = await fetchFromGroq(messages);
+            // Usar enrutador dinámico para seleccionar el modelo óptimo
+            nextResponse = await fetchWithDynamicRouting(messages, responseConfig, currentRole);
             console.info("[SofIA] sendPrompt:rawResponse", {
                 type: typeof nextResponse,
                 length: nextResponse?.length ?? 0,
@@ -123,7 +124,7 @@ const usePromptFunctions = ({
 
     // Enviar un mensaje personalizado (texto libre o contextual)
     const sendCustomPrompt = useCallback(
-        async (customPrompt, context = "", displayOverride = null, fetchFunction = fetchFromGroq) => {
+        async (customPrompt, context = "", displayOverride = null) => {
             if (!customPrompt.trim()) return;
 
             window.speechSynthesis.cancel();
@@ -168,7 +169,8 @@ const usePromptFunctions = ({
                     { role: "user", content: enhancedPrompt }
                 ];
 
-                let response = await fetchFunction(messages);
+                // Usar enrutador dinámico para seleccionar el modelo óptimo
+                let response = await fetchWithDynamicRouting(messages, responseConfig, currentRole);
                 console.info("[SofIA] sendCustomPrompt:rawResponse", {
                     type: typeof response,
                     length: response?.length ?? 0,
@@ -265,7 +267,8 @@ const usePromptFunctions = ({
                     { role: "user", content: enhancedPrompt },
                 ];
 
-                let response = await fetchFromGroq(messages);
+                // Usar enrutador dinámico con la configuración sobrescrita
+                let response = await fetchWithDynamicRouting(messages, overrideResponseConfig, overrideRole);
                 console.info("[SofIA] regenerateLastResponse:rawResponse", {
                     type: typeof response,
                     length: response?.length ?? 0,
@@ -353,7 +356,7 @@ const usePromptFunctions = ({
 
         const lastResponse = getLastAIResponse();
         if (!lastResponse.trim()) return;
-        sendCustomPrompt(lastResponse, "Resumir el siguiente texto:", "Dame un resumen", fetchFromGroq);
+        sendCustomPrompt(lastResponse, "Resumir el siguiente texto:", "Dame un resumen");
 
     }, [getLastAIResponse, sendCustomPrompt]);
 
@@ -362,7 +365,7 @@ const usePromptFunctions = ({
 
         const lastResponse = getLastAIResponse();
         if (!lastResponse.trim()) return;
-        sendCustomPrompt(lastResponse, "Dame un ejemplo del siguiente texto:", "Explícame con un ejemplo", fetchFromGroq);
+        sendCustomPrompt(lastResponse, "Dame un ejemplo del siguiente texto:", "Explícame con un ejemplo");
 
     }, [getLastAIResponse, sendCustomPrompt]);
 
@@ -372,7 +375,7 @@ const usePromptFunctions = ({
         const lastResponse = getLastAIResponse();
         if (!lastResponse.trim()) return;
         const simplifiedPrompt = `"${lastResponse}"`;
-        sendCustomPrompt(simplifiedPrompt, "Reformular de la manera más sencilla y corta posible", "Reformular toda la respuesta", fetchFromGroq);
+        sendCustomPrompt(simplifiedPrompt, "Reformular de la manera más sencilla y corta posible", "Reformular toda la respuesta");
         setShowSimplificationOptions(false);
 
     }, [getLastAIResponse, sendCustomPrompt, setShowSimplificationOptions]);
@@ -382,7 +385,7 @@ const usePromptFunctions = ({
 
         if (words.trim()) {
             const synonymPrompt = `${words}`;
-            sendCustomPrompt(synonymPrompt, "Dame un sinónimo y una definición corta y muy sencilla de", `Dame sinónimos de ${synonymPrompt}`, fetchFromGroq);
+            sendCustomPrompt(synonymPrompt, "Dame un sinónimo y una definición corta y muy sencilla de", `Dame sinónimos de ${synonymPrompt}`);
             setShowTextInput(false);
         } else {
             alert("Por favor, escribe algo para buscar sinónimos.");

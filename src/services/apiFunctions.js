@@ -123,6 +123,149 @@ ${summaryInfo ? ` Usuario con: ${summaryInfo.discapacidad || 'no especificado'},
     }
 };
 
+// === ENRUTADOR DINÁMICO DE MODELOS ===
+/**
+ * Determina la técnica de prompting más adecuada según los formatos de salida seleccionados.
+ * Basado en los resultados de evaluación de técnicas de prompting.
+ * 
+ * @param {string[]} responseFormats - Formatos de salida seleccionados (lectura-facil, ejemplos, listas, etc)
+ * @param {string} role - Rol del asistente (profesor/familiar)
+ * @returns {string} - Técnica recomendada (zero-shot, few-shot, one-shot, cot, role-prompting)
+ */
+export const determinePromptingTechnique = (responseFormats = [], role = "profesor") => {
+    if (!Array.isArray(responseFormats)) return "zero-shot";
+    
+    const hasRoleRequirement = role && (role === "profesor" || role === "familiar");
+    const hasComplexFormatting = responseFormats.some(f => 
+        f.includes("cot") || f.includes("razonamiento")
+    );
+    const hasStructuredOutput = responseFormats.some(f => 
+        f === "listas" || f === "ejemplos"
+    );
+    
+    // Lógica de precedencia de técnicas
+    if (hasRoleRequirement && responseFormats.length > 0) {
+        return "role-prompting"; // Role-prompting cuando hay adaptación de estilo lingüístico
+    }
+    
+    if (hasComplexFormatting) {
+        return "cot"; // Chain of Thought para razonamiento complejo
+    }
+    
+    if (responseFormats.includes("ejemplos") && responseFormats.length === 1) {
+        return "few-shot"; // Few-shot si solo se piden ejemplos
+    }
+    
+    if (hasStructuredOutput && responseFormats.length > 1) {
+        return "one-shot"; // One-shot para salidas estructuradas múltiples
+    }
+    
+    return "zero-shot"; // Por defecto, respuesta directa
+};
+
+/**
+ * Selecciona el modelo más adecuado según la técnica de prompting.
+ * Basado en puntuaciones de evaluación y tiempos de respuesta.
+ * 
+ * @param {string} technique - Técnica de prompting (zero-shot, few-shot, one-shot, cot, role-prompting)
+ * @param {string} userPreference - Preferencia del usuario para role-prompting
+ * @returns {object} - {model, provider, description}
+ */
+export const selectOptimalModel = (technique = "zero-shot", userPreference = "quality") => {
+    const modelMap = {
+        // Zero-Shot y Few-Shot → Llama-3.3-70b-versatile (scores 5.00 y 4.56, <1.5s latencia)
+        "zero-shot": {
+            model: "llama-3.3-70b-versatile",
+            provider: "groq",
+            score: 5.00,
+            latency: "~0.8s",
+            reason: "Máxima puntuación en Zero-Shot, respuesta rápida y equilibrada"
+        },
+        
+        "few-shot": {
+            model: "llama-3.3-70b-versatile",
+            provider: "groq",
+            score: 4.56,
+            latency: "~1.2s",
+            reason: "Puntuación máxima en Few-Shot, ideal para ejemplos"
+        },
+        
+        // One-Shot y CoT → GPT-oss-120b (one-shot 5.00, cot 4.25 puntos, aunque más lento)
+        "one-shot": {
+            model: "openai/gpt-oss-120b",
+            provider: "groq",
+            score: 5.00,
+            latency: "~2.5s",
+            reason: "Puntuación perfecta en One-Shot, manejo robusto de estructuras"
+        },
+        
+        "cot": {
+            model: "openai/gpt-oss-120b",
+            provider: "groq",
+            score: 4.25,
+            latency: "~3.0s",
+            reason: "Razonamiento complejo y coherente, superior a modelos rápidos en CoT"
+        },
+        
+        // Role-Prompting → Deepseek-v3.1 (5.00) o Llama-3.3-70b (4.41, 8x más rápido)
+        "role-prompting": {
+            model: userPreference === "speed" ? "llama-3.3-70b-versatile" : "deepseek-v3.1:671b-cloud",
+            provider: userPreference === "speed" ? "groq" : "ollama",
+            score: userPreference === "speed" ? 4.41 : 5.00,
+            latency: userPreference === "speed" ? "~1.2s" : "~8-10s",
+            reason: userPreference === "speed" 
+                ? "Respuesta rápida (8x menor latencia)" 
+                : "Máxima puntuación en adaptación lingüística y accesibilidad"
+        }
+    };
+    
+    return modelMap[technique] || modelMap["zero-shot"];
+};
+
+/**
+ * Wrapper que enruta automáticamente a la función fetch correcta según el modelo seleccionado.
+ * 
+ * @param {array} messages - Mensajes para la IA
+ * @param {string[]} responseFormats - Formatos de salida (para determinar técnica)
+ * @param {string} role - Rol del asistente
+ * @param {string} userPreference - Preferencia en role-prompting (quality/speed)
+ * @returns {Promise<string>} - Respuesta de la IA
+ */
+export const fetchWithDynamicRouting = async (
+    messages,
+    responseFormats = [],
+    role = "profesor",
+    userPreference = "quality"
+) => {
+    // Determinar técnica y modelo óptimo
+    const technique = determinePromptingTechnique(responseFormats, role);
+    const modelInfo = selectOptimalModel(technique, userPreference);
+    
+    console.info("[SofIA] Enrutador dinámico", {
+        technique,
+        model: modelInfo.model,
+        provider: modelInfo.provider,
+        score: modelInfo.score,
+        latency: modelInfo.latency,
+        reason: modelInfo.reason
+    });
+    
+    try {
+        // Enrutar a la función fetch correcta según el provider
+        if (modelInfo.provider === "groq") {
+            return await fetchFromGroq(messages, modelInfo.model);
+        } else if (modelInfo.provider === "ollama") {
+            return await fetchFromOllama(messages, modelInfo.model);
+        } else if (modelInfo.provider === "gemini") {
+            return await fetchFromGemini(messages, modelInfo.model);
+        }
+    } catch (error) {
+        console.error(`[SofIA] Error con modelo ${modelInfo.model}, intentando fallback:`, error);
+        // Fallback a Llama si falla el modelo principal
+        return await fetchFromGroq(messages, "llama-3.3-70b-versatile");
+    }
+};
+
 // === AQUÍ PUEDES IR AÑADIENDO MÁS ===
 // LUEGO EN LOS PROMPT, DEPENDIENDO DE CUAL QUEREMOS USAR, LLAMAMOS A UN FETCH O A OTRO
 /*POR EJEMPLO:
