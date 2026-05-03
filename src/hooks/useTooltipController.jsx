@@ -94,7 +94,8 @@ export default function useTooltipController({ chatFlow, setChatFlow }) {
       });
     }
   }, []);
-
+  
+  // Opción en desuso, posible eliminación
   const handleButtonClick = useCallback( // Al pulsar alguna opcion del bocadillo
     async (accion) => {
       setTooltipInfo((prev) => ({ ...prev, loading: true }));

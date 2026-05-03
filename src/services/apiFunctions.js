@@ -129,37 +129,31 @@ ${summaryInfo ? ` Usuario con: ${summaryInfo.discapacidad || 'no especificado'},
  * Basado en los resultados de evaluación de técnicas de prompting.
  * 
  * @param {string[]} responseFormats - Formatos de salida seleccionados (lectura-facil, ejemplos, listas, etc)
- * @param {string} role - Rol del asistente (profesor/familiar)
- * @returns {string} - Técnica recomendada (zero-shot, few-shot, one-shot, cot, role-prompting)
+ * @param {string} promptText - Texto original del usuario para detectar intención natural
+ * @returns {string} - Técnica recomendada (zero-shot, few-shot, one-shot, cot)
  */
-export const determinePromptingTechnique = (responseFormats = [], role = "profesor") => {
+export const determinePromptingTechnique = (responseFormats = [], promptText = "") => {
     if (!Array.isArray(responseFormats)) return "zero-shot";
-    
-    const hasRoleRequirement = role && (role === "profesor" || role === "familiar");
-    const hasComplexFormatting = responseFormats.some(f => 
-        f.includes("cot") || f.includes("razonamiento")
-    );
-    const hasStructuredOutput = responseFormats.some(f => 
+
+    const normalizedPromptText = String(promptText || "").toLowerCase();
+    const hasDetailedReasoningRequest = /\b(paso a paso|paso por paso|en detalle|en profundidad|detallad[oa]s?|desglos[ae]|expl[ií]came|explica(?:me)?|razona|razonamiento|analiza|bien explicado)\b/.test(normalizedPromptText);
+    const hasStructuredOutput = responseFormats.some(f =>
         f === "listas" || f === "ejemplos"
     );
-    
-    // Lógica de precedencia de técnicas
-    if (hasRoleRequirement && responseFormats.length > 0) {
-        return "role-prompting"; // Role-prompting cuando hay adaptación de estilo lingüístico
+
+    // Lógica de precedencia basada en la intención real del usuario
+    if (hasDetailedReasoningRequest) {
+        return "cot"; // Chain of Thought cuando la pregunta pide explicación profunda o paso a paso
     }
-    
-    if (hasComplexFormatting) {
-        return "cot"; // Chain of Thought para razonamiento complejo
-    }
-    
+
     if (responseFormats.includes("ejemplos") && responseFormats.length === 1) {
         return "few-shot"; // Few-shot si solo se piden ejemplos
     }
-    
-    if (hasStructuredOutput && responseFormats.length > 1) {
+
+    if (hasStructuredOutput && responseFormats.filter(f => f === "listas" || f === "ejemplos").length > 1) {
         return "one-shot"; // One-shot para salidas estructuradas múltiples
     }
-    
+
     return "zero-shot"; // Por defecto, respuesta directa
 };
 
@@ -167,8 +161,8 @@ export const determinePromptingTechnique = (responseFormats = [], role = "profes
  * Selecciona el modelo más adecuado según la técnica de prompting.
  * Basado en puntuaciones de evaluación y tiempos de respuesta.
  * 
- * @param {string} technique - Técnica de prompting (zero-shot, few-shot, one-shot, cot, role-prompting)
- * @param {string} userPreference - Preferencia del usuario para role-prompting
+ * @param {string} technique - Técnica de prompting (zero-shot, few-shot, one-shot, cot)
+ * @param {string} userPreference - Preferencia de calidad/velocidad para futuras extensiones
  * @returns {object} - {model, provider, description}
  */
 export const selectOptimalModel = (technique = "zero-shot", userPreference = "quality") => {
@@ -207,16 +201,6 @@ export const selectOptimalModel = (technique = "zero-shot", userPreference = "qu
             reason: "Razonamiento complejo y coherente, superior a modelos rápidos en CoT"
         },
         
-        // Role-Prompting → Deepseek-v3.1 (5.00) o Llama-3.3-70b (4.41, 8x más rápido)
-        "role-prompting": {
-            model: userPreference === "speed" ? "llama-3.3-70b-versatile" : "deepseek-v3.1:671b-cloud",
-            provider: userPreference === "speed" ? "groq" : "ollama",
-            score: userPreference === "speed" ? 4.41 : 5.00,
-            latency: userPreference === "speed" ? "~1.2s" : "~8-10s",
-            reason: userPreference === "speed" 
-                ? "Respuesta rápida (8x menor latencia)" 
-                : "Máxima puntuación en adaptación lingüística y accesibilidad"
-        }
     };
     
     return modelMap[technique] || modelMap["zero-shot"];
@@ -227,18 +211,29 @@ export const selectOptimalModel = (technique = "zero-shot", userPreference = "qu
  * 
  * @param {array} messages - Mensajes para la IA
  * @param {string[]} responseFormats - Formatos de salida (para determinar técnica)
- * @param {string} role - Rol del asistente
+ * @param {string} promptText - Texto original del usuario para elegir técnica
  * @param {string} userPreference - Preferencia en role-prompting (quality/speed)
  * @returns {Promise<string>} - Respuesta de la IA
  */
 export const fetchWithDynamicRouting = async (
     messages,
     responseFormats = [],
-    role = "profesor",
-    userPreference = "quality"
+    userPreference = "quality",
+    promptText = "",
+    routingMode = "automatic"
 ) => {
+    if (routingMode === "fast") {
+        console.info("[SofIA] Modo rápido activo: usando Llama-3.3-70b-versatile");
+        try {
+            return await fetchFromGroq(messages, "llama-3.3-70b-versatile");
+        } catch (error) {
+            console.error("[SofIA] Falló Llama en modo rápido, usando fallback Groq:", error);
+            return await fetchFromGroq(messages, "llama-3.3-70b-versatile");
+        }
+    }
+
     // Determinar técnica y modelo óptimo
-    const technique = determinePromptingTechnique(responseFormats, role);
+    const technique = determinePromptingTechnique(responseFormats, promptText);
     const modelInfo = selectOptimalModel(technique, userPreference);
     
     console.info("[SofIA] Enrutador dinámico", {

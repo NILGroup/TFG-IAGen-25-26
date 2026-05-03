@@ -69,6 +69,7 @@ export default function App() {
     setSummary({
       ...data,
       responseConfig: data.responseConfig || data.herramientas || [],
+      routingPreference: data.routingPreference || "automatic",
     });
     setPaso("modo");
   };
@@ -82,7 +83,11 @@ export default function App() {
     setModoSeleccionado(modo);
     // Sincronizar el rol en el perfil
     if (summary) {
-      setSummary(prev => ({ ...prev, rol: modo }));
+      setSummary(prev => ({
+        ...prev,
+        rol: modo,
+        routingPreference: prev.routingPreference || "automatic",
+      }));
     }
     setPaso("questionPrompt");
   };
@@ -116,7 +121,23 @@ export default function App() {
   const handleRoleChange = (newRole) => {
     setModoSeleccionado(newRole);
     if (summary) {
-      setSummary(prev => ({ ...prev, rol: newRole }));
+      setSummary(prev => ({
+        ...prev,
+        rol: newRole,
+        routingPreference: prev.routingPreference || "automatic",
+      }));
+    }
+  };
+
+  /**
+   * 11. Para guardar la preferencia de enrutamiento
+   */
+  const handleRoutingPreferenceChange = (routingPreference) => {
+    if (summary) {
+      setSummary(prev => ({
+        ...prev,
+        routingPreference,
+      }));
     }
   };
 
@@ -195,6 +216,7 @@ export default function App() {
     setSummary({
       ...updatedSummary,
       responseConfig: updatedSummary.responseConfig || updatedSummary.herramientas || [],
+      routingPreference: updatedSummary.routingPreference || summary?.routingPreference || "automatic",
     });
     setModoSeleccionado(updatedSummary?.rol || null);
   };
@@ -280,7 +302,7 @@ export default function App() {
 
       {/* Paso 2: Elegir entre Profesor o Familiar */}
       {paso === "modo" && (
-        <PantallaRol onSelectMode={handleModoComplete} />
+        <PantallaRol onSelectMode={handleModoComplete} selectedMode={modoSeleccionado || summary?.rol || "profesor"} />
       )}
 
       {/* Paso 3: Escribir la primera pregunta */}
@@ -312,6 +334,7 @@ export default function App() {
           favoritesGlobal={favorites}
           setFavoritesGlobal={setFavorites}
           onRoleChange={handleRoleChange}
+          onRoutingPreferenceChange={handleRoutingPreferenceChange}
         />
       )}
 

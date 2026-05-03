@@ -43,12 +43,6 @@ const usePromptFunctions = ({
         setSpeechState("idle");
         resetHelpOptions();
 
-        console.info("[SofIA] sendPrompt:start", {
-            promptPreview: prompt.slice(0, 80),
-            responseConfig,
-            currentRole,
-        });
-
         setLoading(true);
         setShowChat(true);
         setShowHelpOptions(false);
@@ -70,9 +64,6 @@ const usePromptFunctions = ({
 
             // Construir el prompt con estructura CO-STAR
             const { apiPrompt } = buildPrompt(summary, rawUserText, responseConfig, currentRole);
-            console.info("[SofIA] sendPrompt:builtPrompt", {
-                promptLength: apiPrompt.length,
-            });
 
             const messages = [
                 ...buildConversationMessages(chatFlow),
@@ -80,17 +71,10 @@ const usePromptFunctions = ({
             ];
 
             // Usar enrutador dinámico para seleccionar el modelo óptimo
-            nextResponse = await fetchWithDynamicRouting(messages, responseConfig, currentRole);
-            console.info("[SofIA] sendPrompt:rawResponse", {
-                type: typeof nextResponse,
-                length: nextResponse?.length ?? 0,
-            });
+            nextResponse = await fetchWithDynamicRouting(messages, responseConfig, "quality", rawUserText, summary?.routingPreference || "automatic");
 
             // Adaptar respuesta a LF
             nextResponse = await adaptToLecturaFacil({ response: nextResponse, summary, responseConfig, setChatFlow });
-            console.info("[SofIA] sendPrompt:adaptedResponse", {
-                length: nextResponse?.length ?? 0,
-            });
 
             setChatFlow((prev) => [
                 ...prev.filter((entry) => entry.type !== "loading"),
@@ -132,12 +116,6 @@ const usePromptFunctions = ({
             setSpeechState("idle");
 
             resetHelpOptions();
-            console.info("[SofIA] sendCustomPrompt:start", {
-                promptPreview: customPrompt.slice(0, 80),
-                contextPreview: context.slice(0, 80),
-                responseConfig,
-                currentRole,
-            });
             setLoading(true);
             setShowChat(true);
 
@@ -170,17 +148,10 @@ const usePromptFunctions = ({
                 ];
 
                 // Usar enrutador dinámico para seleccionar el modelo óptimo
-                let response = await fetchWithDynamicRouting(messages, responseConfig, currentRole);
-                console.info("[SofIA] sendCustomPrompt:rawResponse", {
-                    type: typeof response,
-                    length: response?.length ?? 0,
-                });
+                let response = await fetchWithDynamicRouting(messages, responseConfig, "quality", rawText, summary?.routingPreference || "automatic");
 
                 // Adaptar respuesta a LF
                 response = await adaptToLecturaFacil({ response, summary, responseConfig, setChatFlow });
-                console.info("[SofIA] sendCustomPrompt:adaptedResponse", {
-                    length: response?.length ?? 0,
-                });
 
                 setChatFlow((prev) => [
                     ...prev.filter((entry) => entry.type !== "loading"),
@@ -231,12 +202,6 @@ const usePromptFunctions = ({
             setActiveSpeechId(null);
             setSpeechState("idle");
 
-            console.info("[SofIA] regenerateLastResponse:start", {
-                overrideResponseConfig,
-                overrideRole,
-                lastAIIndex,
-            });
-
             setLoading(true);
             setShowHelpOptions(false);
 
@@ -252,9 +217,6 @@ const usePromptFunctions = ({
                     overrideResponseConfig,
                     overrideRole
                 );
-                console.info("[SofIA] regenerateLastResponse:builtPrompt", {
-                    promptLength: apiPrompt.length,
-                });
 
                 const enhancedPrompt = await enhancePromptWithCoStar(apiPrompt, summary);
 
@@ -268,20 +230,13 @@ const usePromptFunctions = ({
                 ];
 
                 // Usar enrutador dinámico con la configuración sobrescrita
-                let response = await fetchWithDynamicRouting(messages, overrideResponseConfig, overrideRole);
-                console.info("[SofIA] regenerateLastResponse:rawResponse", {
-                    type: typeof response,
-                    length: response?.length ?? 0,
-                });
+                let response = await fetchWithDynamicRouting(messages, overrideResponseConfig, "quality", lastUserMessage.content, summary?.routingPreference || "automatic");
 
                 response = await adaptToLecturaFacil({
                     response,
                     summary,
                     responseConfig: overrideResponseConfig,
                     setChatFlow,
-                });
-                console.info("[SofIA] regenerateLastResponse:adaptedResponse", {
-                    length: response?.length ?? 0,
                 });
 
                 setChatFlow((prev) => {
