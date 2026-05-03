@@ -235,8 +235,19 @@ export const fetchWithDynamicRouting = async (
     messages,
     responseFormats = [],
     role = "profesor",
-    userPreference = "quality"
+    userPreference = "quality",
+    routingMode = "automatic"
 ) => {
+    if (routingMode === "fast") {
+        console.info("[SofIA] Modo rápido activo: usando Llama-3.3-70b-versatile");
+        try {
+            return await fetchFromGroq(messages, "llama-3.3-70b-versatile");
+        } catch (error) {
+            console.error("[SofIA] Falló Llama en modo rápido, usando fallback Groq:", error);
+            return await fetchFromGroq(messages, "llama-3.3-70b-versatile");
+        }
+    }
+
     // Determinar técnica y modelo óptimo
     const technique = determinePromptingTechnique(responseFormats, role);
     const modelInfo = selectOptimalModel(technique, userPreference);

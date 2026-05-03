@@ -80,7 +80,7 @@ const usePromptFunctions = ({
             ];
 
             // Usar enrutador dinámico para seleccionar el modelo óptimo
-            nextResponse = await fetchWithDynamicRouting(messages, responseConfig, currentRole);
+            nextResponse = await fetchWithDynamicRouting(messages, responseConfig, currentRole, "quality", summary?.routingPreference || "automatic");
             console.info("[SofIA] sendPrompt:rawResponse", {
                 type: typeof nextResponse,
                 length: nextResponse?.length ?? 0,
@@ -170,7 +170,7 @@ const usePromptFunctions = ({
                 ];
 
                 // Usar enrutador dinámico para seleccionar el modelo óptimo
-                let response = await fetchWithDynamicRouting(messages, responseConfig, currentRole);
+                let response = await fetchWithDynamicRouting(messages, responseConfig, currentRole, "quality", summary?.routingPreference || "automatic");
                 console.info("[SofIA] sendCustomPrompt:rawResponse", {
                     type: typeof response,
                     length: response?.length ?? 0,
@@ -268,7 +268,7 @@ const usePromptFunctions = ({
                 ];
 
                 // Usar enrutador dinámico con la configuración sobrescrita
-                let response = await fetchWithDynamicRouting(messages, overrideResponseConfig, overrideRole);
+                let response = await fetchWithDynamicRouting(messages, overrideResponseConfig, overrideRole, "quality", summary?.routingPreference || "automatic");
                 console.info("[SofIA] regenerateLastResponse:rawResponse", {
                     type: typeof response,
                     length: response?.length ?? 0,

@@ -57,33 +57,50 @@ const ROLE_OPTIONS = [
   {
     id: "profesor",
     label: "Profesor",
-    description: "Te explica paso a paso con paciencia",
+    description: "Ayuda más didáctica",
   },
   {
     id: "familiar",
     label: "Familiar",
-    description: "Te ayuda con cariño y confianza",
+    description: "Ayuda más cercana",
+  },
+];
+
+const ROUTING_OPTIONS = [
+  {
+    id: "automatic",
+    label: "Automático",
+    description: "Más calidad",
+  },
+  {
+    id: "fast",
+    label: "Rápido",
+    description: "Más rápido",
   },
 ];
 
 export default function ResponseConfigPanel({
   currentConfig = [],
   currentRole = "profesor",
+  currentRoutingPreference = "automatic",
   onApply,
   onRoleChange,
+  onRoutingPreferenceChange,
 }) {
   const [selectedOptions, setSelectedOptions] = useState(
     normalizeResponseFormat(currentConfig)
   );
   const [selectedRole, setSelectedRole] = useState(currentRole);
+  const [selectedRoutingPreference, setSelectedRoutingPreference] = useState(currentRoutingPreference);
   const [hasChanges, setHasChanges] = useState(false);
 
   // Sincronizar con la configuración actual
   useEffect(() => {
     setSelectedOptions(normalizeResponseFormat(currentConfig));
     setSelectedRole(currentRole);
+    setSelectedRoutingPreference(currentRoutingPreference);
     setHasChanges(false);
-  }, [currentConfig, currentRole]);
+  }, [currentConfig, currentRole, currentRoutingPreference]);
 
   // Detectar cambios
   useEffect(() => {
@@ -92,9 +109,10 @@ export default function ResponseConfigPanel({
       JSON.stringify([...selectedOptions].sort()) !==
       JSON.stringify([...normalizedCurrentConfig].sort());
     const roleChanged = selectedRole !== currentRole;
+    const routingChanged = selectedRoutingPreference !== currentRoutingPreference;
 
-    setHasChanges(configChanged || roleChanged);
-  }, [selectedOptions, selectedRole, currentConfig, currentRole]);
+    setHasChanges(configChanged || roleChanged || routingChanged);
+  }, [selectedOptions, selectedRole, selectedRoutingPreference, currentConfig, currentRole, currentRoutingPreference]);
 
   const toggleOption = (id) => {
     setSelectedOptions((prev) =>
@@ -108,6 +126,9 @@ export default function ResponseConfigPanel({
     }
     if (onRoleChange && selectedRole !== currentRole) {
       onRoleChange(selectedRole);
+    }
+    if (onRoutingPreferenceChange && selectedRoutingPreference !== currentRoutingPreference) {
+      onRoutingPreferenceChange(selectedRoutingPreference);
     }
     setHasChanges(false);
   };
@@ -193,6 +214,40 @@ export default function ResponseConfigPanel({
                   onChange={() => setSelectedRole(option.id)}
                 />
                 <span className="radio-label">{option.label}</span>
+                <span className="radio-indicator" aria-hidden="true">
+                  {isSelected ? "✓" : ""}
+                </span>
+              </label>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Sección: Velocidad de respuesta */}
+      <div className="response-config-section">
+        <h2 className="response-config-section-title">
+          Velocidad de respuesta
+        </h2>
+
+        <div className="response-config-options">
+          {ROUTING_OPTIONS.map((option) => {
+            const isSelected = selectedRoutingPreference === option.id;
+
+            return (
+              <label
+                key={option.id}
+                className={`radio-card ${isSelected ? "checked" : ""}`}
+                htmlFor={`routing-${option.id}`}
+              >
+                <input
+                  type="radio"
+                  name="routing-config"
+                  id={`routing-${option.id}`}
+                  checked={isSelected}
+                  onChange={() => setSelectedRoutingPreference(option.id)}
+                />
+                <span className="radio-label">{option.label}</span>
+                <span className="checkbox-card-row-desc">{option.description}</span>
                 <span className="radio-indicator" aria-hidden="true">
                   {isSelected ? "✓" : ""}
                 </span>
