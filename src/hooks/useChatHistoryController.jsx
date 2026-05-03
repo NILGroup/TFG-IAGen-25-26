@@ -38,7 +38,7 @@ export default function useChatHistoryController({
             ? {
                 ...entry,
                 flow: [...chatFlow],
-                timestamp: new Date().toLocaleString(),
+                timestamp: new Date().toISOString(),
               }
             : { ...entry, isNew: false }
         );
@@ -47,7 +47,7 @@ export default function useChatHistoryController({
         const chatEntry = {
           title: aiGeneratedTitle,
           flow: [...chatFlow],
-          timestamp: new Date().toLocaleString(),
+          timestamp: new Date().toISOString(),
           isNew: true,
         };
 

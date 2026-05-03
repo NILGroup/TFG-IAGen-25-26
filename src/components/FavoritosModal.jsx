@@ -19,6 +19,44 @@ export default function FavoritosModal({ isOpen, onClose, favorites, onDelete })
     const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
     const currentFavorito = favorites[startIndex]; // Solo uno
 
+    /**
+     * Formatea la fecha de forma legible en español
+     */
+    const formatDate = (timestampString) => {
+        if (!timestampString) return "";
+
+        const date = new Date(timestampString);
+        if (isNaN(date.getTime())) {
+            return timestampString.split(",")[0] || timestampString;
+        }
+
+        const now = new Date();
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const yesterday = new Date(today);
+        yesterday.setDate(yesterday.getDate() - 1);
+        const favDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+
+        const hours = date.getHours().toString().padStart(2, "0");
+        const minutes = date.getMinutes().toString().padStart(2, "0");
+        const timeStr = `${hours}:${minutes}`;
+
+        if (favDate.getTime() === today.getTime()) {
+            return `Hoy, ${timeStr}`;
+        } else if (favDate.getTime() === yesterday.getTime()) {
+            return `Ayer, ${timeStr}`;
+        } else {
+            const diffDays = Math.floor((today - favDate) / (1000 * 60 * 60 * 24));
+            if (diffDays < 7) {
+                const days = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
+                return `${days[date.getDay()]}, ${timeStr}`;
+            } else {
+                const months = ["enero", "febrero", "marzo", "abril", "mayo", "junio",
+                               "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
+                return `${date.getDate()} de ${months[date.getMonth()]}`;
+            }
+        }
+    };
+
     const handlePreviousPage = () => {
         if (currentPage > 1) {
             setCurrentPage(currentPage - 1);
@@ -76,7 +114,7 @@ export default function FavoritosModal({ isOpen, onClose, favorites, onDelete })
                         <div className="favorito-pagina">
                             <div className="favorito-pagina-header">
                                 <span className="favorito-pagina-fecha">
-                                    {currentFavorito.timestamp}
+                                    {formatDate(currentFavorito.timestamp)}
                                 </span>
                                 {onDelete && (
                                     confirmDelete ? (

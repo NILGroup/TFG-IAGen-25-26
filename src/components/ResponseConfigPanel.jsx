@@ -14,27 +14,27 @@ const RESPONSE_FORMAT_OPTIONS = [
   {
     id: "lectura-facil",
     label: "Lectura Fácil",
-    description: "Con palabras fáciles",
+    description: "Te explico todo con palabras sencillas",
   },
   {
     id: "ejemplos",
     label: "Con ejemplos",
-    description: "Te pongo ejemplos para entenderlo mejor",
+    description: "Te explico todo con cosas que conoces",
   },
   {
     id: "listas",
     label: "Con listas",
-    description: "Te lo cuento punto por punto",
+    description: "Te cuento las cosas punto por punto",
   },
   {
     id: "textos-cortos",
-    label: "Textos cortos",
-    description: "Respuestas cortas",
+    label: "Respuestas cortas",
+    description: "Te cuento las cosas en pocas palabras",
   },
   {
     id: "frases-sencillas",
-    label: "Frases sencillas",
-    description: "Frases cortas y palabras del día a día",
+    label: "Frases cortas",
+    description: "Te cuento cada idea en una frase",
   },
 ];
 

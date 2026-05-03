@@ -81,7 +81,7 @@ return (
           className="panel-glosario-cerrar"
           aria-label="Cerrar diccionario"
         >
-          &times; 
+          Cerrar
         </button>
       </div>
 
