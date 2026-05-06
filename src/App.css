@@ -1658,7 +1658,7 @@ body {
   align-items: center;
 }
 
-/* Estilo para las "cards" de cada palabra (Corregido el nombre para que coincida con tu JSX) */
+/* Estilo para las "cards" de cada palabra */
 .panel-glosario-palabra {
   border: 1px solid #eee;
   border-radius: 12px;
@@ -1683,6 +1683,7 @@ body {
   background-color: #f9f9f9;
   transition: border-color 0.2s, box-shadow 0.2s;
   box-sizing: border-box;
+  color: black;
 }
 
 /* WCAG 2.4.7: foco visible */
@@ -1711,7 +1712,7 @@ body {
   padding: 24px 16px;
 }
 
-/* COGA: tarjetas con acento lateral - más fácil de escanear */
+/* COGA: tarjetas con acento lateral */
 .panel-glosario-palabra {
   border: 1px solid #e8e8e8;
   border-left: 4px solid #1f4189;
@@ -1743,6 +1744,13 @@ body {
 }
 
 .panel-glosario-palabra-definicion {
+  font-size: 15px;
+  color: #444;
+  line-height: 1.6;
+  margin: 0 0 4px 0;
+}
+
+.panel-glosario-palabra-sinonimo {
   font-size: 15px;
   color: #444;
   line-height: 1.6;

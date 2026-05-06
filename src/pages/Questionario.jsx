@@ -124,7 +124,7 @@ export default function Questionario({ onComplete }) {
         if (page < 5) {
             setPage(page + 1);
         } else {
-            onComplete(); // Termina el cuestionario y vuelve a la interfaz principal
+            onComplete(summary); // Termina el cuestionario y envía el perfil completo
         }
     };
 

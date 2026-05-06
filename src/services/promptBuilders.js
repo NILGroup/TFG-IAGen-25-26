@@ -95,11 +95,6 @@ export const buildDiscapacidadText = (discapacidad) => {
 export const buildUserChallengesText = (retos) =>
     retos?.length > 0 ? retos.join(", ") : "Ninguno específico";
 
-export const buildUserToolsText = (herramientas) =>
-    herramientas?.length > 0
-        ? herramientas.join(", ")
-        : "Ninguna preferencia marcada";
-
 export const resolveUserRole = (rol) => rol?.toLowerCase() || "familiar";
 
 export const buildRoleProfile = (userRole) => {
@@ -130,7 +125,6 @@ export const buildCoStarPrompt = ({
     roleTone,
     userDisabilities,
     userChallenges,
-    userTools,
     responseFormatInstructions,
     promptText,
 }) => `
@@ -142,7 +136,6 @@ Responde a: "${promptText}".
 
 ### ESTILO
 ${roleStyle}
-Herramientas preferidas del usuario: ${userTools}. Úsalas cuando sea relevante.
 
 ### TONO
 ${roleTone}
@@ -167,7 +160,6 @@ export const buildPrompt = (summary, promptText, responseConfig = null, roleOver
 
     const userDisabilities = buildDiscapacidadText(summary.discapacidad);
     const userChallenges = buildUserChallengesText(summary.retos);
-    const userTools = buildUserToolsText(summary.responseConfig || summary.herramientas);
     const userRole = resolveUserRole(roleOverride || summary.rol);
     const responseFormatInstructions = buildResponseFormatInstructions(
         normalizeResponseFormat(responseConfig || summary.responseConfig || summary.herramientas)
@@ -180,7 +172,6 @@ export const buildPrompt = (summary, promptText, responseConfig = null, roleOver
         roleTone,
         userDisabilities,
         userChallenges,
-        userTools,
         responseFormatInstructions,
         promptText,
     });

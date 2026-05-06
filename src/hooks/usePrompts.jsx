@@ -7,7 +7,7 @@
  * un título que englobe toda la conversación.
  */
 
-import { fetchFromGroq, enhancePromptWithCoStar } from '../services/apiFunctions';
+import { fetchFromGroq, fetchWithDynamicRouting, enhancePromptWithCoStar } from '../services/apiFunctions';
 import { buildConversationMessages, buildPrompt } from '../services/promptBuilders';
 import { adaptToLecturaFacil } from '../services/responseAdapters';
 import { useCallback } from "react";
@@ -43,12 +43,6 @@ const usePromptFunctions = ({
         setSpeechState("idle");
         resetHelpOptions();
 
-        console.info("[SofIA] sendPrompt:start", {
-            promptPreview: prompt.slice(0, 80),
-            responseConfig,
-            currentRole,
-        });
-
         setLoading(true);
         setShowChat(true);
         setShowHelpOptions(false);
@@ -70,26 +64,17 @@ const usePromptFunctions = ({
 
             // Construir el prompt con estructura CO-STAR
             const { apiPrompt } = buildPrompt(summary, rawUserText, responseConfig, currentRole);
-            console.info("[SofIA] sendPrompt:builtPrompt", {
-                promptLength: apiPrompt.length,
-            });
 
             const messages = [
                 ...buildConversationMessages(chatFlow),
                 { role: "user", content: apiPrompt }
             ];
 
-            nextResponse = await fetchFromGroq(messages);
-            console.info("[SofIA] sendPrompt:rawResponse", {
-                type: typeof nextResponse,
-                length: nextResponse?.length ?? 0,
-            });
+            // Usar enrutador dinámico para seleccionar el modelo óptimo
+            nextResponse = await fetchWithDynamicRouting(messages, responseConfig, "quality", rawUserText, summary?.routingPreference || "automatic");
 
             // Adaptar respuesta a LF
             nextResponse = await adaptToLecturaFacil({ response: nextResponse, summary, responseConfig, setChatFlow });
-            console.info("[SofIA] sendPrompt:adaptedResponse", {
-                length: nextResponse?.length ?? 0,
-            });
 
             setChatFlow((prev) => [
                 ...prev.filter((entry) => entry.type !== "loading"),
@@ -123,7 +108,7 @@ const usePromptFunctions = ({
 
     // Enviar un mensaje personalizado (texto libre o contextual)
     const sendCustomPrompt = useCallback(
-        async (customPrompt, context = "", displayOverride = null, fetchFunction = fetchFromGroq) => {
+        async (customPrompt, context = "", displayOverride = null) => {
             if (!customPrompt.trim()) return;
 
             window.speechSynthesis.cancel();
@@ -131,12 +116,6 @@ const usePromptFunctions = ({
             setSpeechState("idle");
 
             resetHelpOptions();
-            console.info("[SofIA] sendCustomPrompt:start", {
-                promptPreview: customPrompt.slice(0, 80),
-                contextPreview: context.slice(0, 80),
-                responseConfig,
-                currentRole,
-            });
             setLoading(true);
             setShowChat(true);
 
@@ -168,17 +147,11 @@ const usePromptFunctions = ({
                     { role: "user", content: enhancedPrompt }
                 ];
 
-                let response = await fetchFunction(messages);
-                console.info("[SofIA] sendCustomPrompt:rawResponse", {
-                    type: typeof response,
-                    length: response?.length ?? 0,
-                });
+                // Usar enrutador dinámico para seleccionar el modelo óptimo
+                let response = await fetchWithDynamicRouting(messages, responseConfig, "quality", rawText, summary?.routingPreference || "automatic");
 
                 // Adaptar respuesta a LF
                 response = await adaptToLecturaFacil({ response, summary, responseConfig, setChatFlow });
-                console.info("[SofIA] sendCustomPrompt:adaptedResponse", {
-                    length: response?.length ?? 0,
-                });
 
                 setChatFlow((prev) => [
                     ...prev.filter((entry) => entry.type !== "loading"),
@@ -229,12 +202,6 @@ const usePromptFunctions = ({
             setActiveSpeechId(null);
             setSpeechState("idle");
 
-            console.info("[SofIA] regenerateLastResponse:start", {
-                overrideResponseConfig,
-                overrideRole,
-                lastAIIndex,
-            });
-
             setLoading(true);
             setShowHelpOptions(false);
 
@@ -250,9 +217,6 @@ const usePromptFunctions = ({
                     overrideResponseConfig,
                     overrideRole
                 );
-                console.info("[SofIA] regenerateLastResponse:builtPrompt", {
-                    promptLength: apiPrompt.length,
-                });
 
                 const enhancedPrompt = await enhancePromptWithCoStar(apiPrompt, summary);
 
@@ -265,20 +229,14 @@ const usePromptFunctions = ({
                     { role: "user", content: enhancedPrompt },
                 ];
 
-                let response = await fetchFromGroq(messages);
-                console.info("[SofIA] regenerateLastResponse:rawResponse", {
-                    type: typeof response,
-                    length: response?.length ?? 0,
-                });
+                // Usar enrutador dinámico con la configuración sobrescrita
+                let response = await fetchWithDynamicRouting(messages, overrideResponseConfig, "quality", lastUserMessage.content, summary?.routingPreference || "automatic");
 
                 response = await adaptToLecturaFacil({
                     response,
                     summary,
                     responseConfig: overrideResponseConfig,
                     setChatFlow,
-                });
-                console.info("[SofIA] regenerateLastResponse:adaptedResponse", {
-                    length: response?.length ?? 0,
                 });
 
                 setChatFlow((prev) => {
@@ -353,7 +311,7 @@ const usePromptFunctions = ({
 
         const lastResponse = getLastAIResponse();
         if (!lastResponse.trim()) return;
-        sendCustomPrompt(lastResponse, "Resumir el siguiente texto:", "Dame un resumen", fetchFromGroq);
+        sendCustomPrompt(lastResponse, "Resumir el siguiente texto:", "Dame un resumen");
 
     }, [getLastAIResponse, sendCustomPrompt]);
 
@@ -362,7 +320,7 @@ const usePromptFunctions = ({
 
         const lastResponse = getLastAIResponse();
         if (!lastResponse.trim()) return;
-        sendCustomPrompt(lastResponse, "Dame un ejemplo del siguiente texto:", "Explícame con un ejemplo", fetchFromGroq);
+        sendCustomPrompt(lastResponse, "Dame un ejemplo del siguiente texto:", "Explícame con un ejemplo");
 
     }, [getLastAIResponse, sendCustomPrompt]);
 
@@ -372,7 +330,7 @@ const usePromptFunctions = ({
         const lastResponse = getLastAIResponse();
         if (!lastResponse.trim()) return;
         const simplifiedPrompt = `"${lastResponse}"`;
-        sendCustomPrompt(simplifiedPrompt, "Reformular de la manera más sencilla y corta posible", "Reformular toda la respuesta", fetchFromGroq);
+        sendCustomPrompt(simplifiedPrompt, "Reformular de la manera más sencilla y corta posible", "Reformular toda la respuesta");
         setShowSimplificationOptions(false);
 
     }, [getLastAIResponse, sendCustomPrompt, setShowSimplificationOptions]);
@@ -382,7 +340,7 @@ const usePromptFunctions = ({
 
         if (words.trim()) {
             const synonymPrompt = `${words}`;
-            sendCustomPrompt(synonymPrompt, "Dame un sinónimo y una definición corta y muy sencilla de", `Dame sinónimos de ${synonymPrompt}`, fetchFromGroq);
+            sendCustomPrompt(synonymPrompt, "Dame un sinónimo y una definición corta y muy sencilla de", `Dame sinónimos de ${synonymPrompt}`);
             setShowTextInput(false);
         } else {
             alert("Por favor, escribe algo para buscar sinónimos.");
