@@ -208,12 +208,18 @@ export default function Questionario({ onComplete }) {
 
     // PÁGINA 4
     const toggleTool = (id) => {
-        setSummary(prevSummary => ({
-            ...prevSummary,
-            herramientas: prevSummary.herramientas.includes(id)
+        setSummary(prevSummary => {
+            const newHerr = prevSummary.herramientas.includes(id)
                 ? prevSummary.herramientas.filter((item) => item !== id)
-                : [...prevSummary.herramientas, id]
-        }));
+                : [...prevSummary.herramientas, id];
+
+            return {
+                ...prevSummary,
+                herramientas: newHerr,
+                // Mantener responseConfig sincronizado con las herramientas del formulario
+                responseConfig: newHerr,
+            };
+        });
 
     };
 

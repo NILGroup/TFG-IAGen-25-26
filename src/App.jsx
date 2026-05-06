@@ -142,6 +142,19 @@ export default function App() {
   };
 
   /**
+   * 12. Para guardar la configuración de formato de respuestas
+   */
+  const handleResponseConfigChange = (responseConfig) => {
+    if (summary) {
+      setSummary(prev => ({
+        ...prev,
+        responseConfig,
+        herramientas: responseConfig,
+      }));
+    }
+  };
+
+  /**
    * 5. Cuando se finaliza una conversación desde el chat
    * Guarda o actualiza la conversación en el historial.
    */
@@ -335,6 +348,7 @@ export default function App() {
           setFavoritesGlobal={setFavorites}
           onRoleChange={handleRoleChange}
           onRoutingPreferenceChange={handleRoutingPreferenceChange}
+          onResponseConfigChange={handleResponseConfigChange}
         />
       )}
 

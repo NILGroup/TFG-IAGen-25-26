@@ -53,6 +53,7 @@ export default function InterfazPrincipal({
     setFavoritesGlobal,
     onRoleChange,
     onRoutingPreferenceChange,
+    onResponseConfigChange,
 }) {
     const {
         selectedOption,
@@ -96,13 +97,19 @@ export default function InterfazPrincipal({
         normalizeResponseFormat(summary?.herramientas || DEFAULT_RESPONSE_FORMAT)
     );
 
+    // Indica si el usuario ha modificado la configuración desde el panel
+    const [userModifiedConfig, setUserModifiedConfig] = useState(false);
+
     // Rol actual del ayudante (puede cambiar desde el panel lateral)
     // Prioridad: modoSeleccionado (elección actual) > summary.rol (perfil guardado) > "profesor" (defecto)
     const [currentRole, setCurrentRole] = useState(modoSeleccionado || summary?.rol || "profesor");
     const currentRoutingPreference = summary?.routingPreference || "automatic";
 
     useEffect(() => {
-        setResponseConfig(normalizeResponseFormat(summary?.responseConfig || summary?.herramientas || DEFAULT_RESPONSE_FORMAT));
+        // Sólo sincronizar desde el perfil inicial si el usuario no ha aplicado cambios
+        if (!userModifiedConfig) {
+            setResponseConfig(normalizeResponseFormat(summary?.responseConfig || summary?.herramientas || DEFAULT_RESPONSE_FORMAT));
+        }
         setCurrentRole(modoSeleccionado || summary?.rol || "profesor");
     }, [summary, modoSeleccionado]);
 
@@ -126,11 +133,13 @@ export default function InterfazPrincipal({
         setResponseConfig(normalizedConfig);
         setCurrentRole(normalizedRole);
 
-        // Sincronizar el rol con el estado global (App.jsx)
-        if (newRole && onRoleChange) {
-            onRoleChange(newRole);
-        }
+        // Marca que el usuario ha cambiado la configuración activamente (no persiste en el perfil)
+        setUserModifiedConfig(true);
 
+        // No sincronizamos con `summary` aquí: aplicar cambios en el panel lateral
+        // debe afectar sólo a esta conversación (se guarda junto al chat cuando corresponda).
+
+        // Regenerar la última respuesta con la nueva configuración
         void regenerateLastResponse(normalizedConfig, normalizedRole);
     };
 
@@ -268,6 +277,8 @@ export default function InterfazPrincipal({
         const chatEntry = {
             title: title,
             flow: JSON.parse(JSON.stringify(chatFlow)), // Deep copy
+            responseConfig: responseConfig,
+            role: currentRole,
             timestamp: new Date().toISOString(),
         };
 
@@ -306,6 +317,8 @@ export default function InterfazPrincipal({
         const chatEntry = {
             title,
             flow: JSON.parse(JSON.stringify(chatFlow)),
+            responseConfig: responseConfig,
+            role: currentRole,
             timestamp: new Date().toISOString(),
             id: originalChatId && activeChat
                 ? activeChat.id
@@ -336,6 +349,10 @@ export default function InterfazPrincipal({
         setChatFlow(flowCopy);
         setOriginalChatFlow(flowCopy);
         setOriginalChatId(entry.id);
+        // Restaurar configuración asociada al chat (si la tiene)
+        setResponseConfig(normalizeResponseFormat(entry.responseConfig || summary?.responseConfig || summary?.herramientas || DEFAULT_RESPONSE_FORMAT));
+        setCurrentRole(entry.role || modoSeleccionado || summary?.rol || "profesor");
+        setUserModifiedConfig(false);
         setShowChat(true);
         setShowHelpOptions(true);
         setHasUnsavedChanges(false);
@@ -387,6 +404,8 @@ export default function InterfazPrincipal({
     useEffect(() => {
         if (promptInicial && !promptInicialEnviado.current) {
             promptInicialEnviado.current = true;
+            // Nuevo chat: reiniciar la bandera de cambios del panel lateral
+            setUserModifiedConfig(false);
             setShowChat(true);
             sendCustomPrompt(promptInicial);
             setPrompt("");
@@ -403,6 +422,10 @@ export default function InterfazPrincipal({
             setOriginalChatFlow(flowCopy);
             setOriginalChatId(chatToResume.id);
             setActiveChat(chatToResume);
+            // Restaurar configuración guardada en el chat reanudado
+            setResponseConfig(normalizeResponseFormat(chatToResume.responseConfig || summary?.responseConfig || summary?.herramientas || DEFAULT_RESPONSE_FORMAT));
+            setCurrentRole(chatToResume.role || modoSeleccionado || summary?.rol || "profesor");
+            setUserModifiedConfig(false);
             setShowChat(true);
             setShowHelpOptions(true);
             setHasUnsavedChanges(false);

@@ -39,7 +39,7 @@ export const adaptToLecturaFacil = async ({
         refinedResponse1 = await fetchFromGemini(refinementMessages1);
     } catch (error) {
         console.log("Falló Gemini, usamos Ollama");
-        refinedResponse1 = await fetchFromOllama(refinementMessages1);
+        refinedResponse1 = await fetchFromOllama(refinementMessages1, "gpt-oss:120b-cloud");
     }
 
     const refinementMessages2 = [
