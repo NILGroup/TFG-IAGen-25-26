@@ -50,12 +50,12 @@ export default function FavoritosModal({ isOpen, onClose, favorites, onDelete })
                 {/* Header */}
                 <div className="modal-historial-header">
                     <h2 id="favoritos-modal-title" className="modal-historial-titulo">
-                        Mis respuestas recordadas
+                        Mis respuestas guardadas
                     </h2>
                     <button
                         onClick={onClose}
                         className="modal-historial-cerrar"
-                        aria-label="Cerrar mis respuestas recordadas"
+                        aria-label="Cerrar mis respuestas guardadas"
                     >
                         Cerrar
                     </button>
@@ -66,10 +66,10 @@ export default function FavoritosModal({ isOpen, onClose, favorites, onDelete })
                     {favorites.length === 0 ? (
                         <div className="modal-historial-vacio">
                             <p className="modal-historial-vacio-texto">
-                                Todavía no has recordado nada.
+                                Todavía no has guardado nada.
                             </p>
                             <p className="modal-historial-vacio-texto">
-                                En el chat, pulsa el botón Recordar para añadir respuestas aquí.
+                                En el chat, pulsa el botón Guardar para añadir respuestas aquí.
                             </p>
                         </div>
                     ) : (
@@ -82,7 +82,7 @@ export default function FavoritosModal({ isOpen, onClose, favorites, onDelete })
                                     confirmDelete ? (
                                         <div className="modal-historial-confirmar-eliminar">
                                             <span className="modal-historial-confirmar-texto">
-                                                ¿Quieres olvidar esta respuesta?
+                                                ¿Quieres borrar esta respuesta?
                                             </span>
                                             <button
                                                 className="modal-historial-btn-confirmar"
@@ -93,14 +93,14 @@ export default function FavoritosModal({ isOpen, onClose, favorites, onDelete })
                                                         setCurrentPage(currentPage - 1);
                                                     }
                                                 }}
-                                                aria-label="Sí, olvidar esta respuesta"
+                                                aria-label="Sí, borrar esta respuesta"
                                             >
-                                                Sí, olvidar
+                                                Sí, borrar
                                             </button>
                                             <button
                                                 className="modal-historial-btn-cancelar"
                                                 onClick={() => setConfirmDelete(false)}
-                                                aria-label="No olvidar"
+                                                aria-label="No borrar"
                                             >
                                                 No
                                             </button>
@@ -109,9 +109,9 @@ export default function FavoritosModal({ isOpen, onClose, favorites, onDelete })
                                         <button
                                             className="favorito-pagina-eliminar"
                                             onClick={() => setConfirmDelete(true)}
-                                            aria-label="Olvidar esta respuesta"
+                                            aria-label="Borrar esta respuesta"
                                         >
-                                            Olvidar
+                                            Borrar
                                         </button>
                                     )
                                 )}
@@ -139,7 +139,7 @@ export default function FavoritosModal({ isOpen, onClose, favorites, onDelete })
                 {/* Footer con paginación */}
                 <div className="modal-historial-footer">
                     <p className="modal-historial-footer-total">
-                        {totalFavoritos} {totalFavoritos === 1 ? "respuesta recordada" : "respuestas recordadas"}
+                        {totalFavoritos} {totalFavoritos === 1 ? "respuesta guardada" : "respuestas guardadas"}
                     </p>
 
                     {totalPages > 1 && (
