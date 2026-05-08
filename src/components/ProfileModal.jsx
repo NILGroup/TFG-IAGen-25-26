@@ -155,6 +155,12 @@ export default function ProfileModal({ isOpen, onClose, summary, onSave }) {
       description: "Te cuento cada idea en una frase",
       ejemplo: "Es una bola. Es muy grande. Da vueltas al Sol.",
     },
+    {
+      id: "pasoapaso",
+      label: "Paso a paso",
+      description: "Te explico cómo hacerlo en orden",
+      ejemplo: "Paso 1: Piensa qué quieres saber.\nPaso 2: Escríbelo con palabras sencillas.\nPaso 3: Pulsa el botón de enviar.",
+    },
   ];
 
   return (

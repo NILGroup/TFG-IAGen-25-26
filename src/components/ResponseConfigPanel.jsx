@@ -37,6 +37,11 @@ const RESPONSE_OPTIONS = [
     label: "Frases cortas",
     description: "Te cuento cada idea en una frase",
   },
+  {
+    id: "pasoapaso",
+    label: "Paso a paso",
+    description: "Te explico cómo hacerlo en orden",
+  },
 ];
 
 // Opciones de rol
