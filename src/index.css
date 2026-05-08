@@ -1,13 +1,84 @@
 /*@import "tailwindcss";*/
 
+/* ========================================
+   PALETA DE COLORES - SofIA
+   ======================================== */
+
 :root {
+  /* ------------------------------------------
+     COLORES PRIMARIOS (Púrpuras)
+     ------------------------------------------ */
+  --color-primary-darkest: #270A33;  /* Texto principal, fondos muy oscuros */
+  --color-primary-dark: #451A3E;     /* Botones primarios, texto secundario */
+  --color-primary: #5C2D54;          /* Variante intermedia */
+
+  /* ------------------------------------------
+     COLORES DE ACENTO (Teals/Verdes azulados)
+     ------------------------------------------ */
+  --color-accent-dark: #2D5A5E;      /* Texto sobre fondos claros - WCAG AAA */
+  --color-accent: #434D4A;           /* Enlaces, botones secundarios */
+  --color-accent-medium: #4A9199;    /* Hover sobre fondos claros - WCAG AA */
+  --color-accent-light: #77B1A9;     /* SOLO para fondos/bordes, NO texto */
+
+  /* ------------------------------------------
+     COLORES DE FONDO
+     ------------------------------------------ */
+  --color-bg-dark: #270A33;          /* Fondo modo oscuro */
+  --color-bg-light: #EEF8F6;         /* Fondo principal claro */
+  --color-bg-card: #FFFFFF;          /* Fondo de tarjetas */
+  --color-bg-hover: #E0F0ED;         /* Hover sobre fondos claros */
+
+  /* ------------------------------------------
+     COLORES DE BORDE Y DECORACIÓN
+     ------------------------------------------ */
+  --color-border-light: #B1E6D1;     /* Bordes suaves */
+  --color-border-medium: #77B1A9;    /* Bordes con más presencia */
+  --color-border-strong: #3D7B80;    /* Bordes destacados */
+
+  /* ------------------------------------------
+     COLORES SEMÁNTICOS
+     ------------------------------------------ */
+  --color-success: #2E7D32;          /* Éxito, confirmación */
+  --color-success-light: #E8F5E9;    /* Fondo de éxito */
+  --color-error: #C62828;            /* Error, peligro */
+  --color-error-light: #FFEBEE;      /* Fondo de error */
+  --color-warning: #C44709;          /* Advertencia */
+  --color-warning-light: #FFF3E0;    /* Fondo de advertencia */
+  --color-info: #834CCD;             /* Información */
+  --color-info-light: #E3F2FD;       /* Fondo de información */
+
+  /* ------------------------------------------
+     ESCALA DE GRISES (Solo 5 tonos)
+     ------------------------------------------ */
+  --color-gray-900: #212121;         /* Texto muy oscuro */
+  --color-gray-700: #555555;         /* Texto secundario - WCAG AA */
+  --color-gray-500: #757575;         /* Texto deshabilitado grande */
+  --color-gray-300: #BDBDBD;         /* Bordes, separadores */
+  --color-gray-100: #F5F5F5;         /* Fondos sutiles */
+
+  /* ------------------------------------------
+     COLORES ESPECIALES
+     ------------------------------------------ */
+  --color-magenta: #9C27B0;          /* Acento especial (badges, highlights) */
+  --color-focus: #77B1A9;            /* Outline de focus para accesibilidad */
+
+  /* ------------------------------------------
+     SOMBRAS
+     ------------------------------------------ */
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.12);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.16);
+
+  /* ------------------------------------------
+     CONFIGURACIÓN BASE
+     ------------------------------------------ */
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
-  background-color: #270A33;
+  background-color: var(--color-bg-dark);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -17,12 +88,12 @@
 
 a {
   font-weight: 500;
-  color: #3D7B80;
+  color: var(--color-accent);
   text-decoration: inherit;
 }
 
 a:hover {
-  color: #77B1A9;
+  color: var(--color-accent-medium);
 }
 
 body {
@@ -45,31 +116,32 @@ button {
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #451A3E;
+  background-color: var(--color-primary-dark);
   cursor: pointer;
   transition: border-color 0.25s;
 }
 
 button:hover {
-  border-color: #3D7B80;
+  border-color: var(--color-accent);
 }
 
 button:focus,
 button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
 }
 
 @media (prefers-color-scheme: light) {
   :root {
-    color: #270A33;
-    background-color: #ffffff;
+    color: var(--color-primary-darkest);
+    background-color: var(--color-bg-card);
   }
 
   a:hover {
-    color: #77B1A9;
+    color: var(--color-accent-medium);
   }
 
   button {
-    background-color: #EEF8F6;
+    background-color: var(--color-bg-light);
   }
 }

@@ -17,7 +17,7 @@
   display: flex;
   align-items: center;
   justify-content: left;
-  background-color: var(--color-bg, #EEF8F6);
+  background-color: var(--color-bg, var(--color-bg-light));
   padding: 2rem;
   box-sizing: border-box;
 }
@@ -38,7 +38,7 @@
   background: white;
   padding: 40px;
   border-radius: 24px;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-lg);
 }
 
 /* PantallaRol - mismo tamaño que question-prompt-content */
@@ -53,12 +53,12 @@
   background: white;
   padding: 20px 40px;
   border-radius: 24px;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-lg);
 }
 
 /* Títulos principales de cada pantalla
  * - clamp: tamaño responsive (mínimo 1.8rem, máximo 2.5rem)
- * - color #270A33: azul muy oscuro (casi negro)
+ * - color var(--color-primary-darkest): azul muy oscuro (casi negro)
  */
 .modo-title,
 .eleccion-title,
@@ -66,7 +66,7 @@
   font-size: clamp(1.8rem, 4vw, 2.5rem);
   font-weight: bold;
   text-align: center;
-  color: #270A33;
+  color: var(--color-primary-darkest);
   margin: 0;
   line-height: 1.3;
 }
@@ -78,14 +78,14 @@
 }
 
 /* Subtítulos explicativos
- * - color #451A3E: gris medio para texto secundario
+ * - color var(--color-primary-dark): gris medio para texto secundario
  */
 .modo-subtitle,
 .eleccion-subtitle,
 .formulario-subtitle {
   font-size: clamp(1rem, 2.5vw, 1.25rem);
   text-align: center;
-  color: #451A3E;
+  color: var(--color-primary-dark);
   margin: 0;
   line-height: 1.5;
 }
@@ -111,7 +111,7 @@
 
 /* Tarjetas clickeables (Profesor/Familiar, Con ayuda/Directa)
  * - background white: fondo blanco
- * - border 4px #B1E6D1: borde gris claro
+ * - border 4px var(--color-border-light): borde gris claro
  * - border-radius 1.5rem: esquinas muy redondeadas
  * - box-shadow: sombra para efecto elevado
  * - transition: animación suave al hacer hover
@@ -122,8 +122,8 @@
   background: white;
   padding: 2rem;
   border-radius: 20px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  border: 3px solid #B1E6D1;
+  box-shadow: var(--shadow-md);
+  border: 3px solid var(--color-border-light);
   cursor: pointer;
   transition: all 0.3s ease;
   display: flex;
@@ -147,7 +147,7 @@
 .eleccion-card:focus-visible {
   transform: translateY(-8px);
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
-  border-color: #3D7B80;
+  border-color: var(--color-accent);
 }
 
 /* Tarjetas - cuando se hace click
@@ -157,12 +157,12 @@
 .modo-card:active,
 .eleccion-card:active {
   transform: translateY(-4px);
-  border-color: #270A33;
+  border-color: var(--color-primary-darkest);
 }
 
 .modo-card:focus-visible,
 .eleccion-card:focus-visible {
-  outline: 3px solid #451A3E;
+  outline: 3px solid var(--color-primary-dark);
   outline-offset: 2px;
 }
 
@@ -171,7 +171,7 @@
 .eleccion-card-title {
   font-size: clamp(1.3rem, 3vw, 1.75rem);
   font-weight: bold;
-  color: #270A33;
+  color: var(--color-primary-darkest);
   margin: 0;
   text-align: left;
 }
@@ -179,7 +179,7 @@
 /* Descripción breve dentro de las tarjetas de rol */
 .modo-card-desc {
   font-size: clamp(0.95rem, 2vw, 1.1rem);
-  color: #555;
+  color: var(--color-gray-700);
   text-align: left;
   margin: 0;
   line-height: 1.4;
@@ -194,9 +194,9 @@
   padding: 12px 20px;
   font-size: 16px;
   font-weight: 600;
-  color: #451A3E;
-  background-color: #EEF8F6;
-  border: 2px solid #77B1A9;
+  color: var(--color-primary-dark);
+  background-color: var(--color-bg-light);
+  border: 2px solid var(--color-accent-light);
   border-radius: 10px;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -209,21 +209,21 @@
 
 /* Botón volver - hover: fondo más oscuro */
 .pantalla-back-btn:hover {
-  background-color: #B1E6D1;
-  color: #451A3E;
-  border-color: #77B1A9;
+  background-color: var(--color-border-light);
+  color: var(--color-primary-dark);
+  border-color: var(--color-accent-light);
 }
 
 /* Botón volver - cuando se pulsa */
 .pantalla-back-btn:active {
-  background-color: #77B1A9;
-  border-color: #3D7B80;
+  background-color: var(--color-accent-light);
+  border-color: var(--color-accent);
   transform: scale(0.98);
 }
 
 /* Botón volver - focus (teclado) */
 .pantalla-back-btn:focus-visible {
-  outline: 3px solid #3D7B80;
+  outline: 3px solid var(--color-accent);
   outline-offset: 2px;
 }
 
@@ -249,17 +249,17 @@
 /* Mensaje de bienvenida personalizado */
 .modo-welcome {
   font-size: clamp(1.1rem, 2.5vw, 1.4rem);
-  color: #3D7B80;
+  color: var(--color-accent);
   text-align: center;
   margin: 0;
   padding: 12px 24px;
-  background: #EEF8F6;
+  background: var(--color-bg-light);
   border-radius: 12px;
-  border: 2px solid #77B1A9;
+  border: 2px solid var(--color-accent-light);
 }
 
 .modo-welcome strong {
-  color: #270A33;
+  color: var(--color-primary-darkest);
 }
 
 /* Botón para reiniciar perfil */
@@ -268,22 +268,22 @@
   padding: 10px 20px;
   font-size: 14px;
   font-weight: 500;
-  color: #3D7B80;
+  color: var(--color-accent);
   background: transparent;
-  border: 2px solid #77B1A9;
+  border: 2px solid var(--color-accent-light);
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .modo-reset-btn:hover {
-  color: #451A3E;
-  border-color: #3D7B80;
-  background: #f5f5f5;
+  color: var(--color-primary-dark);
+  border-color: var(--color-accent);
+  background: var(--color-gray-100);
 }
 
 .modo-reset-btn:focus-visible {
-  outline: 3px solid #451A3E;
+  outline: 3px solid var(--color-primary-dark);
   outline-offset: 2px;
 }
 
@@ -304,7 +304,7 @@
 
 .eleccion-card-desc {
   font-size: clamp(0.95rem, 2vw, 1.1rem);
-  color: #451A3E;
+  color: var(--color-primary-dark);
   text-align: left;
   margin: 0;
   line-height: 1.5;
@@ -324,10 +324,10 @@
 }
 
 .formulario-card {
-  background: #EEF8F6;
+  background: var(--color-bg-light);
   padding: 24px;
   border-radius: 16px;
-  border: 2px solid #EEF8F6;
+  border: 2px solid var(--color-bg-light);
 
   width: 100%;
   box-sizing: border-box;
@@ -335,7 +335,7 @@
 }
 
 .formulario-card:focus-within {
-  border-color: #451A3E;
+  border-color: var(--color-primary-dark);
 }
 
 /* Etiqueta de la pregunta
@@ -345,7 +345,7 @@
   display: block;
   font-size: clamp(1.1rem, 2.5vw, 1.35rem);
   font-weight: bold;
-  color: #270A33;
+  color: var(--color-primary-darkest);
   margin-bottom: 8px;
 }
 
@@ -354,14 +354,14 @@
  */
 .formulario-helper {
   font-size: clamp(0.9rem, 2vw, 1rem);
-  color: #3D7B80;
+  color: var(--color-accent);
   margin: 0 0 12px 0;
   line-height: 1.5;
 }
 
 /* Input (1 línea) y Textarea (varias líneas)
- * - color #451A3E: texto gris oscuro (visible)
- * - background #EEF8F6: fondo gris muy claro
+ * - color var(--color-primary-dark): texto gris oscuro (visible)
+ * - background var(--color-bg-light): fondo gris muy claro
  * - border gris: borde sutil
  */
 .formulario-input,
@@ -370,8 +370,8 @@
   padding: 16px 20px;
   font-size: 18px;
   font-family: inherit;
-  color: #451A3E;
-  border: 2px solid #77B1A9;
+  color: var(--color-primary-dark);
+  border: 2px solid var(--color-accent-light);
   border-radius: 12px;
   background-color: white;
   box-sizing: border-box;
@@ -385,7 +385,7 @@
 .formulario-input:focus,
 .formulario-textarea:focus {
   outline: none;
-  border-color: #451A3E;
+  border-color: var(--color-primary-dark);
   box-shadow: 0 0 0 4px rgba(33, 150, 243, 0.15);
 }
 
@@ -404,7 +404,7 @@
   padding: 18px;
   font-size: clamp(1.2rem, 3vw, 1.4rem);
   font-weight: bold;
-  background-color: #77B1A9;
+  background-color: var(--color-accent-light);
   color: white;
   border: none;
   border-radius: 12px;
@@ -415,13 +415,13 @@
 
 /* Botón enviar - hover: verde más oscuro */
 .formulario-submit-btn:hover:not(.disabled) {
-  background-color: #3D7B80;
+  background-color: var(--color-accent);
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
 }
 
 .formulario-submit-btn:focus-visible {
-  outline: 3px solid #451A3E;
+  outline: 3px solid var(--color-primary-dark);
   outline-offset: 2px;
 }
 
@@ -432,13 +432,13 @@
 .formulario-submit-btn.disabled {
   opacity: 0.5;
   cursor: not-allowed;
-  background-color: #77B1A9;
+  background-color: var(--color-accent-light);
 }
 
 /* Mensaje de error de validación (texto rojo) */
 
 .formulario-validation {
-  color: #451A3E;
+  color: var(--color-primary-dark);
   font-size: 1rem;
   text-align: center;
   margin: 8px 0 0;
@@ -578,7 +578,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: #f5f9fa;
+  background-color: var(--color-bg-light);
   padding: 2rem;
   box-sizing: border-box;
   position: relative;
@@ -595,7 +595,7 @@
   background: white;
   padding: 40px 60px;
   border-radius: 24px;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-lg);
   transition: max-width 0.3s ease;
 }
 
@@ -627,7 +627,7 @@
   font-size: clamp(2rem, 5vw, 2.5rem);
   font-weight: bold;
   text-align: left;
-  color: #1a1a2e;
+  color: var(--color-primary-darkest);
   margin: 0;
   line-height: 1.3;
   width: 100%;
@@ -637,7 +637,7 @@
 .question-prompt-subtitle {
   font-size: clamp(1.25rem, 3vw, 1.5rem);
   text-align: left;
-  color: #444;
+  color: var(--color-gray-900);
   margin: 0;
   line-height: 1.4;
   font-weight: 500;
@@ -658,7 +658,7 @@
   display: block;
   font-size: 1.1rem;
   font-weight: 600;
-  color: #1a1a2e;
+  color: var(--color-primary-darkest);
   margin-bottom: 4px;
 }
 
@@ -668,9 +668,9 @@
   padding: 18px 20px;
   font-size: 18px;
   font-family: inherit;
-  color: #1a1a2e;
+  color: var(--color-primary-darkest);
   background-color: white;
-  border: 2px solid #d0d0d0;
+  border: 2px solid var(--color-gray-300);
   border-radius: 12px;
   box-sizing: border-box;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
@@ -681,19 +681,19 @@
 
 .question-prompt-textarea:focus {
   outline: none;
-  border-color: #2196f3;
+  border-color: var(--color-info);
   box-shadow: 0 0 0 4px rgba(33, 150, 243, 0.15);
 }
 
 .question-prompt-textarea:disabled {
-  background-color: #f5f5f5;
-  color: #666;
+  background-color: var(--color-gray-100);
+  color: var(--color-gray-700);
   cursor: not-allowed;
   opacity: 0.7;
 }
 
 .question-prompt-textarea::placeholder {
-  color: #888;
+  color: var(--color-gray-500);
   font-size: 16px;
   font-style: italic;
 }
@@ -704,7 +704,7 @@
   padding: 18px 24px;
   font-size: clamp(1.25rem, 3vw, 1.5rem);
   font-weight: bold;
-  background-color: #3D7B80;
+  background-color: var(--color-accent);
   color: white;
   border: none;
   border-radius: 12px;
@@ -717,7 +717,7 @@
 }
 
 .question-prompt-submit-btn:hover:not(:disabled) {
-  background-color: #3D7B80;
+  background-color: var(--color-accent);
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
 }
@@ -735,13 +735,13 @@
 .question-prompt-submit-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
-  background-color: #9e9e9e;
+  background-color: var(--color-gray-500);
   box-shadow: none;
 }
 
 /* Estado de carga del botón */
 .question-prompt-submit-btn[aria-busy="true"] {
-  background-color: #666;
+  background-color: var(--color-gray-700);
   cursor: wait;
 }
 
@@ -840,7 +840,7 @@
 }
 
 .exit-modal-header {
-  background-color: #270A33;
+  background-color: var(--color-primary-darkest);
   padding: 24px 28px;
 }
 
@@ -858,7 +858,7 @@
 
 .exit-modal-description {
   font-size: 1.1rem;
-  color: #444;
+  color: var(--color-gray-900);
   text-align: center;
   margin: 0 0 24px 0;
   line-height: 1.5;
@@ -885,12 +885,12 @@
 }
 
 .exit-modal-btn-primary {
-  background-color: #270A33;
+  background-color: var(--color-primary-darkest);
   color: white;
 }
 
 .exit-modal-btn-primary:hover {
-  background-color: #270A33;
+  background-color: var(--color-primary-darkest);
 }
 
 .exit-modal-btn-primary:focus-visible {
@@ -899,35 +899,35 @@
 }
 
 .exit-modal-btn-secondary {
-  background-color: #f5f5f5;
-  color: #666;
-  border: 2px solid #d0d0d0;
+  background-color: var(--color-gray-100);
+  color: var(--color-gray-700);
+  border: 2px solid var(--color-gray-300);
 }
 
 .exit-modal-btn-secondary:hover {
-  background-color: #e0e0e0;
-  color: #333;
+  background-color: var(--color-gray-300);
+  color: var(--color-gray-900);
 }
 
 .exit-modal-btn-secondary:focus-visible {
-  outline: 3px solid #2196f3;
+  outline: 3px solid var(--color-info);
   outline-offset: 2px;
 }
 
 .exit-modal-btn-tertiary {
   background-color: transparent;
-  color: #666;
+  color: var(--color-gray-700);
   text-decoration: underline;
   min-height: 44px;
 }
 
 .exit-modal-btn-tertiary:hover {
-  color: #333;
-  background-color: #f5f5f5;
+  color: var(--color-gray-900);
+  background-color: var(--color-gray-100);
 }
 
 .exit-modal-btn-tertiary:focus-visible {
-  outline: 3px solid #2196f3;
+  outline: 3px solid var(--color-info);
   outline-offset: 2px;
 }
 
