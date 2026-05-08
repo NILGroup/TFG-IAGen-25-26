@@ -6,6 +6,9 @@
  */
 
 import { useState } from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import rehypeRaw from "rehype-raw";
 
 export default function FavoritosModal({ isOpen, onClose, favorites, onDelete }) {
     const ITEMS_PER_PAGE = 1; // Un favorito por página
@@ -128,7 +131,34 @@ export default function FavoritosModal({ isOpen, onClose, favorites, onDelete })
                                 <div className="favorito-pagina-respuesta">
                                     <span className="favorito-pagina-label">Respuesta:</span>
                                     <div className="favorito-pagina-texto">
-                                        {currentFavorito.answer}
+                                        <ReactMarkdown
+                                            remarkPlugins={[remarkGfm]}
+                                            rehypePlugins={[rehypeRaw]}
+                                            components={{
+                                                p: ({ children }) => (
+                                                    <p style={{ margin: '0 0 0.8em 0', fontSize: 'inherit', lineHeight: '1.6' }}>
+                                                        {children}
+                                                    </p>
+                                                ),
+                                                li: ({ children }) => (
+                                                    <li style={{ marginBottom: '4px', fontSize: 'inherit', listStyle: 'none' }}>
+                                                        - {children}
+                                                    </li>
+                                                ),
+                                                ul: ({ children }) => (
+                                                    <ul style={{ margin: '8px 0', paddingLeft: '12px', fontSize: 'inherit' }}>
+                                                        {children}
+                                                    </ul>
+                                                ),
+                                                ol: ({ children }) => (
+                                                    <ol style={{ margin: '8px 0', paddingLeft: '20px', fontSize: 'inherit' }}>
+                                                        {children}
+                                                    </ol>
+                                                )
+                                            }}
+                                        >
+                                            {currentFavorito.answer}
+                                        </ReactMarkdown>
                                     </div>
                                 </div>
                             </div>

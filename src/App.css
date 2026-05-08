@@ -2655,7 +2655,6 @@ body {
   font-size: 17px;
   color: var(--color-gray-900);
   line-height: 1.6;
-  white-space: pre-wrap;
   word-wrap: break-word;
   background-color: #f8fbff;
   padding: 18px 20px;
