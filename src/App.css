@@ -903,7 +903,12 @@ body {
 }
 
 .next-btn {
+<<<<<<< Updated upstream
   background: #1CA655;
+=======
+  background: var(--color-accent-light);
+  color: black;
+>>>>>>> Stashed changes
 }
 
 .next-btn::after {
