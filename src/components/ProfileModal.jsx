@@ -153,20 +153,44 @@ export default function ProfileModal({ isOpen, onClose, summary, onSave }) {
   };
 
   // Lista de herramientas
-  const tools = RESPONSE_FORMAT_OPTIONS.map((option) => {
-    const exampleMap = {
-      "lectura-facil": "Un planeta es una bola muy grande. Los planetas estan en el cielo. Los planetas dan vueltas alrededor del Sol.",
-      "ejemplos": "Un planeta es como una pelota grande que da vueltas al Sol.",
-      "listas": "• Es muy grande\n• Da vueltas al Sol\n• Tiene forma de bola",
-      "textos-cortos": "Un planeta es una bola grande que gira alrededor del Sol.",
-      "frases-sencillas": "Es una bola. Es muy grande. Da vueltas al Sol.",
-    };
-
-    return {
-      ...option,
-      ejemplo: exampleMap[option.id],
-    };
-  });
+  const tools = [
+    {
+      id: "lecturaFacil",
+      label: "Lectura Fácil",
+      description: "Te explico todo con palabras sencillas",
+      ejemplo: "Un planeta es una bola muy grande. Los planetas estan en el cielo. Los planetas dan vueltas alrededor del Sol.",
+    },
+    {
+      id: "ejemplo",
+      label: "Con ejemplos",
+      description: "Te explico todo con cosas que conoces",
+      ejemplo: "Un planeta es como una pelota grande que da vueltas al Sol.",
+    },
+    {
+      id: "bullet",
+      label: "Con listas",
+      description: "Te cuento las cosas punto por punto",
+      ejemplo: "• Es muy grande\n• Da vueltas al Sol\n• Tiene forma de bola",
+    },
+    {
+      id: "textocorto",
+      label: "Respuestas cortas",
+      description: "Te cuento las cosas en pocas palabras",
+      ejemplo: "Un planeta es una bola grande que gira alrededor del Sol.",
+    },
+    {
+      id: "frasescortas",
+      label: "Frases cortas",
+      description: "Te cuento cada idea en una frase",
+      ejemplo: "Es una bola. Es muy grande. Da vueltas al Sol.",
+    },
+    {
+      id: "pasoapaso",
+      label: "Paso a paso",
+      description: "Te explico cómo hacerlo en orden",
+      ejemplo: "Paso 1: Piensa qué quieres saber.\nPaso 2: Escríbelo con palabras sencillas.\nPaso 3: Pulsa el botón de enviar.",
+    },
+  ];
 
   return (
     <>

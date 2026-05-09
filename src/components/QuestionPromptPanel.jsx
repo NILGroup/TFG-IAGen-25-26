@@ -6,6 +6,12 @@
 
 import robotLogo from "../assets/AventurIA_robot_sinfondo.png";
 
+const BASE = import.meta.env.BASE_URL;
+const AVATAR_IMAGES = {
+    profesor: `${BASE}Profesor_avatar.png`,
+    familiar: `${BASE}Familiar_avatar.png`
+};
+
 export default function QuestionPromptPanel({
     onBack,           // Función para volver a PantallaRol (cambiar de ayudante)
     userName,         // Nombre del usuario desde el cuestionario
@@ -15,6 +21,7 @@ export default function QuestionPromptPanel({
     isSubmitting,     // Indica si se está enviando la pregunta (para deshabilitar el botón)
     favorites = [],   // Lista de favoritos guardados
     onOpenFavoritos,  // Función para abrir el modal de favoritos
+    avatarMode,       // Rol seleccionado para mostrar su avatar
 }) {
     /**
      * Maneja el envío del formulario.
@@ -70,12 +77,13 @@ export default function QuestionPromptPanel({
                     </button>
                 )}
 
-                {/* Logo del robot */}
+                {/* Logo del robot / Avatar */}
                 <div className="question-prompt-logo-container">
                     <img 
-                        src={robotLogo} 
-                        alt="SofIA" 
+                        src={avatarMode && AVATAR_IMAGES[avatarMode] ? AVATAR_IMAGES[avatarMode] : robotLogo} 
+                        alt={avatarMode ? `Avatar ${avatarMode}` : "SofIA"} 
                         className="question-prompt-logo" 
+                        style={avatarMode ? { width: "128px", height: "128px", borderRadius: "50%", objectFit: "cover" } : {}}
                     />
                 </div>
 

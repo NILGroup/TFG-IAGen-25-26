@@ -52,7 +52,6 @@ export default function InterfazPrincipal({
     favoritesGlobal = [],
     setFavoritesGlobal,
     onRoleChange,
-    onRoutingPreferenceChange,
     onResponseConfigChange,
 }) {
     const {
@@ -103,15 +102,14 @@ export default function InterfazPrincipal({
     // Rol actual del ayudante (puede cambiar desde el panel lateral)
     // Prioridad: modoSeleccionado (elección actual) > summary.rol (perfil guardado) > "profesor" (defecto)
     const [currentRole, setCurrentRole] = useState(modoSeleccionado || summary?.rol || "profesor");
-    const currentRoutingPreference = summary?.routingPreference || "automatic";
 
     useEffect(() => {
         // Sólo sincronizar desde el perfil inicial si el usuario no ha aplicado cambios
         if (!userModifiedConfig) {
             setResponseConfig(normalizeResponseFormat(summary?.responseConfig || summary?.herramientas || DEFAULT_RESPONSE_FORMAT));
+            setCurrentRole(modoSeleccionado || summary?.rol || "profesor");
         }
-        setCurrentRole(modoSeleccionado || summary?.rol || "profesor");
-    }, [summary, modoSeleccionado]);
+    }, [summary, modoSeleccionado, userModifiedConfig]);
 
     // Estado para el panel de glosario
     const [showGlosario, setShowGlosario] = useState(false);
@@ -141,12 +139,6 @@ export default function InterfazPrincipal({
 
         // Regenerar la última respuesta con la nueva configuración
         void regenerateLastResponse(normalizedConfig, normalizedRole);
-    };
-
-    const handleRoutingPreferenceChange = (routingPreference) => {
-        if (onRoutingPreferenceChange) {
-            onRoutingPreferenceChange(routingPreference);
-        }
     };
 
     const {
@@ -577,9 +569,7 @@ export default function InterfazPrincipal({
                 <ResponseConfigPanel
                     currentConfig={responseConfig}
                     currentRole={currentRole}
-                    currentRoutingPreference={currentRoutingPreference}
                     onApply={handleApplyResponseConfig}
-                    onRoutingPreferenceChange={handleRoutingPreferenceChange}
                 />
 
                 {/* Modal de confirmación de salida */}

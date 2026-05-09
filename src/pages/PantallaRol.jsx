@@ -29,7 +29,7 @@ export default function PantallaRol({ onSelectMode, selectedMode = null }) {
                             className="modo-img"
                         />
                         <span className="modo-card-title">Profesor</span>
-                        <span className="modo-card-desc">Te ayuda como un profesor</span>
+                        <span className="modo-card-desc">Te explica como un experto</span>
                     </button>
 
                     {/* Tarjeta Familiar */}

@@ -327,8 +327,7 @@ export default function App() {
           setPrompt={setPreguntaInicial}
           sendPrompt={handleSendFirstPrompt}
           isSubmitting={isSubmitting}
-          favorites={favorites}
-          onOpenFavoritos={() => setShowFavoritosModal(true)}
+          favorites={favorites}          avatarMode={modoSeleccionado || summary?.rol || "profesor"}          onOpenFavoritos={() => setShowFavoritosModal(true)}
         />
       )}
 

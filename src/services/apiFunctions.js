@@ -141,8 +141,8 @@ export const determinePromptingTechnique = (responseFormats = [], promptText = "
         f === "listas" || f === "ejemplos"
     );
 
-    // Lógica de precedencia basada en la intención real del usuario
-    if (hasDetailedReasoningRequest) {
+    // Lógica de precedencia basada en la intención real del usuario o configuración seleccionada
+    if (hasDetailedReasoningRequest || responseFormats.includes("pasoapaso")) {
         return "cot"; // Chain of Thought cuando la pregunta pide explicación profunda o paso a paso
     }
 
@@ -219,19 +219,8 @@ export const fetchWithDynamicRouting = async (
     messages,
     responseFormats = [],
     userPreference = "quality",
-    promptText = "",
-    routingMode = "automatic"
+    promptText = ""
 ) => {
-    if (routingMode === "fast") {
-        console.info("[SofIA] Modo rápido activo: usando Llama-3.3-70b-versatile");
-        try {
-            return await fetchFromGroq(messages, "llama-3.3-70b-versatile");
-        } catch (error) {
-            console.error("[SofIA] Falló Llama en modo rápido, usando fallback Groq:", error);
-            return await fetchFromGroq(messages, "llama-3.3-70b-versatile");
-        }
-    }
-
     // Determinar técnica y modelo óptimo
     const technique = determinePromptingTechnique(responseFormats, promptText);
     const modelInfo = selectOptimalModel(technique, userPreference);
