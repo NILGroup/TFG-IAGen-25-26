@@ -34,7 +34,13 @@ export default function Chat({
 
     // Scroll automático cuando se añaden nuevos mensajes
     useEffect(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+        const timer = setTimeout(() => {
+            messagesEndRef.current?.scrollIntoView({
+                behavior: "smooth",
+                block: "end"
+            });
+        }, 200);
+        return () => clearTimeout(timer);
     }, [chatFlow]);
 
     return (
@@ -56,7 +62,7 @@ export default function Chat({
                     {(entry.type === "ai" || entry.type === "loading") && avatarSrc && (
                         <img
                             src={avatarSrc}
-                            alt={avatarMode === "profesor" ? "Profesor" : "Familia"}
+                            alt={avatarMode === "profesor" ? "Profesor" : "Familiar"}
                             className="chat-avatar"
                         />
                     )}

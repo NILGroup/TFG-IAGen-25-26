@@ -9,7 +9,7 @@
 
 import "../styles/Pantallas.css";
 
-export default function PantallaRol({ onSelectMode }) {
+export default function PantallaRol({ onSelectMode, selectedMode = null }) {
     return (
         <div className="modo-container">
             <div className="modo-content">
@@ -19,7 +19,7 @@ export default function PantallaRol({ onSelectMode }) {
                 <div className="modo-options">
                     {/* Tarjeta Profesor */}
                     <button
-                        className="modo-card"
+                        className={`modo-card ${selectedMode === "profesor" ? "checked" : ""}`}
                         aria-label="Elegir Profesor"
                         onClick={() => onSelectMode("profesor")}
                     >
@@ -34,7 +34,7 @@ export default function PantallaRol({ onSelectMode }) {
 
                     {/* Tarjeta Familiar */}
                     <button
-                        className="modo-card"
+                        className={`modo-card ${selectedMode === "familiar" ? "checked" : ""}`}
                         aria-label="Elegir Familiar"
                         onClick={() => onSelectMode("familiar")}
                     >
@@ -44,7 +44,7 @@ export default function PantallaRol({ onSelectMode }) {
                             className="modo-img"
                         />
                         <span className="modo-card-title">Familiar</span>
-                        <span className="modo-card-desc">Te ayuda con cariño</span>
+                        <span className="modo-card-desc">Te ayuda como un familiar</span>
                     </button>
                 </div>
             </div>

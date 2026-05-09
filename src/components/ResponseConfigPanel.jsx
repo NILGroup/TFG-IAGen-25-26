@@ -10,8 +10,7 @@
 
 import { useState, useEffect } from "react";
 
-// Opciones de formato de respuesta
-const RESPONSE_OPTIONS = [
+const RESPONSE_FORMAT_OPTIONS = [
   {
     id: "lectura-facil",
     label: "Lectura Fácil",
@@ -20,7 +19,7 @@ const RESPONSE_OPTIONS = [
   {
     id: "ejemplos",
     label: "Con ejemplos",
-    description: "Te explico todo con cosas que conoces ",
+    description: "Te pongo ejemplos para entenderlo mejor",
   },
   {
     id: "listas",
@@ -34,13 +33,8 @@ const RESPONSE_OPTIONS = [
   },
   {
     id: "frases-sencillas",
-    label: "Frases cortas",
-    description: "Te cuento cada idea en una frase",
-  },
-  {
-    id: "pasoapaso",
-    label: "Paso a paso",
-    description: "Te explico cómo hacerlo en orden",
+    label: "Frases sencillas",
+    description: "Frases cortas y palabras del día a día",
   },
 ];
 
@@ -49,41 +43,62 @@ const ROLE_OPTIONS = [
   {
     id: "profesor",
     label: "Profesor",
-    description: "Te explica paso a paso con paciencia",
+    description: "Te ayuda como un profesor",
   },
   {
     id: "familiar",
     label: "Familiar",
-    description: "Te ayuda con cariño y confianza",
+    description: "Te ayuda como un familiar",
+  },
+];
+
+const ROUTING_OPTIONS = [
+  {
+    id: "automatic",
+    label: "Automático",
+    description: "Más calidad",
+  },
+  {
+    id: "fast",
+    label: "Rápido",
+    description: "Más rápido",
   },
 ];
 
 export default function ResponseConfigPanel({
   currentConfig = [],
   currentRole = "profesor",
+  currentRoutingPreference = "automatic",
   onApply,
   onRoleChange,
+  onRoutingPreferenceChange,
 }) {
-  const [selectedOptions, setSelectedOptions] = useState(currentConfig);
+  const [selectedOptions, setSelectedOptions] = useState(
+    normalizeResponseFormat(currentConfig)
+  );
   const [selectedRole, setSelectedRole] = useState(currentRole);
+  const [selectedRoutingPreference, setSelectedRoutingPreference] = useState(currentRoutingPreference);
   const [hasChanges, setHasChanges] = useState(false);
 
   // Sincronizar con la configuración actual
   useEffect(() => {
-    setSelectedOptions(currentConfig);
+    setSelectedOptions(normalizeResponseFormat(currentConfig));
     setSelectedRole(currentRole);
+    setSelectedRoutingPreference(currentRoutingPreference);
     setHasChanges(false);
-  }, [currentConfig, currentRole]);
+  }, [currentConfig, currentRole, currentRoutingPreference]);
 
   // Detectar cambios
   useEffect(() => {
+    const normalizedCurrentConfig = normalizeResponseFormat(currentConfig);
     const configChanged =
       JSON.stringify([...selectedOptions].sort()) !==
-      JSON.stringify([...currentConfig].sort());
+      JSON.stringify([...normalizedCurrentConfig].sort());
     const roleChanged = selectedRole !== currentRole;
+    const routingChanged = selectedRoutingPreference !== currentRoutingPreference;
 
-    setHasChanges(configChanged || roleChanged);
-  }, [selectedOptions, selectedRole, currentConfig, currentRole]);
+    setHasChanges(configChanged || roleChanged || routingChanged);
+  }, [selectedOptions, selectedRole, selectedRoutingPreference, currentConfig, currentRole, currentRoutingPreference]);
 
   const toggleOption = (id) => {
     setSelectedOptions((prev) =>
@@ -93,16 +108,19 @@ export default function ResponseConfigPanel({
 
   const handleApply = () => {
     if (onApply) {
-      onApply(selectedOptions);
+      onApply(normalizeResponseFormat(selectedOptions), selectedRole);
     }
     if (onRoleChange && selectedRole !== currentRole) {
       onRoleChange(selectedRole);
+    }
+    if (onRoutingPreferenceChange && selectedRoutingPreference !== currentRoutingPreference) {
+      onRoutingPreferenceChange(selectedRoutingPreference);
     }
     setHasChanges(false);
   };
 
   const handleReset = () => {
-    setSelectedOptions(currentConfig);
+    setSelectedOptions(normalizeResponseFormat(currentConfig));
     setSelectedRole(currentRole);
     setHasChanges(false);
   };
@@ -130,7 +148,7 @@ export default function ResponseConfigPanel({
 
         {/* Lista de opciones de formato */}
         <div className="response-config-options">
-          {RESPONSE_OPTIONS.map((option) => {
+          {RESPONSE_FORMAT_OPTIONS.map((option) => {
             const isSelected = selectedOptions.includes(option.id);
 
             return (
@@ -182,6 +200,40 @@ export default function ResponseConfigPanel({
                   onChange={() => setSelectedRole(option.id)}
                 />
                 <span className="radio-label">{option.label}</span>
+                <span className="radio-indicator" aria-hidden="true">
+                  {isSelected ? "✓" : ""}
+                </span>
+              </label>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Sección: Velocidad de respuesta */}
+      <div className="response-config-section">
+        <h2 className="response-config-section-title">
+          Velocidad de respuesta
+        </h2>
+
+        <div className="response-config-options">
+          {ROUTING_OPTIONS.map((option) => {
+            const isSelected = selectedRoutingPreference === option.id;
+
+            return (
+              <label
+                key={option.id}
+                className={`radio-card ${isSelected ? "checked" : ""}`}
+                htmlFor={`routing-${option.id}`}
+              >
+                <input
+                  type="radio"
+                  name="routing-config"
+                  id={`routing-${option.id}`}
+                  checked={isSelected}
+                  onChange={() => setSelectedRoutingPreference(option.id)}
+                />
+                <span className="radio-label">{option.label}</span>
+                <span className="checkbox-card-row-desc">{option.description}</span>
                 <span className="radio-indicator" aria-hidden="true">
                   {isSelected ? "✓" : ""}
                 </span>

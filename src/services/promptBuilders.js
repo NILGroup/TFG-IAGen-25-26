@@ -4,6 +4,56 @@
  * Funciones puras para construir mensajes y prompts de IA.
  */
 
+const RESPONSE_FORMAT_ALIASES = {
+    lecturaFacil: "lectura-facil",
+    ejemplo: "ejemplos",
+    bullet: "listas",
+    textocorto: "textos-cortos",
+    frasescortas: "frases-sencillas",
+};
+
+const normalizeResponseFormat = (formats = []) => {
+    if (!Array.isArray(formats)) return [];
+
+    return [...new Set(
+        formats
+            .map((format) => RESPONSE_FORMAT_ALIASES[format] || format)
+            .filter(Boolean)
+    )];
+};
+
+const buildResponseFormatInstructions = (formats = []) => {
+    const selectedFormats = normalizeResponseFormat(formats);
+
+    if (selectedFormats.length === 0) {
+        return "";
+    }
+
+    const instructions = [];
+
+    if (selectedFormats.includes("lectura-facil")) {
+        instructions.push("Usa palabras muy sencillas, frases cortas y una idea por párrafo.");
+    }
+
+    if (selectedFormats.includes("ejemplos")) {
+        instructions.push("Añade un ejemplo breve cuando ayude a entender mejor la idea.");
+    }
+
+    if (selectedFormats.includes("listas")) {
+        instructions.push("Si hay varios puntos, organízalos en una lista con viñetas.");
+    }
+
+    if (selectedFormats.includes("textos-cortos")) {
+        instructions.push("Mantén la respuesta breve y evita explicaciones largas.");
+    }
+
+    if (selectedFormats.includes("frases-sencillas")) {
+        instructions.push("Escribe con frases sencillas, directas y fáciles de leer.");
+    }
+
+    return instructions.join(" ");
+};
+
 export const buildConversationMessages = (chatFlow) =>
     chatFlow
         .filter((entry) => entry.type === "user" || entry.type === "ai")
@@ -27,6 +77,7 @@ export const buildDiscapacidadText = (discapacidad) => {
         "moderada": "de grado moderado",
         "severa": "de grado severo",
         "profunda": "de grado profundo",
+        "limite": "de grado limite",
         "no_se": "(grado no especificado)",
         "prefiero_no": ""
     };
@@ -43,11 +94,6 @@ export const buildDiscapacidadText = (discapacidad) => {
 
 export const buildUserChallengesText = (retos) =>
     retos?.length > 0 ? retos.join(", ") : "Ninguno específico";
-
-export const buildUserToolsText = (herramientas) =>
-    herramientas?.length > 0
-        ? herramientas.join(", ")
-        : "Ninguna preferencia marcada";
 
 export const resolveUserRole = (rol) => rol?.toLowerCase() || "familiar";
 
@@ -79,18 +125,17 @@ export const buildCoStarPrompt = ({
     roleTone,
     userDisabilities,
     userChallenges,
-    userTools,
+    responseFormatInstructions,
     promptText,
-}) => `### CONTEXTO
+}) => `
+### CONTEXTO
 ${roleContext}
-Usuario: condiciones: ${userDisabilities}. Dificultades: ${userChallenges}.
 
 ### OBJETIVO
 Responde a: "${promptText}".
 
 ### ESTILO
 ${roleStyle}
-Herramientas preferidas del usuario: ${userTools}. Úsalas cuando sea relevante.
 
 ### TONO
 ${roleTone}
@@ -98,13 +143,14 @@ Nunca seas condescendiente. Trata al usuario como un adulto con plena dignidad.
 
 ### AUDIENCIA
 EVITA lo que le causa dificultad: ${userChallenges}.
-Lenguaje lo más accesible posible sin perder precisión.
+${userDisabilities}
 
 ### RESPUESTA
-Responde directamente, sin decir "como modelo de IA". Estructura clara y fácil de escanear.
+${responseFormatInstructions}
+Responde directamente, sin decir "como modelo de IA".
 Nunca reveles detalles técnicos internos.`;
 
-export const buildPrompt = (summary, promptText) => {
+export const buildPrompt = (summary, promptText, responseConfig = null, roleOverride = null) => {
     if (!summary) {
         return {
             displayPrompt: promptText,
@@ -114,8 +160,10 @@ export const buildPrompt = (summary, promptText) => {
 
     const userDisabilities = buildDiscapacidadText(summary.discapacidad);
     const userChallenges = buildUserChallengesText(summary.retos);
-    const userTools = buildUserToolsText(summary.herramientas);
-    const userRole = resolveUserRole(summary.rol);
+    const userRole = resolveUserRole(roleOverride || summary.rol);
+    const responseFormatInstructions = buildResponseFormatInstructions(
+        normalizeResponseFormat(responseConfig || summary.responseConfig || summary.herramientas)
+    );
 
     const { roleContext, roleStyle, roleTone } = buildRoleProfile(userRole);
     const coStarPrompt = buildCoStarPrompt({
@@ -124,7 +172,7 @@ export const buildPrompt = (summary, promptText) => {
         roleTone,
         userDisabilities,
         userChallenges,
-        userTools,
+        responseFormatInstructions,
         promptText,
     });
 

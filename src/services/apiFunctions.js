@@ -123,6 +123,144 @@ ${summaryInfo ? ` Usuario con: ${summaryInfo.discapacidad || 'no especificado'},
     }
 };
 
+// === ENRUTADOR DINÁMICO DE MODELOS ===
+/**
+ * Determina la técnica de prompting más adecuada según los formatos de salida seleccionados.
+ * Basado en los resultados de evaluación de técnicas de prompting.
+ * 
+ * @param {string[]} responseFormats - Formatos de salida seleccionados (lectura-facil, ejemplos, listas, etc)
+ * @param {string} promptText - Texto original del usuario para detectar intención natural
+ * @returns {string} - Técnica recomendada (zero-shot, few-shot, one-shot, cot)
+ */
+export const determinePromptingTechnique = (responseFormats = [], promptText = "") => {
+    if (!Array.isArray(responseFormats)) return "zero-shot";
+
+    const normalizedPromptText = String(promptText || "").toLowerCase();
+    const hasDetailedReasoningRequest = /\b(paso a paso|paso por paso|en detalle|en profundidad|detallad[oa]s?|desglos[ae]|expl[ií]came|explica(?:me)?|razona|razonamiento|analiza|bien explicado)\b/.test(normalizedPromptText);
+    const hasStructuredOutput = responseFormats.some(f =>
+        f === "listas" || f === "ejemplos"
+    );
+
+    // Lógica de precedencia basada en la intención real del usuario
+    if (hasDetailedReasoningRequest) {
+        return "cot"; // Chain of Thought cuando la pregunta pide explicación profunda o paso a paso
+    }
+
+    if (responseFormats.includes("ejemplos") && responseFormats.length === 1) {
+        return "few-shot"; // Few-shot si solo se piden ejemplos
+    }
+
+    if (hasStructuredOutput && responseFormats.filter(f => f === "listas" || f === "ejemplos").length > 1) {
+        return "one-shot"; // One-shot para salidas estructuradas múltiples
+    }
+
+    return "zero-shot"; // Por defecto, respuesta directa
+};
+
+/**
+ * Selecciona el modelo más adecuado según la técnica de prompting.
+ * Basado en puntuaciones de evaluación y tiempos de respuesta.
+ * 
+ * @param {string} technique - Técnica de prompting (zero-shot, few-shot, one-shot, cot)
+ * @param {string} userPreference - Preferencia de calidad/velocidad para futuras extensiones
+ * @returns {object} - {model, provider, description}
+ */
+export const selectOptimalModel = (technique = "zero-shot", userPreference = "quality") => {
+    const modelMap = {
+        // Zero-Shot y Few-Shot → Llama-3.3-70b-versatile (scores 5.00 y 4.56, <1.5s latencia)
+        "zero-shot": {
+            model: "llama-3.3-70b-versatile",
+            provider: "groq",
+            score: 5.00,
+            latency: "~0.8s",
+            reason: "Máxima puntuación en Zero-Shot, respuesta rápida y equilibrada"
+        },
+        
+        "few-shot": {
+            model: "llama-3.3-70b-versatile",
+            provider: "groq",
+            score: 4.56,
+            latency: "~1.2s",
+            reason: "Puntuación máxima en Few-Shot, ideal para ejemplos"
+        },
+        
+        // One-Shot y CoT → GPT-oss-120b (one-shot 5.00, cot 4.25 puntos, aunque más lento)
+        "one-shot": {
+            model: "openai/gpt-oss-120b",
+            provider: "groq",
+            score: 5.00,
+            latency: "~2.5s",
+            reason: "Puntuación perfecta en One-Shot, manejo robusto de estructuras"
+        },
+        
+        "cot": {
+            model: "openai/gpt-oss-120b",
+            provider: "groq",
+            score: 4.25,
+            latency: "~3.0s",
+            reason: "Razonamiento complejo y coherente, superior a modelos rápidos en CoT"
+        },
+        
+    };
+    
+    return modelMap[technique] || modelMap["zero-shot"];
+};
+
+/**
+ * Wrapper que enruta automáticamente a la función fetch correcta según el modelo seleccionado.
+ * 
+ * @param {array} messages - Mensajes para la IA
+ * @param {string[]} responseFormats - Formatos de salida (para determinar técnica)
+ * @param {string} promptText - Texto original del usuario para elegir técnica
+ * @param {string} userPreference - Preferencia en role-prompting (quality/speed)
+ * @returns {Promise<string>} - Respuesta de la IA
+ */
+export const fetchWithDynamicRouting = async (
+    messages,
+    responseFormats = [],
+    userPreference = "quality",
+    promptText = "",
+    routingMode = "automatic"
+) => {
+    if (routingMode === "fast") {
+        console.info("[SofIA] Modo rápido activo: usando Llama-3.3-70b-versatile");
+        try {
+            return await fetchFromGroq(messages, "llama-3.3-70b-versatile");
+        } catch (error) {
+            console.error("[SofIA] Falló Llama en modo rápido, usando fallback Groq:", error);
+            return await fetchFromGroq(messages, "llama-3.3-70b-versatile");
+        }
+    }
+
+    // Determinar técnica y modelo óptimo
+    const technique = determinePromptingTechnique(responseFormats, promptText);
+    const modelInfo = selectOptimalModel(technique, userPreference);
+    
+    console.info("[SofIA] Enrutador dinámico", {
+        technique,
+        model: modelInfo.model,
+        provider: modelInfo.provider,
+        score: modelInfo.score,
+        latency: modelInfo.latency,
+        reason: modelInfo.reason
+    });
+    
+    try {
+        // Enrutar a la función fetch correcta según el provider
+        if (modelInfo.provider === "groq") {
+            return await fetchFromGroq(messages, modelInfo.model);
+        } else if (modelInfo.provider === "ollama") {
+            return await fetchFromOllama(messages, modelInfo.model);
+        } else if (modelInfo.provider === "gemini") {
+            return await fetchFromGemini(messages, modelInfo.model);
+        }
+    } catch (error) {
+        console.error(`[SofIA] Error con modelo ${modelInfo.model}, intentando fallback:`, error);
+        // Fallback a Llama si falla el modelo principal
+        return await fetchFromGroq(messages, "llama-3.3-70b-versatile");
+    }
+};
+
 // === AQUÍ PUEDES IR AÑADIENDO MÁS ===
 // LUEGO EN LOS PROMPT, DEPENDIENDO DE CUAL QUEREMOS USAR, LLAMAMOS A UN FETCH O A OTRO
 /*POR EJEMPLO:

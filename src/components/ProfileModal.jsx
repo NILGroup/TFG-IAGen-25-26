@@ -8,6 +8,34 @@
 
 import { useState, useEffect } from "react";
 
+const RESPONSE_FORMAT_OPTIONS = [
+  {
+    id: "lectura-facil",
+    label: "Lectura Fácil",
+    description: "Te explico todo con palabras sencillas",
+  },
+  {
+    id: "ejemplos",
+    label: "Con ejemplos",
+    description: "Te explico todo con cosas que conoces",
+  },
+  {
+    id: "listas",
+    label: "Con listas",
+    description: "Te cuento las cosas punto por punto",
+  },
+  {
+    id: "textos-cortos",
+    label: "Respuestas cortas",
+    description: "Te cuento las cosas en pocas palabras",
+  },
+  {
+    id: "frases-sencillas",
+    label: "Frases cortas",
+    description: "Te cuento cada idea en una frase",
+  },
+];
+
 export default function ProfileModal({ isOpen, onClose, summary, onSave }) {
   // Estados para todos los campos del perfil
   const [nombre, setNombre] = useState("");
@@ -29,7 +57,7 @@ export default function ProfileModal({ isOpen, onClose, summary, onSave }) {
       setGrado(summary.discapacidad?.grado || "");
       setRetos(summary.retos || []);
       setRetoOtro(summary.retoOtro || "");
-      setHerramientas(summary.herramientas || []);
+      setHerramientas(summary.responseConfig || summary.herramientas || []);
       setRol(summary.rol || "profesor");
       setShowUnsavedWarning(false);
     }
@@ -46,7 +74,7 @@ export default function ProfileModal({ isOpen, onClose, summary, onSave }) {
     grado !== (summary?.discapacidad?.grado || "") ||
     JSON.stringify(retos) !== JSON.stringify(summary?.retos || []) ||
     retoOtro !== (summary?.retoOtro || "") ||
-    JSON.stringify(herramientas) !== JSON.stringify(summary?.herramientas || []) ||
+    JSON.stringify(herramientas) !== JSON.stringify(summary?.responseConfig || summary?.herramientas || []) ||
     rol !== (summary?.rol || "profesor");
 
   /**
@@ -91,6 +119,7 @@ export default function ProfileModal({ isOpen, onClose, summary, onSave }) {
       retos,
       retoOtro,
       herramientas,
+      responseConfig: herramientas,
       rol,
     };
     onSave(updatedSummary);

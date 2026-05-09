@@ -23,6 +23,22 @@ import ChatActivePanel from "../components/ChatActivePanel";
 import ResponseConfigPanel from "../components/ResponseConfigPanel";
 import PanelGlosario from "../components/PanelGlosario";
 
+const DEFAULT_RESPONSE_FORMAT = ["lectura-facil", "ejemplos"];
+
+const normalizeResponseFormat = (formats = []) => {
+    if (!Array.isArray(formats)) return [];
+
+    const aliases = {
+        lecturaFacil: "lectura-facil",
+        ejemplo: "ejemplos",
+        bullet: "listas",
+        textocorto: "textos-cortos",
+        frasescortas: "frases-sencillas",
+    };
+
+    return [...new Set(formats.map((format) => aliases[format] || format).filter(Boolean))];
+};
+
 export default function InterfazPrincipal({
     summary,
     modoSeleccionado,
@@ -35,6 +51,9 @@ export default function InterfazPrincipal({
     onFinalizarConversacion,
     favoritesGlobal = [],
     setFavoritesGlobal,
+    onRoleChange,
+    onRoutingPreferenceChange,
+    onResponseConfigChange,
 }) {
     const {
         selectedOption,
@@ -74,10 +93,25 @@ export default function InterfazPrincipal({
     };
 
     // Configuración de respuestas (panel siempre visible)
-    const [responseConfig, setResponseConfig] = useState(["lectura-facil", "ejemplos"]);
+    const [responseConfig, setResponseConfig] = useState(() =>
+        normalizeResponseFormat(summary?.herramientas || DEFAULT_RESPONSE_FORMAT)
+    );
+
+    // Indica si el usuario ha modificado la configuración desde el panel
+    const [userModifiedConfig, setUserModifiedConfig] = useState(false);
 
     // Rol actual del ayudante (puede cambiar desde el panel lateral)
-    const [currentRole, setCurrentRole] = useState(modoSeleccionado || "profesor");
+    // Prioridad: modoSeleccionado (elección actual) > summary.rol (perfil guardado) > "profesor" (defecto)
+    const [currentRole, setCurrentRole] = useState(modoSeleccionado || summary?.rol || "profesor");
+    const currentRoutingPreference = summary?.routingPreference || "automatic";
+
+    useEffect(() => {
+        // Sólo sincronizar desde el perfil inicial si el usuario no ha aplicado cambios
+        if (!userModifiedConfig) {
+            setResponseConfig(normalizeResponseFormat(summary?.responseConfig || summary?.herramientas || DEFAULT_RESPONSE_FORMAT));
+        }
+        setCurrentRole(modoSeleccionado || summary?.rol || "profesor");
+    }, [summary, modoSeleccionado]);
 
     // Estado para el panel de glosario
     const [showGlosario, setShowGlosario] = useState(false);
@@ -90,23 +124,36 @@ export default function InterfazPrincipal({
     const [originalChatId, setOriginalChatId] = useState(null);
     const [showExitModal, setShowExitModal] = useState(false);
     const [exitAction, setExitAction] = useState(null); // 'sofia' o 'back'
+    const [pendingHistorySelection, setPendingHistorySelection] = useState(null);
 
-    const handleApplyResponseConfig = (newConfig) => {
-        setResponseConfig(newConfig);
-        // TODO: Regenerar la última respuesta de la IA con la nueva configuración
-        console.log("Nueva configuración de respuestas:", newConfig);
+    const handleApplyResponseConfig = (newConfig, newRole) => {
+        const normalizedConfig = normalizeResponseFormat(newConfig);
+        const normalizedRole = newRole || currentRole;
+
+        setResponseConfig(normalizedConfig);
+        setCurrentRole(normalizedRole);
+
+        // Marca que el usuario ha cambiado la configuración activamente (no persiste en el perfil)
+        setUserModifiedConfig(true);
+
+        // No sincronizamos con `summary` aquí: aplicar cambios en el panel lateral
+        // debe afectar sólo a esta conversación (se guarda junto al chat cuando corresponda).
+
+        // Regenerar la última respuesta con la nueva configuración
+        void regenerateLastResponse(normalizedConfig, normalizedRole);
     };
 
-    const handleRoleChange = (newRole) => {
-        setCurrentRole(newRole);
-        // TODO: Regenerar la última respuesta de la IA con el nuevo rol
-        console.log("Rol cambiado a:", newRole);
+    const handleRoutingPreferenceChange = (routingPreference) => {
+        if (onRoutingPreferenceChange) {
+            onRoutingPreferenceChange(routingPreference);
+        }
     };
 
     const {
         sendPrompt,
         sendCustomPrompt,
         generateTitleFromChat,
+        regenerateLastResponse,
     } = usePromptFunctions({
         summary: summary,
         chatFlow,
@@ -119,7 +166,9 @@ export default function InterfazPrincipal({
         setShowTextInput,
         resetHelpOptions,
         setActiveSpeechId,
-        setSpeechState
+        setSpeechState,
+        responseConfig,
+        currentRole,
     });
 
     const {
@@ -185,7 +234,7 @@ export default function InterfazPrincipal({
             id: Date.now(),
             question: userMessage.content,
             answer: aiMessage.content,
-            timestamp: new Date().toLocaleString(),
+            timestamp: new Date().toISOString(),
         }]);
     };
 
@@ -228,19 +277,13 @@ export default function InterfazPrincipal({
         const chatEntry = {
             title: title,
             flow: JSON.parse(JSON.stringify(chatFlow)), // Deep copy
-            timestamp: new Date().toLocaleString(),
+            responseConfig: responseConfig,
+            role: currentRole,
+            timestamp: new Date().toISOString(),
         };
 
         // Pasar el chat original si existe (para actualizar en lugar de duplicar)
         onFinalizarConversacion(chatEntry, originalChatId ? activeChat : null);
-        onBack();
-    };
-
-    /**
-     * Maneja la salida sin guardar.
-     */
-    const handleSalirSinGuardar = () => {
-        setShowExitModal(false);
         onBack();
     };
 
@@ -264,9 +307,92 @@ export default function InterfazPrincipal({
     /**
      * Maneja la opción "Guardar y salir" del modal.
      */
+    const saveCurrentChatToHistory = async () => {
+        if (chatFlow.length === 0) return;
+
+        const title = originalChatId && activeChat
+            ? activeChat.title
+            : await generateTitleFromChat();
+
+        const chatEntry = {
+            title,
+            flow: JSON.parse(JSON.stringify(chatFlow)),
+            responseConfig: responseConfig,
+            role: currentRole,
+            timestamp: new Date().toISOString(),
+            id: originalChatId && activeChat
+                ? activeChat.id
+                : `chat_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        };
+
+        if (originalChatId && activeChat) {
+            setChatHistory((prev) => prev.map((entry) =>
+                entry.id === activeChat.id ? chatEntry : entry
+            ));
+            if (setChatHistoryGlobal) {
+                setChatHistoryGlobal((prev) => prev.map((entry) =>
+                    entry.id === activeChat.id ? chatEntry : entry
+                ));
+            }
+        } else {
+            setChatHistory((prev) => [...prev, chatEntry]);
+            if (setChatHistoryGlobal) {
+                setChatHistoryGlobal((prev) => [...prev, chatEntry]);
+            }
+            setOriginalChatId(chatEntry.id);
+        }
+    };
+
+    const selectHistoryChat = (entry) => {
+        const flowCopy = JSON.parse(JSON.stringify(entry.flow));
+        setActiveChat(entry);
+        setChatFlow(flowCopy);
+        setOriginalChatFlow(flowCopy);
+        setOriginalChatId(entry.id);
+        // Restaurar configuración asociada al chat (si la tiene)
+        setResponseConfig(normalizeResponseFormat(entry.responseConfig || summary?.responseConfig || summary?.herramientas || DEFAULT_RESPONSE_FORMAT));
+        setCurrentRole(entry.role || modoSeleccionado || summary?.rol || "profesor");
+        setUserModifiedConfig(false);
+        setShowChat(true);
+        setShowHelpOptions(true);
+        setHasUnsavedChanges(false);
+    };
+
+    const handleSelectHistoryChat = (entry) => {
+        if (entry.id === activeChat?.id) return;
+        if (hasUnsavedChanges) {
+            setPendingHistorySelection(entry);
+            setExitAction('history');
+            setShowExitModal(true);
+            return;
+        }
+        selectHistoryChat(entry);
+    };
+
     const handleGuardarYSalir = async () => {
         setShowExitModal(false);
+        if (pendingHistorySelection) {
+            await saveCurrentChatToHistory();
+            const entry = pendingHistorySelection;
+            setPendingHistorySelection(null);
+            selectHistoryChat(entry);
+            return;
+        }
         await handleFinalizarYVolver();
+    };
+
+    /**
+     * Maneja la salida sin guardar.
+     */
+    const handleSalirSinGuardar = () => {
+        setShowExitModal(false);
+        if (pendingHistorySelection) {
+            const entry = pendingHistorySelection;
+            setPendingHistorySelection(null);
+            selectHistoryChat(entry);
+            return;
+        }
+        onBack();
     };
 
     // ========================================
@@ -278,6 +404,8 @@ export default function InterfazPrincipal({
     useEffect(() => {
         if (promptInicial && !promptInicialEnviado.current) {
             promptInicialEnviado.current = true;
+            // Nuevo chat: reiniciar la bandera de cambios del panel lateral
+            setUserModifiedConfig(false);
             setShowChat(true);
             sendCustomPrompt(promptInicial);
             setPrompt("");
@@ -294,6 +422,10 @@ export default function InterfazPrincipal({
             setOriginalChatFlow(flowCopy);
             setOriginalChatId(chatToResume.id);
             setActiveChat(chatToResume);
+            // Restaurar configuración guardada en el chat reanudado
+            setResponseConfig(normalizeResponseFormat(chatToResume.responseConfig || summary?.responseConfig || summary?.herramientas || DEFAULT_RESPONSE_FORMAT));
+            setCurrentRole(chatToResume.role || modoSeleccionado || summary?.rol || "profesor");
+            setUserModifiedConfig(false);
             setShowChat(true);
             setShowHelpOptions(true);
             setHasUnsavedChanges(false);
@@ -445,14 +577,18 @@ export default function InterfazPrincipal({
                 <ResponseConfigPanel
                     currentConfig={responseConfig}
                     currentRole={currentRole}
+                    currentRoutingPreference={currentRoutingPreference}
                     onApply={handleApplyResponseConfig}
-                    onRoleChange={handleRoleChange}
+                    onRoutingPreferenceChange={handleRoutingPreferenceChange}
                 />
 
                 {/* Modal de confirmación de salida */}
                 <ExitConfirmModal
                     isOpen={showExitModal}
-                    onClose={() => setShowExitModal(false)}
+                    onClose={() => {
+                        setShowExitModal(false);
+                        setPendingHistorySelection(null);
+                    }}
                     onSaveAndExit={handleGuardarYSalir}
                     onExitWithoutSaving={handleSalirSinGuardar}
                 />
@@ -463,15 +599,7 @@ export default function InterfazPrincipal({
                     onClose={toggleHistory}
                     chatHistory={chatHistory}
                     activeChat={activeChat}
-                    onSelectChat={(entry) => {
-                        setActiveChat(entry);
-                        setChatFlow(JSON.parse(JSON.stringify(entry.flow)));
-                        setOriginalChatFlow(JSON.parse(JSON.stringify(entry.flow)));
-                        setOriginalChatId(entry.id);
-                        setShowChat(true);
-                        setShowHelpOptions(true);
-                        setHasUnsavedChanges(false);
-                    }}
+                    onSelectChat={handleSelectHistoryChat}
                     onDeleteChat={(entryToDelete) => {
                         setChatHistory(prev => prev.filter(entry => entry.id !== entryToDelete.id));
                         if (activeChat?.id === entryToDelete.id) {

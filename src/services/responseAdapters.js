@@ -7,12 +7,18 @@
 import { promptLF1, promptLF2 } from "../utils/promptLF";
 import { fetchFromGroq, fetchFromGemini, fetchFromOllama } from "./apiFunctions";
 
+const usesLecturaFacil = (formats = []) => {
+    const normalizedFormats = Array.isArray(formats) ? formats : [];
+    return normalizedFormats.includes("lectura-facil") || normalizedFormats.includes("lecturaFacil");
+};
+
 export const adaptToLecturaFacil = async ({
     response,
     summary,
+    responseConfig,
     setChatFlow,
 }) => {
-    if (!summary || !summary.herramientas?.includes("lecturaFacil")) {
+    if (!summary || !usesLecturaFacil(responseConfig || summary.herramientas)) {
         return response;
     }
 
@@ -33,7 +39,7 @@ export const adaptToLecturaFacil = async ({
         refinedResponse1 = await fetchFromGemini(refinementMessages1);
     } catch (error) {
         console.log("Falló Gemini, usamos Ollama");
-        refinedResponse1 = await fetchFromOllama(refinementMessages1);
+        refinedResponse1 = await fetchFromOllama(refinementMessages1, "gpt-oss:120b-cloud");
     }
 
     const refinementMessages2 = [

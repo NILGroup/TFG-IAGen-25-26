@@ -7,12 +7,6 @@
  *
  * Flujo simplificado para accesibilidad cognitiva (COGA):
  * Cuestionario → Elegir Rol → Pregunta Directa → Chat
- *
- * Características de accesibilidad:
- * - Navegación lineal y predecible (COGA 3.3.2)
- * - Reducción de pasos intermedios (COGA 2.4.1)
- * - Lenguaje claro en cada pantalla (COGA 4.2.1)
- * - Consistencia en botones de navegación (WCAG 3.2.3)
  */
 
 import { useState } from "react";
@@ -72,16 +66,29 @@ export default function App() {
    * Guarda los datos del usuario y avanza a elegir rol.
    */
   const handleQuestionnaireComplete = (data) => {
-    setSummary(data);
+    setSummary({
+      ...data,
+      responseConfig: data.responseConfig || data.herramientas || [],
+      routingPreference: data.routingPreference || "automatic",
+    });
     setPaso("modo");
   };
 
   /**
    * 2. Cuando el usuario elige modo (Profesor / Familia)
    * Guarda el modo y avanza directamente a escribir la primera pregunta.
+   * También sincroniza el rol en el perfil del usuario.
    */
   const handleModoComplete = (modo) => {
     setModoSeleccionado(modo);
+    // Sincronizar el rol en el perfil
+    if (summary) {
+      setSummary(prev => ({
+        ...prev,
+        rol: modo,
+        routingPreference: prev.routingPreference || "automatic",
+      }));
+    }
     setPaso("questionPrompt");
   };
 
@@ -106,6 +113,45 @@ export default function App() {
   const handleVolverARol = () => {
     setPreguntaInicial("");
     setPaso("modo");
+  };
+
+  /**
+   * Sincroniza el rol cuando cambia desde InterfazPrincipal (panel de configuración)
+   */
+  const handleRoleChange = (newRole) => {
+    setModoSeleccionado(newRole);
+    if (summary) {
+      setSummary(prev => ({
+        ...prev,
+        rol: newRole,
+        routingPreference: prev.routingPreference || "automatic",
+      }));
+    }
+  };
+
+  /**
+   * 11. Para guardar la preferencia de enrutamiento
+   */
+  const handleRoutingPreferenceChange = (routingPreference) => {
+    if (summary) {
+      setSummary(prev => ({
+        ...prev,
+        routingPreference,
+      }));
+    }
+  };
+
+  /**
+   * 12. Para guardar la configuración de formato de respuestas
+   */
+  const handleResponseConfigChange = (responseConfig) => {
+    if (summary) {
+      setSummary(prev => ({
+        ...prev,
+        responseConfig,
+        herramientas: responseConfig,
+      }));
+    }
   };
 
   /**
@@ -180,7 +226,12 @@ export default function App() {
    * 10. Para guardar cambios en el perfil
    */
   const handleSaveProfile = (updatedSummary) => {
-    setSummary(updatedSummary);
+    setSummary({
+      ...updatedSummary,
+      responseConfig: updatedSummary.responseConfig || updatedSummary.herramientas || [],
+      routingPreference: updatedSummary.routingPreference || summary?.routingPreference || "automatic",
+    });
+    setModoSeleccionado(updatedSummary?.rol || null);
   };
 
   // ========================================
@@ -264,7 +315,7 @@ export default function App() {
 
       {/* Paso 2: Elegir entre Profesor o Familiar */}
       {paso === "modo" && (
-        <PantallaRol onSelectMode={handleModoComplete} />
+        <PantallaRol onSelectMode={handleModoComplete} selectedMode={modoSeleccionado || summary?.rol || "profesor"} />
       )}
 
       {/* Paso 3: Escribir la primera pregunta */}
@@ -295,6 +346,9 @@ export default function App() {
           onFinalizarConversacion={handleFinalizarConversacion}
           favoritesGlobal={favorites}
           setFavoritesGlobal={setFavorites}
+          onRoleChange={handleRoleChange}
+          onRoutingPreferenceChange={handleRoutingPreferenceChange}
+          onResponseConfigChange={handleResponseConfigChange}
         />
       )}
 
