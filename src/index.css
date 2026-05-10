@@ -16,9 +16,10 @@
      COLORES DE ACENTO (Teals/Verdes azulados)
      ------------------------------------------ */
   --color-accent-dark: #2D5A5E;      /* Texto sobre fondos claros - WCAG AAA */
-  --color-accent: #434D4A;           /* Enlaces, botones secundarios */
+  --color-accent: #7C54B4;           /* Enlaces, botones secundarios */
   --color-accent-medium: #4A9199;    /* Hover sobre fondos claros - WCAG AA */
   --color-accent-light: #77B1A9;     /* SOLO para fondos/bordes, NO texto */
+  --color-accent-bg: #E6F4F6;        /* Fondo suave para elementos seleccionados */
 
   /* ------------------------------------------
      COLORES DE FONDO
