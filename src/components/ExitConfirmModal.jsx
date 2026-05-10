@@ -3,12 +3,6 @@
  *
  * Modal de confirmación para cuando el usuario intenta salir del chat
  * sin haber guardado los cambios.
- *
- * Características de accesibilidad (COGA/WCAG):
- * - Lenguaje claro y opciones limitadas (COGA 4.2.1)
- * - Botones grandes y bien separados (WCAG 2.5.5)
- * - Foco visible en todos los elementos (WCAG 2.4.7)
- * - Contraste adecuado (WCAG 1.4.3)
  */
 
 export default function ExitConfirmModal({
