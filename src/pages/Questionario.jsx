@@ -324,7 +324,7 @@ export default function Questionario({ onComplete }) {
      *  ==============
      */
 
-    // Lista de herramientas disponibles (Lectura Fácil: sin anglicismos, sin emojis)
+    // Lista de herramientas disponibles
     const tools = [
         {
             id: "lecturaFacil",
@@ -359,8 +359,8 @@ export default function Questionario({ onComplete }) {
         {
             id: "pasoapaso",
             label: "Paso a paso",
-            description: "Te explico cómo hacerlo en orden",
-            ejemplo: "Paso 1: Piensa qué quieres saber.\nPaso 2: Escríbelo con palabras sencillas.\nPaso 3: Pulsa el botón de enviar."
+            description: "Te lo explico con más detalle",
+            ejemplo: ""
         }
     ];
 

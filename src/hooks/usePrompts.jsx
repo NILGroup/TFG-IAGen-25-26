@@ -71,7 +71,7 @@ const usePromptFunctions = ({
             ];
 
             // Usar enrutador dinámico para seleccionar el modelo óptimo
-            nextResponse = await fetchWithDynamicRouting(messages, responseConfig, "quality", rawUserText);
+            nextResponse = await fetchWithDynamicRouting(messages, responseConfig, rawUserText);
 
             // Adaptar respuesta a LF
             nextResponse = await adaptToLecturaFacil({ response: nextResponse, summary, responseConfig, setChatFlow });
@@ -148,7 +148,7 @@ const usePromptFunctions = ({
                 ];
 
                 // Usar enrutador dinámico para seleccionar el modelo óptimo
-                let response = await fetchWithDynamicRouting(messages, responseConfig, "quality", rawText);
+                let response = await fetchWithDynamicRouting(messages, responseConfig, rawText);
 
                 // Adaptar respuesta a LF
                 response = await adaptToLecturaFacil({ response, summary, responseConfig, setChatFlow });
@@ -230,7 +230,7 @@ const usePromptFunctions = ({
                 ];
 
                 // Usar enrutador dinámico con la configuración sobrescrita
-                let response = await fetchWithDynamicRouting(messages, overrideResponseConfig, "quality", lastUserMessage.content);
+                let response = await fetchWithDynamicRouting(messages, overrideResponseConfig, lastUserMessage.content);
 
                 response = await adaptToLecturaFacil({
                     response,
