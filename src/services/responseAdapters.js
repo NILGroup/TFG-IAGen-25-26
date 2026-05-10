@@ -18,7 +18,7 @@ export const adaptToLecturaFacil = async ({
     responseConfig,
     setChatFlow,
 }) => {
-    if (!summary || !usesLecturaFacil(responseConfig || summary.herramientas)) {
+    if (!summary || !usesLecturaFacil(responseConfig)) {
         return response;
     }
 

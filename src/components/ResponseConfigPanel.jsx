@@ -39,7 +39,7 @@ const RESPONSE_FORMAT_OPTIONS = [
   {
     id: "pasoapaso",
     label: "Paso a paso",
-    description: "Te explico cómo hacerlo en orden",
+    description: "Te explico con más detalle",
   },
 ];
 
@@ -145,7 +145,7 @@ export default function ResponseConfigPanel({
         )}
 
         {/* Lista de opciones de formato */}
-        <div className="response-config-options">
+        <div className="checkbox-list-vertical response-config-options">
           {RESPONSE_FORMAT_OPTIONS.map((option) => {
             const isSelected = selectedOptions.includes(option.id);
 
@@ -180,7 +180,7 @@ export default function ResponseConfigPanel({
           Quién te acompaña
         </h2>
 
-        <div className="response-config-options">
+        <div className="radio-group response-config-options">
           {ROLE_OPTIONS.map((option) => {
             const isSelected = selectedRole === option.id;
 

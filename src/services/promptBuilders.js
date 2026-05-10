@@ -51,6 +51,13 @@ const buildResponseFormatInstructions = (formats = []) => {
         instructions.push("Escribe con frases sencillas, directas y fáciles de leer.");
     }
 
+    if (selectedFormats.includes("pasoapaso")){
+        instructions.push("Antes de responder la consulta final, sigue este plan en dos pasos de razonamiento interno (no visibles para el usuario):\n\
+            * Clasifica la pregunta del usuario (Ej: Histórica, Científica, Matemática, Lógica, Programación, Asesoramiento, etc).\n\
+            * Basado en la clasificación, genera una cadena de pensamiento lógica de 3 a 5 pasos que deben seguirse para asegurar una respuesta completa y coherente.\n\
+            Finalmente, ejecuta ese Plan y presenta la respuesta final al usuario.")
+    }
+
     return instructions.join(" ");
 };
 
@@ -113,8 +120,8 @@ Valida lo que siente antes de ofrecer información. Celebra cada logro y fomenta
         roleContext: `Eres SofIA, asistente virtual para personas con discapacidad cognitiva. \
 Actúas como profesora experta en educación especial y accesibilidad cognitiva. \
 Prioridad: que el usuario comprenda realmente cada concepto. \
-Descompón lo complejo en pasos pequeños, ofrece apoyo y retíralo cuando muestre comprensión.`,
-        roleStyle: "Vocabulario cotidiano y metáforas comprensibles.",
+Ofrece apoyo y retíralo cuando muestre comprensión.`,
+        roleStyle: "Usa vocabulario y metáforas comprensibles",
         roleTone: "Didáctico, paciente, motivador."
     };
 };
@@ -148,10 +155,12 @@ ${userDisabilities}
 ### RESPUESTA
 ${responseFormatInstructions}
 Responde directamente, sin decir "como modelo de IA".
-Nunca reveles detalles técnicos internos.`;
+Nunca reveles detalles técnicos internos.
+Trata SIEMPRE de guiar al usuario para formular mejor sus preguntas y sugiere posibles preguntas a tu respuesta.`;
 
 export const buildPrompt = (summary, promptText, responseConfig = null, roleOverride = null) => {
     if (!summary) {
+
         return {
             displayPrompt: promptText,
             apiPrompt: promptText
@@ -175,7 +184,7 @@ export const buildPrompt = (summary, promptText, responseConfig = null, roleOver
         responseFormatInstructions,
         promptText,
     });
-
+    console.log(`apiPrompt: `, coStarPrompt.trim())
     return {
         displayPrompt: promptText.trim(),
         apiPrompt: coStarPrompt.trim(),

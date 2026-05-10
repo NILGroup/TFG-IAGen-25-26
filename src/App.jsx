@@ -9,15 +9,16 @@
  * Cuestionario → Elegir Rol → Pregunta Directa → Chat
  */
 
-import { useState } from "react";
+import { Suspense, lazy, useState } from "react";
 import Questionario from "./pages/Questionario";
-import PantallaRol from "./pages/PantallaRol";
-import QuestionPromptPanel from "./components/QuestionPromptPanel";
-import InterfazPrincipal from "./pages/InterfazPrincipal";
-import HistoryModal from "./components/HistoryModal";
-import FavoritosModal from "./components/FavoritosModal";
-import ProfileModal from "./components/ProfileModal";
 import "./App.css";
+
+const PantallaRol = lazy(() => import("./pages/PantallaRol"));
+const QuestionPromptPanel = lazy(() => import("./components/QuestionPromptPanel"));
+const InterfazPrincipal = lazy(() => import("./pages/InterfazPrincipal"));
+const HistoryModal = lazy(() => import("./components/HistoryModal"));
+const FavoritosModal = lazy(() => import("./components/FavoritosModal"));
+const ProfileModal = lazy(() => import("./components/ProfileModal"));
 
 export default function App() {
   // ========================================
@@ -320,62 +321,64 @@ export default function App() {
 
       {/* Paso 3: Escribir la primera pregunta */}
       {paso === "questionPrompt" && (
-        <QuestionPromptPanel
-          onBack={handleVolverARol}
-          userName={summary?.nombre}
-          prompt={preguntaInicial}
-          setPrompt={setPreguntaInicial}
-          sendPrompt={handleSendFirstPrompt}
-          isSubmitting={isSubmitting}
-          favorites={favorites}          avatarMode={modoSeleccionado || summary?.rol || "profesor"}          onOpenFavoritos={() => setShowFavoritosModal(true)}
-        />
+          <QuestionPromptPanel
+            onBack={handleVolverARol}
+            userName={summary?.nombre}
+            prompt={preguntaInicial}
+            setPrompt={setPreguntaInicial}
+            sendPrompt={handleSendFirstPrompt}
+            isSubmitting={isSubmitting}
+            favorites={favorites}
+            avatarMode={modoSeleccionado || summary?.rol || "profesor"}
+            onOpenFavoritos={() => setShowFavoritosModal(true)}
+          />
       )}
 
       {/* Paso 4: Chat conversacional */}
       {paso === "chat" && (
-        <InterfazPrincipal
-          summary={summary}
-          modoSeleccionado={modoSeleccionado}
-          promptInicial={preguntaInicial}
-          onBack={handleNuevaConversacion}
-          onIrAPerfil={handleIrAPerfil}
-          chatHistoryGlobal={chatHistory}
-          setChatHistoryGlobal={setChatHistory}
-          chatToResume={chatToResume}
-          onFinalizarConversacion={handleFinalizarConversacion}
-          favoritesGlobal={favorites}
-          setFavoritesGlobal={setFavorites}
-          onRoleChange={handleRoleChange}
-          onRoutingPreferenceChange={handleRoutingPreferenceChange}
-          onResponseConfigChange={handleResponseConfigChange}
-        />
+          <InterfazPrincipal
+            summary={summary}
+            modoSeleccionado={modoSeleccionado}
+            promptInicial={preguntaInicial}
+            onBack={handleNuevaConversacion}
+            onIrAPerfil={handleIrAPerfil}
+            chatHistoryGlobal={chatHistory}
+            setChatHistoryGlobal={setChatHistory}
+            chatToResume={chatToResume}
+            onFinalizarConversacion={handleFinalizarConversacion}
+            favoritesGlobal={favorites}
+            setFavoritesGlobal={setFavorites}
+            onRoleChange={handleRoleChange}
+            onRoutingPreferenceChange={handleRoutingPreferenceChange}
+            onResponseConfigChange={handleResponseConfigChange}
+          />
       )}
 
       {/* Modal de Perfil - Accesible desde cualquier pantalla */}
-      <ProfileModal
-        isOpen={showProfileModal}
-        onClose={() => setShowProfileModal(false)}
-        summary={summary}
-        onSave={handleSaveProfile}
-      />
+        <ProfileModal
+          isOpen={showProfileModal}
+          onClose={() => setShowProfileModal(false)}
+          summary={summary}
+          onSave={handleSaveProfile}
+        />
 
       {/* Modal de Historial - Accesible desde cualquier pantalla */}
-      <HistoryModal
-        isOpen={showHistoryModal}
-        onClose={() => setShowHistoryModal(false)}
-        chatHistory={chatHistory}
-        activeChat={chatToResume}
-        onSelectChat={handleSelectChatFromHistory}
-        onDeleteChat={handleDeleteChat}
-      />
+        <HistoryModal
+          isOpen={showHistoryModal}
+          onClose={() => setShowHistoryModal(false)}
+          chatHistory={chatHistory}
+          activeChat={chatToResume}
+          onSelectChat={handleSelectChatFromHistory}
+          onDeleteChat={handleDeleteChat}
+        />
 
       {/* Modal de Favoritos - Accesible desde cualquier pantalla */}
-      <FavoritosModal
-        isOpen={showFavoritosModal}
-        onClose={() => setShowFavoritosModal(false)}
-        favorites={favorites}
-        onDelete={(id) => setFavorites(prev => prev.filter(f => f.id !== id))}
-      />
+        <FavoritosModal
+          isOpen={showFavoritosModal}
+          onClose={() => setShowFavoritosModal(false)}
+          favorites={favorites}
+          onDelete={(id) => setFavorites(prev => prev.filter(f => f.id !== id))}
+        />
     </div>
   );
 }

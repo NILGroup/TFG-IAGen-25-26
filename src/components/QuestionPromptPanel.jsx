@@ -4,9 +4,8 @@
  * El usuario escribe su primera pregunta para iniciar la conversación con SofIA.
  */
 
-import robotLogo from "../assets/AventurIA_robot_sinfondo.png";
-
 const BASE = import.meta.env.BASE_URL;
+const robotLogoPath = `${BASE}AventurIA_robot_sinfondo.png`;
 const AVATAR_IMAGES = {
     profesor: `${BASE}Profesor_avatar.png`,
     familiar: `${BASE}Familiar_avatar.png`
@@ -49,16 +48,16 @@ export default function QuestionPromptPanel({
 
     return (
         <div className="question-prompt-container">
-            {/* Botón de respuestas recordadas - centrado debajo del header */}
+            {/* Botón de respuestas guardadas - centrado debajo del header */}
             {favorites.length > 0 && onOpenFavoritos && (
                 <div className="favoritos-btn-container">
                     <button
                         className="favoritos-btn"
                         onClick={onOpenFavoritos}
-                        aria-label={`Ver ${favorites.length} ${favorites.length === 1 ? "respuesta recordada" : "respuestas recordadas"}`}
+                        aria-label={`Ver ${favorites.length} ${favorites.length === 1 ? "respuesta guardada" : "respuestas guardadas"}`}
                     >
                         <span className="favoritos-btn-texto">
-                            {favorites.length} {favorites.length === 1 ? "respuesta recordada" : "respuestas recordadas"}
+                            {favorites.length} {favorites.length === 1 ? "respuesta guardada" : "respuestas guardadas"}
                         </span>
                     </button>
                 </div>
@@ -80,10 +79,11 @@ export default function QuestionPromptPanel({
                 {/* Logo del robot / Avatar */}
                 <div className="question-prompt-logo-container">
                     <img 
-                        src={avatarMode && AVATAR_IMAGES[avatarMode] ? AVATAR_IMAGES[avatarMode] : robotLogo} 
+                        src={avatarMode && AVATAR_IMAGES[avatarMode] ? AVATAR_IMAGES[avatarMode] : robotLogoPath} 
                         alt={avatarMode ? `Avatar ${avatarMode}` : "SofIA"} 
                         className="question-prompt-logo" 
                         style={avatarMode ? { width: "128px", height: "128px", borderRadius: "50%", objectFit: "cover" } : {}}
+                        fetchPriority="high"
                     />
                 </div>
 

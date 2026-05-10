@@ -10,7 +10,8 @@
  * */
 
 import React from "react";
-import robotLogo from "../assets/AventurIA_robot_sinfondo.png";
+const BASE = import.meta.env.BASE_URL;
+const robotLogo = `${BASE}AventurIA_robot_sinfondo.png`;
 
 export default function BotonesInteraccion({
     prompt,                    // Contenido actual del input de texto del usuario

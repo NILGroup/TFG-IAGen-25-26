@@ -82,20 +82,24 @@ body {
   background-color: var(--color-primary-darkest);
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   z-index: 1000;
+  box-sizing: border-box;
 }
 
+
+
 .header-bar-container {
-  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   height: 100%;
-  width: 100%;
+  width: 97vw;
   padding: 0 16px;
+  gap: 16px;
 }
 
 .header-bar-title {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
+  flex: 1;
+  text-align: center;
   font-size: 32px !important;
   font-weight: bold;
   font-style: italic;
@@ -105,7 +109,6 @@ body {
   padding: 0;
   transition: color 0.2s;
   line-height: 1;
-  z-index: 10;
   pointer-events: auto;
   user-select: none;
 }
@@ -131,23 +134,17 @@ body {
 }
 
 .header-bar-left {
-  position: absolute;
-  left: 30px;
-  top: 50%;
-  transform: translateY(-50%);
   display: flex;
   align-items: center;
   gap: 12px;
+  flex: 0 0 auto;
 }
 
 .header-bar-right {
-  position: absolute;
-  right: 30px;
-  top: 50%;
-  transform: translateY(-50%);
   display: flex;
   gap: 16px;
   align-items: center;
+  flex: 0 0 auto;
 }
 
 /* =============================================
@@ -157,7 +154,7 @@ body {
 .main-content {
   transition: margin-left 0.3s ease;
   margin-left: 0;
-  min-height: 100vh;
+  flex: 1;
 }
 
 /* Cuando la config está abierta, empuja el contenido a la izquierda */
@@ -215,9 +212,15 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
   padding-top: 0px;
-  padding-bottom: 24px;
+  padding-bottom: 0px;
+}
+
+.app-wrapper.config-abierto {
+  height: 100vh;
+  overflow: hidden;
 }
 
 @media (max-width: 768px) {
@@ -406,35 +409,32 @@ body {
   align-items: flex-start;
   gap: 10px;
   padding: 16px 20px;
-  border: 2px dashed #d0d0d0;
+  border: 2px solid var(--color-accent-light);
   border-radius: 12px;
-  background: var(--color-gray-100);
+  background: white;
   transition: all 0.2s ease;
 }
 
 .checkbox-card-otra-directa:focus-within {
   border-color: var(--color-info);
+  outline: 3px solid var(--color-primary-dark);
   background: #f0f7ff;
+  outline-offset: 2px;
 }
 
 /* Estado activo: cuando hay texto */
 .checkbox-card-otra-directa.activa {
   border-style: solid;
-  border-color: var(--color-success);
+  border-color: var(--color-accent);
   border-width: 3px;
-  background: var(--color-success-light);
+  background: var(--color-border-light);
 }
 
 /* Etiqueta */
 .otra-opcion-label {
   font-size: 16px;
-  font-weight: 500;
-  color: var(--color-gray-700);
-}
-
-.checkbox-card-otra-directa.activa .otra-opcion-label {
-  color: var(--color-success);
   font-weight: 600;
+  color: var(--color-primary-darkest);
 }
 
 /* Input */
@@ -459,10 +459,6 @@ body {
 
 .otra-opcion-input-directa::placeholder {
   color: var(--color-gray-500);
-}
-
-.checkbox-card-otra-directa.activa .otra-opcion-input-directa {
-  border-color: var(--color-success);
 }
 
 /*==================================
@@ -949,16 +945,9 @@ body {
 * ====================================*/
 
 .summary-box,
-.summary-box-horizontal,
-.robot-container {
+.summary-box-horizontal {
   align-self: flex-start;
   text-align: left;
-}
-
-.robot-container {
-  display: flex;
-  justify-content: left;
-  width: 100%;
 }
 
 /* Imagen del robot centrada */
@@ -1649,49 +1638,12 @@ body {
   margin: 0;
 }
 
-/* Lista de opciones - usa los estilos de checkbox-card-row del cuestionario */
+/* Lista de opciones - reutiliza los estilos compartidos del cuestionario */
 .response-config-options {
   display: flex;
   flex-direction: column;
   gap: 8px;
-}
-
-/* Ajustes específicos para el panel lateral */
-.response-config-panel .checkbox-card-row {
-  padding: 12px 14px;
-  min-height: auto;
-}
-
-.response-config-panel .checkbox-card-row-label {
-  font-size: 15px;
-}
-
-.response-config-panel .checkbox-card-row-desc {
-  font-size: 12px;
-}
-
-.response-config-panel .checkbox-card-row-indicator {
-  width: 26px;
-  height: 26px;
-  min-width: 26px;
-  font-size: 14px;
-}
-
-/* Ajustes para radio buttons en el panel */
-.response-config-panel .radio-card {
-  padding: 12px 14px;
-  min-height: auto;
-}
-
-.response-config-panel .radio-label {
-  font-size: 15px;
-}
-
-.response-config-panel .radio-indicator {
-  width: 26px;
-  height: 26px;
-  min-width: 26px;
-  font-size: 14px;
+  margin-bottom: 0;
 }
 
 /* Botones de acción */
@@ -2522,9 +2474,9 @@ body {
   max-width: 800px; /* Más ancho que el historial para leer respuestas largas */
 }
 
-/* Header naranja para favoritos (override del historial) */
+/* Header de favoritos usando la paleta principal (override del historial) */
 .favoritos-modal .modal-historial-header {
-  background-color: var(--color-warning);
+  background-color: var(--color-primary-dark);
 }
 
 .favoritos-contenido {
@@ -2700,29 +2652,27 @@ body {
 .chat-active-wrapper {
   display: flex;
   flex-direction: column;
-  max-width: 2200px;
-  width: 98%;
+  width: 100%; /* ocupa todo el ancho por defecto */
   margin: 110px auto 0;
-  height: calc(100vh - 110px - 70px); /* 110px margin top + 70px input bar */
+  height: calc(100vh - 1px - 70px);
   overflow: hidden;
-  min-height: 0; /* Fix para Safari */
-  -webkit-flex: 1; /* Prefijo para Safari */
+  min-height: 0;
+  -webkit-flex: 1;
+  box-sizing: border-box;
 }
-
 /* Cuadro blanco solo para los mensajes - más ancho */
 .chat-selection-area {
   background: white;
-  border-radius: 20px 20px 0 0; /* Solo bordes redondeados arriba */
-  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05); /* Sombra solo hacia arriba */
-  overflow: hidden; /* Respeta los bordes redondeados */
+  border-radius: 20px 20px 0 0;
+  overflow: hidden;
   padding: 20px 30px;
   width: 100%;
-  max-width: 2200px;
-  margin: 0 auto;
+  margin: 0;
   flex: 1;
   display: flex;
   flex-direction: column;
-  min-height: 0; /* Fix para Safari */
+  min-height: 0;
+  box-sizing: border-box;
 }
 
 /* Contenedor interno para scroll */
@@ -2812,11 +2762,15 @@ body {
   z-index: 500;
 }
 
+.config-abierto .favoritos-btn-container {
+  left: calc(50% - 160px);
+}
+
 .favoritos-btn {
   display: flex;
   align-items: center;
   gap: 8px;
-  background-color: var(--color-warning);
+  background-color: var(--color-primary-dark);
   color: white;
   border: none;
   font-size: 20px;
@@ -2831,7 +2785,7 @@ body {
 }
 
 .favoritos-btn:hover {
-  background-color: var(--color-warning);
+  background-color: var(--color-primary);
 }
 
 .favoritos-btn:focus-visible {
@@ -3132,9 +3086,9 @@ body {
   outline-offset: 2px;
 }
 
-/* Botón guardar respuesta en favoritos - Naranja oscuro */
+/* Botón guardar respuesta en favoritos */
 .guardar-respuesta-btn {
-  background: var(--color-warning);
+  background: var(--color-primary-dark);
   color: white;
   border: none;
   border-radius: 8px;
@@ -3147,11 +3101,11 @@ body {
 }
 
 .guardar-respuesta-btn:hover:not(:disabled) {
-  background: var(--color-warning);
+  background: var(--color-primary);
 }
 
 .guardar-respuesta-btn:focus-visible {
-  outline: 3px solid #f59e0b;
+  outline: 3px solid var(--color-focus);
   outline-offset: 2px;
 }
 
@@ -3262,15 +3216,17 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
-  padding: 15px 50px ;
-  margin-top: 120px;
+  padding: 15px 20px;
+  margin: 10vh auto 0;
   background-color: white;
   border-radius: 20px;
   width: 75vw;
   min-width: 75vw;
   max-width: 75vw;
   min-height: 70vh;
+    overflow-x: hidden;
+  overflow-y: auto;
+  box-sizing: border-box;
 }
 .icon-container {
   display: flex;

@@ -160,14 +160,14 @@ export default function Chat({
                                             : "Reanudar"}
                                 </button>
 
-                                {/* Botón para recordar esta respuesta */}
+                                {/* Botón para guardar esta respuesta */}
                                 <button
                                     className={`guardar-respuesta-btn ${isResponseSaved(index) ? "guardado" : ""}`}
                                     onClick={() => onGuardarFavorito(index)}
                                     disabled={isResponseSaved(index)}
-                                    aria-label={isResponseSaved(index) ? "Ya está recordado" : "Recordar esta respuesta"}
+                                    aria-label={isResponseSaved(index) ? "Ya está guardado" : "Guardar esta respuesta"}
                                 >
-                                    {isResponseSaved(index) ? "Recordado" : "Recordar"}
+                                    {isResponseSaved(index) ? "Guardado" : "Guardar"}
                                 </button>
                             </div>
                         )}

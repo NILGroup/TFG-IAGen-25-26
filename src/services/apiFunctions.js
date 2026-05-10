@@ -48,7 +48,7 @@ const fetchIA = async ({
 };
 
 // === FETCH DE GROQ ===
-// Modelos: openai/gpt-oss-120b, llama-3.3-70b-versatile, meta-llama/llama-4-maverick-17b-128e-instruct ¿? Posible
+// Modelos: openai/gpt-oss-120b, llama-3.3-70b-versatile
 export const fetchFromGroq = (messages, model = "llama-3.3-70b-versatile") => {
     return fetchIA({
         url: "https://api.groq.com/openai/v1/chat/completions",
@@ -77,7 +77,7 @@ export const fetchFromGemini = async (messages, model = "gemini-flash-latest") =
 };
 
 // === FETCH DE OLLAMA (LOCAL) ===
-// Modelos: deepseek-v3.1:671b-cloud
+// Modelos: deepseek-v3.1:671b-cloud (Ahora es de pago)
 export const fetchFromOllama = (messages, model = "deepseek-v3.1:671b-cloud") => {
     return fetchIA({
         url: "http://localhost:11434/v1/chat/completions",
@@ -162,43 +162,30 @@ export const determinePromptingTechnique = (responseFormats = [], promptText = "
  * Basado en puntuaciones de evaluación y tiempos de respuesta.
  * 
  * @param {string} technique - Técnica de prompting (zero-shot, few-shot, one-shot, cot)
- * @param {string} userPreference - Preferencia de calidad/velocidad para futuras extensiones
  * @returns {object} - {model, provider, description}
  */
-export const selectOptimalModel = (technique = "zero-shot", userPreference = "quality") => {
+export const selectOptimalModel = (technique = "zero-shot") => {
     const modelMap = {
         // Zero-Shot y Few-Shot → Llama-3.3-70b-versatile (scores 5.00 y 4.56, <1.5s latencia)
         "zero-shot": {
             model: "llama-3.3-70b-versatile",
-            provider: "groq",
-            score: 5.00,
-            latency: "~0.8s",
-            reason: "Máxima puntuación en Zero-Shot, respuesta rápida y equilibrada"
+            provider: "groq"
         },
         
         "few-shot": {
             model: "llama-3.3-70b-versatile",
-            provider: "groq",
-            score: 4.56,
-            latency: "~1.2s",
-            reason: "Puntuación máxima en Few-Shot, ideal para ejemplos"
+            provider: "groq"
         },
         
         // One-Shot y CoT → GPT-oss-120b (one-shot 5.00, cot 4.25 puntos, aunque más lento)
         "one-shot": {
             model: "openai/gpt-oss-120b",
-            provider: "groq",
-            score: 5.00,
-            latency: "~2.5s",
-            reason: "Puntuación perfecta en One-Shot, manejo robusto de estructuras"
+            provider: "groq"
         },
         
         "cot": {
             model: "openai/gpt-oss-120b",
-            provider: "groq",
-            score: 4.25,
-            latency: "~3.0s",
-            reason: "Razonamiento complejo y coherente, superior a modelos rápidos en CoT"
+            provider: "groq"
         },
         
     };
@@ -212,26 +199,21 @@ export const selectOptimalModel = (technique = "zero-shot", userPreference = "qu
  * @param {array} messages - Mensajes para la IA
  * @param {string[]} responseFormats - Formatos de salida (para determinar técnica)
  * @param {string} promptText - Texto original del usuario para elegir técnica
- * @param {string} userPreference - Preferencia en role-prompting (quality/speed)
  * @returns {Promise<string>} - Respuesta de la IA
  */
 export const fetchWithDynamicRouting = async (
     messages,
     responseFormats = [],
-    userPreference = "quality",
     promptText = ""
 ) => {
     // Determinar técnica y modelo óptimo
     const technique = determinePromptingTechnique(responseFormats, promptText);
-    const modelInfo = selectOptimalModel(technique, userPreference);
+    const modelInfo = selectOptimalModel(technique);
     
     console.info("[SofIA] Enrutador dinámico", {
         technique,
         model: modelInfo.model,
-        provider: modelInfo.provider,
-        score: modelInfo.score,
-        latency: modelInfo.latency,
-        reason: modelInfo.reason
+        provider: modelInfo.provider
     });
     
     try {

@@ -17,10 +17,12 @@
  */
 
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import "../App.css";
-import robotLogo from "../assets/AventurIA_robot_sinfondo.png";
-import robotLogoCuerpo from "../assets/AventurIA_robotCuerposinfondo.png";
+
+const BASE = import.meta.env.BASE_URL;
+const robotLogo = `${BASE}AventurIA_robot_sinfondo.png`;
+const robotLogoCuerpo = `${BASE}AventurIA_robotCuerposinfondo.png`;
 
 const RESPONSE_FORMAT_OPTIONS = [
     {
@@ -113,6 +115,14 @@ export default function Questionario({ onComplete }) {
      */
 
     const [page, setPage] = useState(1);
+    const containerRef = useRef(null);
+
+    // Hacer scroll al top cuando cambia de página
+    useEffect(() => {
+        if (containerRef.current) {
+            containerRef.current.scrollTop = 0;
+        }
+    }, [page]);
 
     /** =========================
       *  NAVEGACIÓN ENTRE PÁGINAS
@@ -123,6 +133,7 @@ export default function Questionario({ onComplete }) {
     const nextPage = () => {
         if (page < 5) {
             setPage(page + 1);
+            window.scrollTo(0, 0);
         } else {
             onComplete(summary); // Termina el cuestionario y envía el perfil completo
         }
@@ -132,6 +143,7 @@ export default function Questionario({ onComplete }) {
     const prevPage = () => {
         if (page > 1) {
             setPage(page - 1);
+            window.scrollTo(0, 0);
         }
     };
 
@@ -324,7 +336,7 @@ export default function Questionario({ onComplete }) {
      *  ==============
      */
 
-    // Lista de herramientas disponibles (Lectura Fácil: sin anglicismos, sin emojis)
+    // Lista de herramientas disponibles
     const tools = [
         {
             id: "lecturaFacil",
@@ -359,8 +371,8 @@ export default function Questionario({ onComplete }) {
         {
             id: "pasoapaso",
             label: "Paso a paso",
-            description: "Te explico cómo hacerlo en orden",
-            ejemplo: "Paso 1: Piensa qué quieres saber.\nPaso 2: Escríbelo con palabras sencillas.\nPaso 3: Pulsa el botón de enviar."
+            description: "Te explico el razonamiento con detalle",
+            ejemplo: "• Primera pista: Tiene forma de bola.\n • Segunda pista: Es muy grande.\n • Tercera pista: Da vueltas al Sol. \n Respuesta: Es un planeta."
         }
     ];
 
@@ -376,7 +388,7 @@ export default function Questionario({ onComplete }) {
                 return (
                     <div className="question-page">
                         <div className="icon-container">
-                            <img src={robotLogo} alt="Robot SofIA" className="robot-logo" />
+                            <img src={robotLogo} alt="Robot SofIA" className="robot-logo" fetchPriority="high" />
                         </div>
                         <h2>¡Hola! Soy SofIA</h2>
                         <p>Te ayudaré a aprender y resolver dudas.</p>
@@ -564,6 +576,9 @@ export default function Questionario({ onComplete }) {
             case 5:
                 return (
                     <div className="question-page">
+                        <div className="robot-container">
+                            <img src={robotLogo} alt="Logo de SofIA" className="robot-img" fetchPriority="high" />
+                        </div>
                         <h2>¡Ya casi terminas!</h2>
                         <p className="instruction">
                             <strong>Revisa las cosas que has elegido.</strong>
@@ -571,9 +586,7 @@ export default function Questionario({ onComplete }) {
 
                         {generateSummary()}
 
-                        <div className="robot-container">
-                            <img src={robotLogoCuerpo} alt="SofIA está lista" className="robot-img" />
-                        </div>
+
                     </div>
                 );
             default:
@@ -587,7 +600,7 @@ export default function Questionario({ onComplete }) {
      */
 
     return (
-        <div className="principal-container">
+        <div className="principal-container" ref={containerRef}>
             <ProgressStepper currentStep={page} />
 
             <div className="questionnaire-content">
