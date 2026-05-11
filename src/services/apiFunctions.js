@@ -87,42 +87,6 @@ export const fetchFromOllama = (messages, model = "deepseek-v3.1:671b-cloud") =>
     });
 };
 
-// === PRE-PROCESADO DE PROMPTS CON LLAMA3-VERSATILE ===
-/**
- * Envía el prompt del usuario a llama-3.3-70b-versatile para que lo evalúe y mejore
- * siguiendo la estructura CO-STAR, dejándolo listo para el modelo final.
- *
- * @param {string} userPrompt - El prompt original del usuario
- * @param {object} summaryInfo - Información del usuario (discapacidad, retos, herramientas, rol)
- * @returns {string} - El prompt mejorado y reestructurado
- */
-export const enhancePromptWithCoStar = async (userPrompt, summaryInfo = null) => {
-    const metaPrompt = `Reescribe este prompt para que sea más claro y preciso, sin cambiar su intención. \
-Devuelve SOLO el prompt mejorado, sin explicaciones. Mantén el idioma del mensaje. \
-Si es pregunta, mantén formato pregunta. Si es ambiguo, expándelo ligeramente.\
-${summaryInfo ? ` Usuario con: ${summaryInfo.discapacidad || 'no especificado'}, retos: ${summaryInfo.retos || 'no especificados'}.` : ''}
-
-"${userPrompt}"`;
-
-    try {
-        const enhanced = await fetchFromGroq(
-            [{ role: "user", content: metaPrompt }],
-            "llama-3.3-70b-versatile"
-        );
-
-        // Si la mejora falla o viene vacía, devolvemos el original
-        if (!enhanced || enhanced === "Error de conexión" || enhanced.startsWith("Error de servidor")) {
-            console.warn("Fallo en pre-procesado CO-STAR, usando prompt original.");
-            return userPrompt;
-        }
-
-        return enhanced.trim();
-    } catch (error) {
-        console.error("Error en enhancePromptWithCoStar:", error);
-        return userPrompt;
-    }
-};
-
 // === ENRUTADOR DINÁMICO DE MODELOS ===
 /**
  * Determina la técnica de prompting más adecuada según los formatos de salida seleccionados.
@@ -136,13 +100,12 @@ export const determinePromptingTechnique = (responseFormats = [], promptText = "
     if (!Array.isArray(responseFormats)) return "zero-shot";
 
     const normalizedPromptText = String(promptText || "").toLowerCase();
-    const hasDetailedReasoningRequest = /\b(paso a paso|paso por paso|en detalle|en profundidad|detallad[oa]s?|desglos[ae]|expl[ií]came|explica(?:me)?|razona|razonamiento|analiza|bien explicado)\b/.test(normalizedPromptText);
     const hasStructuredOutput = responseFormats.some(f =>
         f === "listas" || f === "ejemplos"
     );
 
     // Lógica de precedencia basada en la intención real del usuario o configuración seleccionada
-    if (hasDetailedReasoningRequest || responseFormats.includes("pasoapaso")) {
+    if (responseFormats.includes("pasoapaso")) {
         return "cot"; // Chain of Thought cuando la pregunta pide explicación profunda o paso a paso
     }
 

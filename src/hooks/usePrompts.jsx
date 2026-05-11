@@ -133,17 +133,12 @@ const usePromptFunctions = ({
                 const { apiPrompt } = buildPrompt(summary, rawText, responseConfig, currentRole);
                 console.info("[SofIA] sendCustomPrompt:builtPrompt", {
                     promptLength: apiPrompt.length,
-                });
-
-                // Pre-procesado transparente: llama3-versatile mejora el prompt CO-STAR ya construido
-                const enhancedPrompt = await enhancePromptWithCoStar(apiPrompt, summary);
-                console.info("[SofIA] sendCustomPrompt:enhancedPrompt", {
-                    promptLength: enhancedPrompt.length,
+                    prompt: apiPrompt
                 });
 
                 const messages = [
                     ...buildConversationMessages(chatFlow),
-                    { role: "user", content: enhancedPrompt }
+                    { role: "user", content: apiPrompt }
                 ];
 
                 // Usar enrutador dinámico para seleccionar el modelo óptimo
@@ -217,7 +212,6 @@ const usePromptFunctions = ({
                     overrideRole
                 );
 
-                const enhancedPrompt = await enhancePromptWithCoStar(apiPrompt, summary);
 
                 const messages = [
                     ...buildConversationMessages(
@@ -225,7 +219,7 @@ const usePromptFunctions = ({
                             .slice(0, lastAIIndex)
                             .filter((entry) => entry.type === "user" || entry.type === "ai")
                     ),
-                    { role: "user", content: enhancedPrompt },
+                    { role: "user", content: apiPrompt },
                 ];
 
                 // Usar enrutador dinámico con la configuración sobrescrita

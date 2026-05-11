@@ -2666,7 +2666,7 @@ body {
   border-radius: 20px 20px 0 0;
   overflow: hidden;
   padding: 20px 30px;
-  width: 100%;
+  width:inherit;
   margin: 0;
   flex: 1;
   display: flex;
