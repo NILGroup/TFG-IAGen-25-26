@@ -359,7 +359,7 @@ export default function Questionario({ onComplete }) {
         {
             id: "pasoapaso",
             label: "Paso a paso",
-            description: "Te explico cómo hacerlo en orden",
+            description: "Te explico cómo hacer las consultas paso a paso",
             ejemplo: "Paso 1: Piensa qué quieres saber.\nPaso 2: Escríbelo con palabras sencillas.\nPaso 3: Pulsa el botón de enviar."
         }
     ];
