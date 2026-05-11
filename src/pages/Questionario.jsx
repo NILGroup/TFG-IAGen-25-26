@@ -371,8 +371,8 @@ export default function Questionario({ onComplete }) {
         {
             id: "pasoapaso",
             label: "Paso a paso",
-            description: "Te explico el razonamiento con detalle",
-            ejemplo: "• Primera pista: Tiene forma de bola.\n • Segunda pista: Es muy grande.\n • Tercera pista: Da vueltas al Sol. \n Respuesta: Es un planeta."
+            description: "Te explico cómo hacer las consultas paso a paso",
+            ejemplo: "Paso 1: Piensa qué quieres saber.\nPaso 2: Escríbelo con palabras sencillas.\nPaso 3: Pulsa el botón de enviar."
         }
     ];
 

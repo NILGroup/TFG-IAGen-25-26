@@ -72,9 +72,6 @@ const usePromptFunctions = ({
 
             // Usar enrutador dinámico para seleccionar el modelo óptimo
             nextResponse = await fetchWithDynamicRouting(messages, responseConfig, rawUserText);
-            console.log(
-                'Modelo escogido: ' + responseConfig.toISOString() + '\n\nRespuesta generada: ' + messages
-            )
             // Adaptar respuesta a LF
             nextResponse = await adaptToLecturaFacil({ response: nextResponse, summary, responseConfig, setChatFlow });
 
