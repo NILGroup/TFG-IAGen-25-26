@@ -31,10 +31,6 @@ const buildResponseFormatInstructions = (formats = []) => {
 
     const instructions = [];
 
-    if (selectedFormats.includes("lectura-facil")) {
-        instructions.push("Usa palabras muy sencillas, frases cortas y una idea por párrafo.");
-    }
-
     if (selectedFormats.includes("ejemplos")) {
         instructions.push("Añade un ejemplo breve cuando ayude a entender mejor la idea.");
     }
@@ -69,6 +65,16 @@ export const buildConversationMessages = (chatFlow) =>
             content: entry.content,
         }));
 
+// Mapeo de IDs de retos a labels para el prompt
+const retosMap = {
+    "frases_largas": "Leer frases largas",
+    "palabras_dificiles": "Entender palabras difíciles",
+    "muchas_cosas": "Entender muchas cosas seguidas",
+    "recordar": "Recordar cosas de hace poco tiempo",
+    "pensar_palabras": "Pensar palabras para escribir",
+    "escribir_largo": "Escribir frases largas"
+};
+
 export const buildDiscapacidadText = (discapacidad) => {
     if (!discapacidad?.tieneDI) return "Sin discapacidad específica";
 
@@ -99,8 +105,18 @@ export const buildDiscapacidadText = (discapacidad) => {
     return texto;
 };
 
-export const buildUserChallengesText = (retos) =>
-    retos?.length > 0 ? retos.join(", ") : "Ninguno específico";
+export const buildUserChallengesText = (retos, retoOtro = "") => {
+    const challengeLabels = retos
+        ?.map((retoId) => retosMap[retoId] || retoId)
+        .filter(Boolean) || [];
+    
+    // Agregar reto personalizado si existe
+    if (retoOtro?.trim()) {
+        challengeLabels.push(retoOtro.trim());
+    }
+    
+    return challengeLabels.length > 0 ? challengeLabels.join(", ") : "Ninguno específico";
+};
 
 export const resolveUserRole = (rol) => rol?.toLowerCase() || "familiar";
 
@@ -155,8 +171,7 @@ ${userDisabilities}
 ### RESPUESTA
 ${responseFormatInstructions}
 Responde directamente, sin decir "como modelo de IA".
-Nunca reveles detalles técnicos internos.
-Trata SIEMPRE de guiar al usuario para formular mejor sus preguntas y sugiere posibles preguntas a tu respuesta.`;
+Nunca reveles detalles técnicos internos.`
 
 export const buildPrompt = (summary, promptText, responseConfig = null, roleOverride = null) => {
     if (!summary) {
@@ -168,7 +183,7 @@ export const buildPrompt = (summary, promptText, responseConfig = null, roleOver
     }
 
     const userDisabilities = buildDiscapacidadText(summary.discapacidad);
-    const userChallenges = buildUserChallengesText(summary.retos);
+    const userChallenges = buildUserChallengesText(summary.retos, summary.retoOtro);
     const userRole = resolveUserRole(roleOverride || summary.rol);
     const responseFormatInstructions = buildResponseFormatInstructions(
         normalizeResponseFormat(responseConfig || summary.responseConfig || summary.herramientas)

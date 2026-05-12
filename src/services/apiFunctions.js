@@ -99,7 +99,6 @@ export const fetchFromOllama = (messages, model = "deepseek-v3.1:671b-cloud") =>
 export const determinePromptingTechnique = (responseFormats = [], promptText = "") => {
     if (!Array.isArray(responseFormats)) return "zero-shot";
 
-    const normalizedPromptText = String(promptText || "").toLowerCase();
     const hasStructuredOutput = responseFormats.some(f =>
         f === "listas" || f === "ejemplos"
     );

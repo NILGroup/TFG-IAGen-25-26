@@ -7,7 +7,7 @@
  * un título que englobe toda la conversación.
  */
 
-import { fetchFromGroq, fetchWithDynamicRouting, enhancePromptWithCoStar } from '../services/apiFunctions';
+import { fetchFromGroq, fetchWithDynamicRouting } from '../services/apiFunctions';
 import { buildConversationMessages, buildPrompt } from '../services/promptBuilders';
 import { adaptToLecturaFacil } from '../services/responseAdapters';
 import { useCallback } from "react";
