@@ -895,7 +895,6 @@ body {
 
 .next-btn,
 .back-btn {
-  background: #ae103d;
   color: white;
   padding: 12px 24px;
   font-size: 20px;
@@ -1767,19 +1766,18 @@ body {
   padding: 24px;
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
+  background-color: var(--color-primary-darkest);
 }
 
 .modal-glosario-titulo {
   margin: 0;
   font-size: 20px;
-  color: var(--color-gray-900);
 }
 
 /* Botón de cerrar */
 .panel-glosario-cerrar {
-  background-color: transparent;
+  background-color: rgba(255, 255, 255, 0.1);
   border: 2px solid var(--color-gray-300);
-  color: var(--color-gray-900);
   font-size: 20px;
   cursor: pointer;
   padding: 10px 20px;
@@ -1788,8 +1786,8 @@ body {
 }
 
 .panel-glosario-cerrar:hover {
-  background-color: var(--color-gray-100);
-  border-color: #bbb;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.5);
 }
 
 /* Buscador */
@@ -1919,34 +1917,50 @@ body {
 }
 
 /* WCAG 2.5.5: área mínima de toque 44x44px */
-.panel-glosario-paginacion-boton {
+.panel-glosario-paginacion-boton-siguiente {
   flex: 1;
   padding: 10px 12px;
   min-height: 44px;
-  background-color: white;
+  background: var(--color-accent);
   border: 2px solid var(--color-gray-300);
   border-radius: 8px;
   font-size: 15px;
   font-weight: 600;
-  color: var(--color-primary-dark);
   cursor: pointer;
   transition: all 0.2s;
   font-family: inherit;
 }
 
-.panel-glosario-paginacion-boton:hover:not(:disabled) {
+.panel-glosario-paginacion-boton-anterior {
+  flex: 1;
+  padding: 10px 12px;
+  min-height: 44px;
+  background: #4e4c4c;
+  border: 2px solid var(--color-gray-300);
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.panel-glosario-paginacion-boton-siguiente:hover:not(:disabled),
+.panel-glosario-paginacion-boton-anterior:hover:not(:disabled) {
   background-color: #f0f4ff;
   border-color: var(--color-info);
   color: var(--color-info);
 }
 
 /* WCAG 2.4.7: foco visible */
-.panel-glosario-paginacion-boton:focus-visible {
+.panel-glosario-paginacion-boton-siguiente:focus-visible,
+.panel-glosario-paginacion-boton-anterior:focus-visible {
   outline: 3px solid var(--color-info);
   outline-offset: 2px;
 }
 
-.panel-glosario-paginacion-boton:disabled {
+.panel-glosario-paginacion-boton-siguiente:disabled,
+.panel-glosario-paginacion-boton-anterior:disabled {
   opacity: 0.4;
   cursor: not-allowed;
 }
@@ -1981,7 +1995,6 @@ body {
 
 .boton-diccionario:focus {
   outline: none;
-  ring: 2px solid white;
 }
 
 .boton-perfil {
@@ -2004,7 +2017,6 @@ body {
 
 .boton-perfil:focus {
   outline: none;
-  ring: 2px solid white;
 }
 
 /*==================================
