@@ -19,6 +19,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import "../App.css";
+import { color } from "framer-motion";
 
 const BASE = import.meta.env.BASE_URL;
 const robotLogo = `${BASE}AventurIA_robot_sinfondo.png`;
@@ -120,7 +121,10 @@ export default function Questionario({ onComplete }) {
     // Hacer scroll al top cuando cambia de página
     useEffect(() => {
         if (containerRef.current) {
-            containerRef.current.scrollTop = 0;
+            // Si la lista de checkboxes ahora maneja el scroll, resetear ese contenedor.
+            const inner = containerRef.current.querySelector('.checkbox-list-vertical');
+            const target = inner || containerRef.current;
+            target.scrollTop = 0;
         }
     }, [page]);
 
@@ -133,7 +137,12 @@ export default function Questionario({ onComplete }) {
     const nextPage = () => {
         if (page < 5) {
             setPage(page + 1);
-            window.scrollTo(0, 0);
+            // Resetear scroll del contenedor interno si existe
+            requestAnimationFrame(() => {
+                const inner = containerRef.current?.querySelector?.('.checkbox-list-vertical');
+                if (inner) inner.scrollTop = 0;
+                else window.scrollTo(0, 0);
+            });
         } else {
             onComplete(summary); // Termina el cuestionario y envía el perfil completo
         }
@@ -143,7 +152,11 @@ export default function Questionario({ onComplete }) {
     const prevPage = () => {
         if (page > 1) {
             setPage(page - 1);
-            window.scrollTo(0, 0);
+            requestAnimationFrame(() => {
+                const inner = containerRef.current?.querySelector?.('.checkbox-list-vertical');
+                if (inner) inner.scrollTop = 0;
+                else window.scrollTo(0, 0);
+            });
         }
     };
 
@@ -387,29 +400,28 @@ export default function Questionario({ onComplete }) {
             case 1:
                 return (
                     <div className="question-page">
-                        <div className="icon-container">
-                            <img src={robotLogo} alt="Robot SofIA" className="robot-logo" fetchPriority="high" />
-                        </div>
                         <h2>¡Hola! Soy SofIA</h2>
-                        <p>Te ayudaré a aprender y resolver dudas.</p>
-                        <label htmlFor="user-name" className="question-label">
-                            <strong>¿Cómo te llamas?</strong>
-                        </label>
-                        <input
-                            id="user-name"
-                            type="text"
-                            placeholder="Escribe tu nombre..."      
-                            className="custom-input"
-                            autoComplete="name"
-                            value={summary.nombre}
-                            onChange={handleNameChange}
-                        />
+                        <p><b>Te ayudaré a aprender y resolver dudas.</b></p>
+                        <div className={`checkbox-card-otra-directa`}>
+                                <span className="otra-opcion-label">¿Cómo te llamas?</span>
+                                <input
+                                    id="user-name"
+                                    type="text"
+                                    className="otra-opcion-input-directa"
+                                    placeholder="Escribe tu nombre..."
+                                    autoComplete="name"
+                                    value={summary.nombre}
+                                    onChange={handleNameChange}
+                                />
+                        </div>
                     </div>
                 );
             case 2:
                 return (
-                    <div className="question-page">
+                    <div className="question-page question-page-perfil">
                         <h2 id="titulo-sobre-ti">Sobre ti</h2>
+
+                        <div className="perfil-options-scroll">
 
                         {/* Pregunta 1: ¿Tienes discapacidad intelectual? */}
                         <fieldset className="radio-group" aria-labelledby="pregunta-di">
@@ -479,6 +491,8 @@ export default function Questionario({ onComplete }) {
                                 ))}
                             </fieldset>
                         )}
+
+                        </div>
                     </div>
                 );
 
@@ -576,9 +590,6 @@ export default function Questionario({ onComplete }) {
             case 5:
                 return (
                     <div className="question-page">
-                        <div className="robot-container">
-                            <img src={robotLogo} alt="Logo de SofIA" className="robot-img" fetchPriority="high" />
-                        </div>
                         <h2>¡Ya casi terminas!</h2>
                         <p className="instruction">
                             <strong>Revisa las cosas que has elegido.</strong>

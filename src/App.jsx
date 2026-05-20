@@ -19,6 +19,8 @@ const InterfazPrincipal = lazy(() => import("./pages/InterfazPrincipal"));
 const HistoryModal = lazy(() => import("./components/HistoryModal"));
 const FavoritosModal = lazy(() => import("./components/FavoritosModal"));
 const ProfileModal = lazy(() => import("./components/ProfileModal"));
+const BASE = import.meta.env.BASE_URL;
+const robotLogo = `${BASE}AventurIA_robot_sinfondo.png`;
 
 export default function App() {
   // ========================================
@@ -284,6 +286,7 @@ export default function App() {
               style={{ cursor: summary && modoSeleccionado ? 'pointer' : 'default' }}
               aria-label={summary && modoSeleccionado ? "Ir a nueva conversación" : "SofIA"}
             >
+              <img src={robotLogo} alt="Robot SofIA" className="header-robot-logo" fetchPriority="high" />
               SofIA
             </h1>
 
