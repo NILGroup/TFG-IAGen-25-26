@@ -98,6 +98,9 @@ body {
 }
 
 .header-bar-title {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
   flex: 1;
   display: flex;
   align-items: center;
@@ -834,6 +837,8 @@ body {
   flex: 1;
   padding-right: 4px;
   overflow: hidden; /* permitir que hijos manejen su propio scroll */
+  justify-content: flex-start;
+  padding-top: 40px;
 }
 
 .question-page h2 {
@@ -960,7 +965,6 @@ body {
 .summary-box-horizontal {
   align-self: flex-start;
   display: flex;
-  flex: 1;
   width: 100%;
   text-align: left;
 }
@@ -1036,6 +1040,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 6px;
+  align-self: flex-start;
 }
 
 .summary-box-horizontal h3 {
@@ -1756,7 +1761,6 @@ body {
 
 /* Cabecera del modal */
 .panel-glosario-top {
-  padding: 12px 16px;
   border-bottom: 1px solid var(--color-gray-300);
   display: flex;
   align-items: center;
@@ -1770,13 +1774,16 @@ body {
 .modal-glosario-titulo {
   margin: 0;
   font-size: 20px;
+  color: #FFFFFF;
 }
 
 /* Botón de cerrar */
 .panel-glosario-cerrar {
   background-color: rgba(255, 255, 255, 0.1);
-  border: 2px solid var(--color-gray-300);
-  font-size: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
   cursor: pointer;
   padding: 10px 20px;
   border-radius: 10px;
@@ -1786,6 +1793,11 @@ body {
 .panel-glosario-cerrar:hover {
   background-color: rgba(255, 255, 255, 0.2);
   border-color: rgba(255, 255, 255, 0.5);
+}
+
+.panel-glosario-cerrar:focus-visible {
+  outline: 3px solid white;
+  outline-offset: 2px;
 }
 
 /* Buscador */
@@ -1933,7 +1945,7 @@ body {
   flex: 1;
   padding: 10px 12px;
   min-height: 44px;
-  background: #4e4c4c;
+  background: var(--color-border-light);
   border: 2px solid var(--color-gray-300);
   border-radius: 8px;
   font-size: 15px;
@@ -3294,7 +3306,7 @@ body {
   flex: 1;
   min-height: 0;
   overflow-y: auto;
-  padding-right: 0 8px 8px 0;
+  padding: 0 8px 8px 0;
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -3306,7 +3318,7 @@ body {
 
 @media (max-width: 768px) {
   .perfil-options-scroll {
-    padding-right: 6px;
+    padding: 6px;
   }
 }
 
