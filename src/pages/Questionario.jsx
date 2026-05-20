@@ -197,11 +197,14 @@ export default function Questionario({ onComplete }) {
             }
         }));
 
-        // Scroll automático a las opciones de grado cuando selecciona "Sí"
+        // Scroll automático suave a las opciones de grado cuando selecciona "Sí"
         if (valor === "si") {
             setTimeout(() => {
-                gradoRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-            }, 100); // Pequeño delay para que el DOM se actualice
+                gradoRef.current?.scrollIntoView({
+                    behavior: "smooth",
+                    block: "nearest" // menos agresivo que "start"
+                });
+            }, 300); // Delay más largo para transición más suave
         }
     };
 

@@ -89,11 +89,14 @@ export default function ProfileModal({ isOpen, onClose, summary, onSave }) {
       setGrado("");
     }
 
-    // Scroll automático a las opciones de grado cuando selecciona "Sí"
+    // Scroll automático suave a las opciones de grado cuando selecciona "Sí"
     if (value === "si") {
       setTimeout(() => {
-        gradoRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-      }, 100); // Pequeño delay para que el DOM se actualice
+        gradoRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "nearest" // menos agresivo que "start"
+        });
+      }, 300); // Delay más largo para transición más suave
     }
   };
 
