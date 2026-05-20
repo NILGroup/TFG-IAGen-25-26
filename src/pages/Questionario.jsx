@@ -117,6 +117,7 @@ export default function Questionario({ onComplete }) {
 
     const [page, setPage] = useState(1);
     const containerRef = useRef(null);
+    const gradoRef = useRef(null); // Ref para scroll automático a opciones de grado
 
     // Hacer scroll al top cuando cambia de página
     useEffect(() => {
@@ -195,6 +196,13 @@ export default function Questionario({ onComplete }) {
                 grado: valor === "si" ? prev.discapacidad.grado : "" // Reset grado si no es "sí"
             }
         }));
+
+        // Scroll automático a las opciones de grado cuando selecciona "Sí"
+        if (valor === "si") {
+            setTimeout(() => {
+                gradoRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+            }, 100); // Pequeño delay para que el DOM se actualice
+        }
     };
 
     const handleGradoDI = (valor) => {
@@ -457,7 +465,11 @@ export default function Questionario({ onComplete }) {
 
                         {/* Pregunta 2: Grado (solo si respondió "Sí") */}
                         {summary.discapacidad.tieneDI === "si" && (
-                            <fieldset className="radio-group radio-group-secondary" aria-labelledby="pregunta-grado">
+                            <fieldset
+                                ref={gradoRef}
+                                className="radio-group radio-group-secondary"
+                                aria-labelledby="pregunta-grado"
+                            >
                                 <legend id="pregunta-grado" className="question-label">
                                     <strong>¿Sabes el grado de tu discapacidad intelectual?</strong>
                                 </legend>
