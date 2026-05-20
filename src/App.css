@@ -382,7 +382,6 @@ body {
   flex-direction: column;
   gap: 12px;
   width: 100%;
-  max-width: 1200px;
   margin: 0;
   border: none;
   padding: 0;
@@ -620,8 +619,7 @@ body {
   flex-direction: column;
   gap: 12px;
   width: 100%;
-  max-width: 1200px;
-  margin: 0 0 20px 0;
+  margin: 0 20px 20px 0;
   border: none;
   padding: 0;
   box-sizing: border-box;
@@ -829,12 +827,12 @@ body {
 }
 
 .question-page {
-  margin-top: 4px;
-  width: 95%;
+  margin: 4px;
+  width: 100%;
   display: flex;
   flex-direction: column;
   flex: 1;
-  padding: 2px;
+  padding-right: 4px;
   overflow: hidden; /* permitir que hijos manejen su propio scroll */
 }
 
@@ -3251,9 +3249,7 @@ body {
   background-color: white;
   border-radius: 20px;
   width: 75vw;
-  min-width: 75vw;
-  max-width: 75vw;
-  height: calc(100vh - 140px); /* altura fija para toda la pantalla del cuestionario */
+  height: calc(100vh - 100px); /* altura fija para toda la pantalla del cuestionario */
   overflow-x: hidden;
   overflow-y: hidden; /* evitar scroll en el contenedor principal */
   box-sizing: border-box;
@@ -3295,7 +3291,7 @@ body {
 
 .perfil-options-scroll {
   width: 100%;
-  flex: 1 1 auto;
+  flex: 1;
   min-height: 0;
   overflow-y: auto;
   padding-right: 0 8px 8px 0;
