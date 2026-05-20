@@ -429,10 +429,9 @@ body {
   background: white;
   transition: all 0.2s ease;
 }
-
+/*Cuando se hace clic en el input o se navega, se resalta con un borde azul y fondo claro*/
 .checkbox-card-otra-directa:focus-within {
   border-color: var(--color-info);
-  outline: 3px solid var(--color-primary-dark);
   background: #f0f7ff;
   outline-offset: 2px;
 }
