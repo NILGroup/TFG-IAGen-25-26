@@ -47,6 +47,9 @@ npm install
 npm run dev
 ```
 
+### Configuración del backend
+El frontend no necesita `.env` propio para hablar con el backend. La única configuración sensible vive en `backend/.env`.
+
 ## Estructura del proyecto
 
 ```

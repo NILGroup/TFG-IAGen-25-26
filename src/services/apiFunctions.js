@@ -1,29 +1,31 @@
 // apiFunctions.js
 /**
- * Este módulo contiene funciones de conexión con diferentes APIs de lenguaje,
- * como Groq, OpenAI, u otras que se quieran añadir.
+ * Backend seguro para manejo de API keys.
+ * El frontend solo habla con el backend; las claves viven en servidor.
  */
+
+const BACKEND_URL = import.meta.env.DEV ? 'http://localhost:8080' : '';
 
 const fetchIA = async ({
     url,
     model,
-    apiKey,
     messages,
     temperature = 0.7,
     headers = {},
+    bodyExtras = {},
 }) => {
     try {
         const res = await fetch(url, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                Authorization: `Bearer ${apiKey}`,
                 ...headers
             },
             body: JSON.stringify({
                 model,
                 messages,
-                temperature
+                temperature,
+                ...bodyExtras,
             }),
         });
 
@@ -51,38 +53,26 @@ const fetchIA = async ({
 // Modelos: openai/gpt-oss-120b, llama-3.3-70b-versatile
 export const fetchFromGroq = (messages, model = "llama-3.3-70b-versatile") => {
     return fetchIA({
-        url: "https://api.groq.com/openai/v1/chat/completions",
-        model: model,
-        apiKey: import.meta.env.VITE_GROQ_LLAMA_API_KEY1,
+        url: `${BACKEND_URL}/api/groq`,
+        model,
         messages
     });
 };
 
-export const fetchFromGemini = async (messages, model = "gemini-flash-latest") => {
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${import.meta.env.VITE_GEMINI_API_KEY}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            contents: messages.map(msg => ({
-                role: msg.role === "assistant" ? "model" : "user",
-                parts: [{ text: msg.content }]
-            }))
-        })
+export const fetchFromGemini = (messages, model = "gemini-flash-latest") => {
+    return fetchIA({
+        url: `${BACKEND_URL}/api/gemini`,
+        model,
+        messages
     });
-
-    if (!response.ok) throw new Error();
-    
-    const data = await response.json();
-    return data.candidates[0].content.parts[0].text;
 };
 
 // === FETCH DE OLLAMA (LOCAL) ===
 // Modelos: deepseek-v3.1:671b-cloud (Ahora es de pago)
 export const fetchFromOllama = (messages, model = "deepseek-v3.1:671b-cloud") => {
     return fetchIA({
-        url: "http://localhost:11434/v1/chat/completions",
-        model: model,
-        apiKey: "", /**No es necesaria va por local */
+        url: `${BACKEND_URL}/api/ollama`,
+        model,
         messages,
     });
 };
@@ -130,7 +120,7 @@ export const selectOptimalModel = (technique = "zero-shot") => {
     const modelMap = {
         // Zero-Shot y Few-Shot → Llama-3.3-70b-versatile (scores 5.00 y 4.56, <1.5s latencia)
         "zero-shot": {
-            model: "llama-3.3-70b-versatile",
+            model: "openai/gpt-oss-120b",
             provider: "groq"
         },
         
@@ -196,13 +186,3 @@ export const fetchWithDynamicRouting = async (
 
 // === AQUÍ PUEDES IR AÑADIENDO MÁS ===
 // LUEGO EN LOS PROMPT, DEPENDIENDO DE CUAL QUEREMOS USAR, LLAMAMOS A UN FETCH O A OTRO
-/*POR EJEMPLO:
-    const fetchFromOpenAI = (messages) => {
-    return fetchIA({
-      url: "https://api.openai.com/v1/chat/completions",
-      model: "gpt-4",
-      apiKey: import.meta.env.VITE_OPENAI_API_KEY,
-      messages
-    });
-  };
-*/
