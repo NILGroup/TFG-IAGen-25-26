@@ -6,7 +6,7 @@
  * Incluye aviso si hay cambios sin guardar al intentar cerrar.
  */
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 const RESPONSE_FORMAT_OPTIONS = [
   {
@@ -49,6 +49,9 @@ export default function ProfileModal({ isOpen, onClose, summary, onSave }) {
   // Estado para mostrar aviso de cambios sin guardar
   const [showUnsavedWarning, setShowUnsavedWarning] = useState(false);
 
+  // Ref para scroll automático a opciones de grado
+  const gradoRef = useRef(null);
+
   // Sincronizar estados con summary cuando se abre el modal
   useEffect(() => {
     if (isOpen && summary) {
@@ -84,6 +87,16 @@ export default function ProfileModal({ isOpen, onClose, summary, onSave }) {
     setTieneDI(value);
     if (value !== "si") {
       setGrado("");
+    }
+
+    // Scroll automático suave a las opciones de grado cuando selecciona "Sí"
+    if (value === "si") {
+      setTimeout(() => {
+        gradoRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "nearest" // menos agresivo que "start"
+        });
+      }, 300); // Delay más largo para transición más suave
     }
   };
 
@@ -280,7 +293,7 @@ export default function ProfileModal({ isOpen, onClose, summary, onSave }) {
 
           {/* SECCIÓN 3: GRADO (solo si tiene DI) */}
           {tieneDI === "si" && (
-            <div className="formulario-card perfil-card-animada">
+            <div ref={gradoRef} className="formulario-card perfil-card-animada">
               <fieldset
                 className="radio-group radio-group-secondary"
                 aria-labelledby="modal-pregunta-grado"
