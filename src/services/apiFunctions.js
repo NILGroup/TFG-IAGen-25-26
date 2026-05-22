@@ -1,7 +1,7 @@
 // apiFunctions.js
 /**
  * Backend seguro para manejo de API keys.
- * El frontend solo habla con el backend; las claves viven en servidor.
+ * El frontend solo habla con el backend. Las claves viven en servidor.
  */
 
 const BACKEND_URL = import.meta.env.DEV ? 'http://localhost:8080' : '';
@@ -38,7 +38,7 @@ const fetchIA = async ({
 
         let content = data.choices?.[0]?.message?.content || "Sin respuesta :/";
 
-        // Eliminar bloques de pensamiento <think>...</think> (el CoT intrinseco de modelos como deepseek)
+        // Eliminar bloques de pensamiento <think>...</think>
         content = content.replace(/<think>[\s\S]*?<\/think>/gi, "").trim();
 
         return content;
@@ -68,14 +68,14 @@ export const fetchFromGemini = (messages, model = "gemini-flash-latest") => {
 };
 
 // === FETCH DE OLLAMA (LOCAL) ===
-// Modelos: deepseek-v3.1:671b-cloud (Ahora es de pago)
-export const fetchFromOllama = (messages, model = "deepseek-v3.1:671b-cloud") => {
+// Modelos: deepseek-v3.1:671b-cloud (En desuso, ahora es de pago)
+/*export const fetchFromOllama = (messages, model = "deepseek-v3.1:671b-cloud") => {
     return fetchIA({
         url: `${BACKEND_URL}/api/ollama`,
         model,
         messages,
     });
-};
+};*/
 
 // === ENRUTADOR DINÁMICO DE MODELOS ===
 /**
@@ -120,7 +120,7 @@ export const selectOptimalModel = (technique = "zero-shot") => {
     const modelMap = {
         // Zero-Shot y Few-Shot → Llama-3.3-70b-versatile (scores 5.00 y 4.56, <1.5s latencia)
         "zero-shot": {
-            model: "openai/gpt-oss-120b",
+            model: "llama-3.3-70b-versatile",
             provider: "groq"
         },
         
@@ -162,24 +162,11 @@ export const fetchWithDynamicRouting = async (
     const technique = determinePromptingTechnique(responseFormats, promptText);
     const modelInfo = selectOptimalModel(technique);
     
-    console.info("[SofIA] Enrutador dinámico", {
-        technique,
-        model: modelInfo.model,
-        provider: modelInfo.provider
-    });
-    
     try {
-        // Enrutar a la función fetch correcta según el provider
-        if (modelInfo.provider === "groq") {
-            return await fetchFromGroq(messages, modelInfo.model);
-        } else if (modelInfo.provider === "ollama") {
-            return await fetchFromOllama(messages, modelInfo.model);
-        } else if (modelInfo.provider === "gemini") {
-            return await fetchFromGemini(messages, modelInfo.model);
-        }
+        return await fetchFromGroq(messages, modelInfo.model);
     } catch (error) {
         console.error(`[SofIA] Error con modelo ${modelInfo.model}, intentando fallback:`, error);
-        // Fallback a Llama si falla el modelo principal
+        // Fallback a Llama si falla el modelo principal (que realmente solo puede ser Llama, que es el mas estable)
         return await fetchFromGroq(messages, "llama-3.3-70b-versatile");
     }
 };

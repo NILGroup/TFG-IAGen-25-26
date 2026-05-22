@@ -1,7 +1,5 @@
 /**
- * Backend seguro para manejo de API keys.
- *
- * Propósito: proxy entre frontend y APIs de IA para mantener las claves en servidor.
+ * Proxy entre frontend y los modelos para mantener las api keys en servidor.
  */
 
 import express from 'express';
@@ -13,7 +11,10 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 8080;
-const CORS_ORIGIN = process.env.CORS_ORIGIN || 'http://localhost:5173';
+// Soporte para múltiples orígenes separados por coma
+const CORS_ORIGIN = process.env.CORS_ORIGIN 
+    ? process.env.CORS_ORIGIN.split(',') 
+    : 'http://localhost:5173';
 
 const getApiKey = (name, serviceName) => {
     const apiKey = process.env[name];
@@ -29,7 +30,7 @@ const getApiKey = (name, serviceName) => {
 app.use(cors({ origin: CORS_ORIGIN }));
 app.use(express.json());
 
-// GROQ - Proxy
+// GROQ
 app.post('/api/groq', async (req, res) => {
     try {
         const { messages, model = 'llama-3.3-70b-versatile', temperature = 0.7 } = req.body;
@@ -63,7 +64,7 @@ app.post('/api/groq', async (req, res) => {
     }
 });
 
-// GEMINI - Proxy
+// GEMINI
 app.post('/api/gemini', async (req, res) => {
     try {
         const { messages, model = 'gemini-flash-latest' } = req.body;
@@ -96,7 +97,7 @@ app.post('/api/gemini', async (req, res) => {
     }
 });
 
-// OPENROUTER - Proxy
+// OPENROUTER
 app.post('/api/openrouter', async (req, res) => {
     try {
         const { messages, model = 'openai/gpt-4', temperature = 0.7 } = req.body;
@@ -132,7 +133,7 @@ app.post('/api/openrouter', async (req, res) => {
     }
 });
 
-// OLLAMA - Proxy (Local) -- Deprecado porque el modelo deepseek pasó a ser de pago
+// OLLAMA - Deprecado porque el modelo deepseek pasó a ser de pago
 /*app.post('/api/ollama', async (req, res) => {
     try {
         const { messages, model = 'deepseek-v3.1:671b-cloud', temperature = 0.7 } = req.body;
@@ -159,20 +160,12 @@ app.post('/api/openrouter', async (req, res) => {
 });
 */
 
-// Health check
-app.get('/health', (req, res) => {
-    res.json({ status: 'ok', timestamp: new Date().toISOString() });
-});
-
-// ============================================
 // Inicio del servidor
-// ============================================
 app.listen(PORT, () => {
     console.log(`Backend SofIA corriendo en el puerto ${PORT}`);
     console.log(`\nEndpoints (internos):`);
-    console.log(`   - Groq:      POST http://localhost:${PORT}/api/groq`);
-    console.log(`   - Gemini:    POST http://localhost:${PORT}/api/gemini`);
+    console.log(`   - Groq:       POST http://localhost:${PORT}/api/groq`);
+    console.log(`   - Gemini:     POST http://localhost:${PORT}/api/gemini`);
     console.log(`   - OpenRouter: POST http://localhost:${PORT}/api/openrouter`);
-    console.log(`   - Health (check para saber que está todo bien):    GET  http://localhost:${PORT}/health`);
     console.log(`\nEl servidor redirige /api/* a este puerto automáticamente`);
 });
