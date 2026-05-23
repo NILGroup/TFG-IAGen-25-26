@@ -139,7 +139,7 @@ export default function ResponseConfigPanel({
         {hasChanges && (
           <div className="response-config-warning">
             <span className="response-config-warning-text">
-              Pulsa Aplicar cambios para ver la respuesta de otra forma
+              Pulsa Aplicar cambios para ver la respuesta de otra forma. La respuesta actual desaparecerá.            
             </span>
           </div>
         )}

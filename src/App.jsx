@@ -263,28 +263,28 @@ export default function App() {
               </div>
             }
 
-            {/* Título central - clickeable para ir a QuestionPromptPanel */}
+            {/* Título central - clickeable para ir a QuestionPromptPanel (no en cuestionario ni en selección de rol) */}
             <h1
               className="header-bar-title"
               onClick={() => {
-                if (summary && modoSeleccionado) {
+                if (summary && modoSeleccionado && paso !== "modo" && paso !== "cuestionario") {
                   setPreguntaInicial("");
                   setChatToResume(null);
                   setPaso("questionPrompt");
                 }
               }}
-              role={summary && modoSeleccionado ? "button" : undefined}
-              tabIndex={summary && modoSeleccionado ? 0 : undefined}
+              role={summary && modoSeleccionado && paso !== "modo" && paso !== "cuestionario" ? "button" : undefined}
+              tabIndex={summary && modoSeleccionado && paso !== "modo" && paso !== "cuestionario" ? 0 : undefined}
               onKeyPress={(e) => {
-                if ((e.key === 'Enter' || e.key === ' ') && summary && modoSeleccionado) {
+                if ((e.key === 'Enter' || e.key === ' ') && summary && modoSeleccionado && paso !== "modo" && paso !== "cuestionario") {
                   e.preventDefault();
                   setPreguntaInicial("");
                   setChatToResume(null);
                   setPaso("questionPrompt");
                 }
               }}
-              style={{ cursor: summary && modoSeleccionado ? 'pointer' : 'default' }}
-              aria-label={summary && modoSeleccionado ? "Ir a nueva conversación" : "SofIA"}
+              style={{ cursor: summary && modoSeleccionado && paso !== "modo" && paso !== "cuestionario" ? 'pointer' : 'default' }}
+              aria-label={summary && modoSeleccionado && paso !== "modo" && paso !== "cuestionario" ? "Ir a nueva conversación" : "SofIA"}
             >
               <img src={robotLogo} alt="Robot SofIA" className="header-robot-logo" fetchPriority="high" />
               SofIA
