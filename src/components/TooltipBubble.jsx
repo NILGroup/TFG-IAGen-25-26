@@ -49,9 +49,8 @@ export const TooltipBubble = ({ tooltipInfo, handleButtonClick, handleReplaceTex
                                 cursor: "pointer", 
                                 borderRadius: "5px", 
                                 border: "1px solid #3D7B80", 
-                                backgroundColor: "#EEF8F6", 
+                                backgroundColor: "val(--color-primary)", 
                                 fontWeight: "bold", 
-                                color: "#270A33" 
                             }}
                         >
                             Cambiar en el texto
@@ -68,7 +67,7 @@ export const TooltipBubble = ({ tooltipInfo, handleButtonClick, handleReplaceTex
                             cursor: "pointer", 
                             borderRadius: "5px", 
                             border: "1px solid #451A3E", 
-                            backgroundColor: "#B1E6D1" 
+                            backgroundColor: "val(--color-primary)"
                         }}
                     >
                         1. ¿Qué significa?
@@ -80,7 +79,7 @@ export const TooltipBubble = ({ tooltipInfo, handleButtonClick, handleReplaceTex
                             cursor: "pointer", 
                             borderRadius: "5px", 
                             border: "1px solid #451A3E", 
-                            backgroundColor: "#B1E6D1" 
+                            backgroundColor: "val(--color-primary)" 
                         }}
                     >
                         2. Palabra parecida
@@ -95,7 +94,7 @@ export const TooltipBubble = ({ tooltipInfo, handleButtonClick, handleReplaceTex
                         cursor: "pointer", 
                         borderRadius: "5px", 
                         border: "1px solid #451A3E", 
-                        backgroundColor: "#B1E6D1" 
+                        backgroundColor: "val(--color-primary)" 
                     }}
                 >
                     Explícalo de otra forma

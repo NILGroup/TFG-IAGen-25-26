@@ -23,6 +23,9 @@ import ChatActivePanel from "../components/ChatActivePanel";
 import ResponseConfigPanel from "../components/ResponseConfigPanel";
 import PanelGlosario from "../components/PanelGlosario";
 
+const BASE = import.meta.env.BASE_URL;
+const robotLogo = `${BASE}AventurIA_robot_sinfondo.png`;
+
 const DEFAULT_RESPONSE_FORMAT = ["lectura-facil", "ejemplos"];
 
 const normalizeResponseFormat = (formats = []) => {
@@ -51,11 +54,8 @@ export default function InterfazPrincipal({
     onFinalizarConversacion,
     favoritesGlobal = [],
     setFavoritesGlobal,
-    onRoleChange,
-    onResponseConfigChange,
 }) {
     const {
-        selectedOption,
         setSelectedOption,
         prompt,
         setPrompt,
@@ -492,9 +492,10 @@ export default function InterfazPrincipal({
                         aria-label="SofIA. Haz clic para volver al inicio"
                         title="Volver al inicio"
                     >
+                        <img src={robotLogo} alt="Robot SofIA" className="header-robot-logo" fetchPriority="high" />
                         SofIA
                     </h1>
-
+                    
                     {/* Derecha: botón Perfil */}
                     <div className="header-bar-right">
                         <button
@@ -560,6 +561,11 @@ export default function InterfazPrincipal({
                         setPrompt={setPrompt}
                         sendCustomPrompt={sendCustomPrompt}
                         saveChatToHistory={handleFinalizarYVolver}
+                        onRequestFinalize={() => {
+                            // Solicitar confirmación de salida al usuario
+                            setExitAction('finish');
+                            setShowExitModal(true);
+                        }}
                         onGuardarFavorito={handleGuardarFavorito}
                         isResponseSaved={isResponseSaved}
                     />

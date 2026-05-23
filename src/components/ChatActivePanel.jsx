@@ -45,6 +45,8 @@ export default function ChatActivePanel({
 
     // Gestión del historial
     saveChatToHistory,           // Guarda la conversación actual en el historial
+    // Solicitud de finalizar: abre modal de confirmación en el padre
+    onRequestFinalize,
 
     // Favoritos
     onGuardarFavorito,           // Guarda un par pregunta-respuesta específico
@@ -132,7 +134,15 @@ export default function ChatActivePanel({
                     <button
                         className="finalizar-conversacion-btn"
                         onClick={async () => {
-                            await saveChatToHistory();
+                            // Priorizar petición del padre para mostrar confirmación.
+                            if (typeof onRequestFinalize === 'function') {
+                                onRequestFinalize();
+                                return;
+                            }
+                            // Fallback directo: guardar sin confirmación
+                            if (typeof saveChatToHistory === 'function') {
+                                await saveChatToHistory();
+                            }
                         }}
                         aria-label="He terminado"
                     >

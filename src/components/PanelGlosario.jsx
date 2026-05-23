@@ -141,7 +141,7 @@ return (
             <button
               onClick={handleAnterior}
               disabled={paginaActual === 1}
-              className="panel-glosario-paginacion-boton"
+              className="panel-glosario-paginacion-boton-anterior"
               aria-label="Página anterior"
             >
               ← Anterior
@@ -149,7 +149,7 @@ return (
             <button
               onClick={handleSiguiente}
               disabled={paginaActual === totalPaginas}
-              className="panel-glosario-paginacion-boton"
+              className="panel-glosario-paginacion-boton-siguiente"
               aria-label="Página siguiente"
             >
               Siguiente →
