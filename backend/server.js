@@ -30,6 +30,20 @@ const getApiKey = (name, serviceName) => {
 app.use(cors({ origin: CORS_ORIGIN }));
 app.use(express.json());
 
+// Request logger to help debugging inside Docker
+app.use((req, res, next) => {
+    console.log(`Incoming request: ${req.method} ${req.originalUrl} from ${req.ip}`);
+    console.log('  Headers:', JSON.stringify(req.headers));
+    if (['POST', 'PUT', 'PATCH'].includes(req.method)) {
+        try {
+            console.log('  Body:', JSON.stringify(req.body));
+        } catch (e) {
+            console.log('  Body: <unserializable>:' + e.msg);
+        }
+    }
+    next();
+});
+
 // GROQ
 app.post('/api/groq', async (req, res) => {
     try {
@@ -57,7 +71,7 @@ app.post('/api/groq', async (req, res) => {
 
         return res.json(response.data);
     } catch (error) {
-        console.error('Groq error:', error.response?.data || error.message);
+        console.error('Groq error full:', error);
         return res.status(error.response?.status || 500).json({
             error: error.response?.data?.error || { message: 'Error en Groq' }
         });
@@ -90,9 +104,14 @@ app.post('/api/gemini', async (req, res) => {
 
         return res.json(response.data);
     } catch (error) {
-        console.error('Gemini error:', error.response?.data || error.message);
+        console.error('Gemini error full:', error);
         return res.status(error.response?.status || 500).json({
-            error: { message: 'Error en Gemini' }
+            error: { message: 'Error en Gemini' },
+            debug: {
+                route: '/api/gemini',
+                method: req.method,
+                body: req.body
+            }
         });
     }
 });
@@ -126,11 +145,25 @@ app.post('/api/openrouter', async (req, res) => {
 
         return res.json(response.data);
     } catch (error) {
-        console.error('OpenRouter error:', error.response?.data || error.message);
+        console.error('OpenRouter error full:', error);
         return res.status(error.response?.status || 500).json({
-            error: error.response?.data?.error || { message: 'Error en OpenRouter' }
+            error: error.response?.data?.error || { message: 'Error en OpenRouter' },
+            debug: {
+                route: '/api/openrouter',
+                method: req.method,
+                body: req.body
+            }
         });
     }
+});
+
+// 404 handler for unmatched /api/* routes and others
+app.use((req, res) => {
+    console.warn(`No route matched: ${req.method} ${req.originalUrl}`);
+    if (req.originalUrl.startsWith('/api/')) {
+        return res.status(404).json({ error: { message: 'API route not found' }, route: req.originalUrl });
+    }
+    return res.status(404).send('Not Found');
 });
 
 // OLLAMA - Deprecado porque el modelo deepseek pasó a ser de pago
@@ -161,8 +194,9 @@ app.post('/api/openrouter', async (req, res) => {
 */
 
 // Inicio del servidor
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
     console.log(`Backend SofIA corriendo en el puerto ${PORT}`);
+    console.log(`CORS_ORIGIN: ${CORS_ORIGIN}`);
     console.log(`\nEndpoints (internos):`);
     console.log(`   - Groq:       POST http://localhost:${PORT}/api/groq`);
     console.log(`   - Gemini:     POST http://localhost:${PORT}/api/gemini`);

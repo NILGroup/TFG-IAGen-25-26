@@ -4,7 +4,7 @@
  * El frontend solo habla con el backend. Las claves viven en servidor.
  */
 
-const BACKEND_URL = import.meta.env.DEV ? 'http://localhost:8080' : '';
+const BACKEND_URL = 'http://localhost:8080';
 
 const fetchIA = async ({
     url,
@@ -53,7 +53,7 @@ const fetchIA = async ({
 // Modelos: openai/gpt-oss-120b, llama-3.3-70b-versatile
 export const fetchFromGroq = (messages, model = "llama-3.3-70b-versatile") => {
     return fetchIA({
-        url: `${BACKEND_URL}/api/groq`,
+        url: `${BACKEND_URL}/2526-iagen/api/groq`,
         model,
         messages
     });
@@ -61,7 +61,7 @@ export const fetchFromGroq = (messages, model = "llama-3.3-70b-versatile") => {
 
 export const fetchFromGemini = (messages, model = "gemini-flash-latest") => {
     return fetchIA({
-        url: `${BACKEND_URL}/api/gemini`,
+        url: `${BACKEND_URL}/2526-iagen/api/gemini`,
         model,
         messages
     });
