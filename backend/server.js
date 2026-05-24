@@ -116,8 +116,8 @@ app.post('/api/gemini', async (req, res) => {
     }
 });
 
-// OPENROUTER
-app.post('/api/openrouter', async (req, res) => {
+// OPENROUTER (desuso)
+/*app.post('/api/openrouter', async (req, res) => {
     try {
         const { messages, model = 'openai/gpt-4', temperature = 0.7 } = req.body;
         const config = getApiKey('OPENROUTER_API_KEY', 'OpenRouter');
@@ -156,6 +156,7 @@ app.post('/api/openrouter', async (req, res) => {
         });
     }
 });
+*/
 
 // 404 handler for unmatched /api/* routes and others
 app.use((req, res) => {
