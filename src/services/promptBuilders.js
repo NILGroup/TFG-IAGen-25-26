@@ -199,7 +199,6 @@ export const buildPrompt = (summary, promptText, responseConfig = null, roleOver
         responseFormatInstructions,
         promptText,
     });
-    console.log(`apiPrompt: `, coStarPrompt.trim())
     return {
         displayPrompt: promptText.trim(),
         apiPrompt: coStarPrompt.trim(),

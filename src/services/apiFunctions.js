@@ -4,7 +4,8 @@
  * El frontend solo habla con el backend. Las claves viven en servidor.
  */
 
-const BACKEND_URL = 'http://localhost:8080';
+// Si se quieren hacer pruebas se añade entonces el localhost correspondiente
+const BACKEND_URL = '';
 
 const fetchIA = async ({
     url,
@@ -32,7 +33,7 @@ const fetchIA = async ({
         const data = await res.json();
 
         if (data.error) {
-            console.error("Error de la API:", data.error.message);  // La API contestó, pero con un error.
+            //console.error("Error de la API:", data.error.message);  // La API contestó, pero con un error.
             return `Error de servidor: ${data.error.message}`;
         }
 
@@ -44,7 +45,7 @@ const fetchIA = async ({
         return content;
 
     } catch (error) {
-        console.error("Error al obtener respuesta IA:", error);
+        //console.error("Error al obtener respuesta IA:", error);
         return "Error de conexión";
     }
 };
@@ -165,7 +166,7 @@ export const fetchWithDynamicRouting = async (
     try {
         return await fetchFromGroq(messages, modelInfo.model);
     } catch (error) {
-        console.error(`[SofIA] Error con modelo ${modelInfo.model}, intentando fallback:`, error);
+        //console.error(`[SofIA] Error con modelo ${modelInfo.model}, intentando fallback:`, error);
         // Fallback a Llama si falla el modelo principal (que realmente solo puede ser Llama, que es el mas estable)
         return await fetchFromGroq(messages, "llama-3.3-70b-versatile");
     }
