@@ -5,7 +5,7 @@
  */
 
 import { promptLF1, promptLF2 } from "../utils/promptLF";
-import { fetchFromGroq, fetchFromGemini, fetchFromOllama } from "./apiFunctions";
+import { fetchFromGroq, fetchFromGemini } from "./apiFunctions";
 
 const usesLecturaFacil = (formats = []) => {
     const normalizedFormats = Array.isArray(formats) ? formats : [];
