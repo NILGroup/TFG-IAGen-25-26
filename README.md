@@ -79,7 +79,7 @@ Tras analizar las herramientas existentes de traducción a Lectura Fácil y cons
 - **Chakra UI 3** + **Emotion** + **Framer Motion** — componentes accesibles y animaciones
 - **react-markdown** + **remark-gfm** + **rehype-raw** — renderizado enriquecido de respuestas
 - **Tailwind CSS 4** (parcial)
-- **APIs de IA**: Groq (Llama 3.3, GPT-oss-120b), Google Gemini, Ollama (local)
+- **APIs de IA**: Groq (Llama 3.3, GPT-oss-120b), Google Gemini
 - **Web Speech API** — lectura en voz alta
 - **gh-pages** — despliegue
 
@@ -102,15 +102,31 @@ npm run dev
 Antes de arrancar, crear un archivo `.env` en la raíz del proyecto con las claves necesarias:
 
 ```env
+# Para el frontend (Vite) si usas llamadas directas desde el cliente:
+# (estos prefijos 'VITE_' expondrán variables al cliente)
 VITE_GROQ_LLAMA_API_KEY1=tu_api_key_de_groq
 VITE_GEMINI_API_KEY=tu_api_key_de_gemini
+
+# Variables usadas por el servidor backend (proxy de APIs):
+# Estas se usan en `backend/server.js` y no se exponen al cliente.
+GROQ_API_KEY=tu_api_key_de_groq
+GEMINI_API_KEY=tu_api_key_de_gemini
 ```
 
 - **Groq**: https://console.groq.com/keys
 - **Gemini**: https://aistudio.google.com/app/apikey
 - **Ollama** (opcional, local): se conecta a `http://localhost:11434` y no requiere clave.
 
-> El archivo `.env` está incluido en `.gitignore` y nunca debe subirse al repositorio.
+
+## Notas sobre el backend y las rutas de la API
+
+- El backend (carpeta `backend/`) actúa como proxy para mantener las claves en servidor. Las rutas actuales del servidor son rutas POST en:
+	- `/groq` — manejar peticiones hacia Groq
+	- `/gemini` — manejar peticiones hacia Gemini
+
+- Si tu frontend envía peticiones a `/api/groq` o `/api/*`, ten en cuenta que en esta versión las rutas no llevan el prefijo `/api/`. Ajusta la configuración del proxy de desarrollo (o el código del cliente) para apuntar a `/groq` y `/gemini`, o añade una regla de reescritura en tu servidor/proxy.
+
+- El servidor se enlaza a `0.0.0.0` para permitir accesos desde contenedores Docker.
 
 ---
 
