@@ -68,15 +68,13 @@ export const fetchFromGemini = (messages, model = "gemini-flash-latest") => {
     });
 };
 
-// === FETCH DE OLLAMA (LOCAL) ===
-// Modelos: deepseek-v3.1:671b-cloud (En desuso, ahora es de pago)
-/*export const fetchFromOllama = (messages, model = "deepseek-v3.1:671b-cloud") => {
+export const fetchFromOllama = (messages, model = "gpt-oss:120b-cloud") => {
     return fetchIA({
         url: `${BACKEND_URL}/api/ollama`,
         model,
         messages,
     });
-};*/
+};
 
 // === ENRUTADOR DINÁMICO DE MODELOS ===
 /**
