@@ -6,7 +6,7 @@
 
 // Por defecto se asume que el frontend y backend están en el mismo host; para pruebas locales
 // puedes establecer `BACKEND_URL = 'http://localhost:8080'`.
-const BACKEND_URL = '';
+const BACKEND_URL = 'http://localhost:8080';
 
 const fetchIA = async ({
     url,

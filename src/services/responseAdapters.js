@@ -37,9 +37,18 @@ export const adaptToLecturaFacil = async ({
     let refinedResponse1 = "";
     try {
         refinedResponse1 = await fetchFromGemini(refinementMessages1);
+
+        // fetchFromGemini puede devolver errores como texto en lugar de lanzar excepción.
+        if (
+            typeof refinedResponse1 !== "string" ||
+            refinedResponse1.startsWith("Error de servidor:") ||
+            refinedResponse1.startsWith("Error de conexión")
+        ) {
+            throw new Error(String(refinedResponse1));
+        }
     } catch (error) {
-        //console.log("Falló Gemini, usamos Ollama");
-        refinedResponse1 = await fetchFromOllama(refinementMessages1, "gpt-oss:120b-cloud");
+        console.log("Falló Gemini, usamos Groq: " + error);
+        refinedResponse1 = await fetchFromGroq(refinementMessages1, "gpt-oss:120b-cloud");
     }
 
     const refinementMessages2 = [

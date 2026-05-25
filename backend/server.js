@@ -31,7 +31,7 @@ app.use(cors({ origin: CORS_ORIGIN }));
 app.use(express.json());
 
 // GROQ
-app.post('/groq', async (req, res) => {
+app.post(['/groq', '/api/groq'], async (req, res) => {
     try {
         const { messages, model = 'llama-3.3-70b-versatile', temperature = 0.7 } = req.body;
         const config = getApiKey('GROQ_API_KEY', 'Groq');
@@ -65,7 +65,7 @@ app.post('/groq', async (req, res) => {
 });
 
 // GEMINI
-app.post('/gemini', async (req, res) => {
+app.post(['/gemini', '/api/gemini'], async (req, res) => {
     try {
         const { messages, model = 'gemini-flash-latest' } = req.body;
         const config = getApiKey('GEMINI_API_KEY', 'Gemini');
@@ -82,17 +82,26 @@ app.post('/gemini', async (req, res) => {
 
         const response = await axios.post(
             `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${config.apiKey}`,
-            { contents },
-            {
-                headers: { 'Content-Type': 'application/json' }
-            }
+            { contents }
         );
 
-        return res.json(response.data);
+        const text = response.data?.candidates?.[0]?.content?.parts
+            ?.map((part) => part.text || '')
+            .join('')
+            .trim();
+
+        return res.json({
+            choices: [
+                {
+                    message: {
+                        content: text || 'Sin respuesta :/'
+                    }
+                }
+            ]
+        });
     } catch (error) {
-        //console.error('Gemini error:', error);
         return res.status(error.response?.status || 500).json({
-            error: { message: 'Error en Gemini' }
+            error: error.response?.data?.error || { message: 'Error en Gemini' }
         });
     }
 });
