@@ -4,9 +4,13 @@
  * El frontend solo habla con el backend. Las claves viven en servidor.
  */
 
-// Por defecto se asume que el frontend y backend están en el mismo host; para pruebas locales
-// puedes establecer `BACKEND_URL = 'http://localhost:8080'`.
-const BACKEND_URL = '';
+// Detecta automáticamente si estamos en desarrollo local o en producción
+const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
+// En local: backend en puerto 8080 con rutas directas
+// En producción: rutas relativas con prefijo /2526-iagen/api
+const BACKEND_URL = isLocalhost ? 'http://localhost:8080' : '';
+const API_PREFIX = isLocalhost ? '' : '/2526-iagen/api';
 
 const fetchIA = async ({
     url,
@@ -55,7 +59,7 @@ const fetchIA = async ({
 // Modelos: openai/gpt-oss-120b, llama-3.3-70b-versatile
 export const fetchFromGroq = (messages, model = "llama-3.3-70b-versatile") => {
     return fetchIA({
-        url: `${BACKEND_URL}/api/groq`,
+        url: `${BACKEND_URL}${API_PREFIX}/groq`,
         model,
         messages
     });
@@ -63,7 +67,7 @@ export const fetchFromGroq = (messages, model = "llama-3.3-70b-versatile") => {
 
 export const fetchFromGemini = (messages, model = "gemini-flash-latest") => {
     return fetchIA({
-        url: `${BACKEND_URL}/api/gemini`,
+        url: `${BACKEND_URL}${API_PREFIX}/gemini`,
         model,
         messages
     });
