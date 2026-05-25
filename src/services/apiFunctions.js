@@ -5,7 +5,7 @@
  */
 
 // Por defecto se asume que el frontend y backend están en el mismo host; para pruebas locales
-// puedes establecer `BACKEND_URL = 'http://localhost:8080'`.
+// puedes establecer `BACKEND_URL = 'http://localhost:8080'`, para el servidor habría que poner el `BACKEND_URL = 'https://idril.fdi.ucm.es/2526-iagen'`.
 const BACKEND_URL = '';
 
 const fetchIA = async ({
