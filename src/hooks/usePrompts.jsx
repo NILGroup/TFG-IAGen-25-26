@@ -131,11 +131,7 @@ const usePromptFunctions = ({
                 // Construir el prompt con estructura CO-STAR
                 const rawText = context ? `${context} ${customPrompt}` : customPrompt;
                 const { apiPrompt } = buildPrompt(summary, rawText, responseConfig, currentRole);
-                console.info("[SofIA] sendCustomPrompt:builtPrompt", {
-                    promptLength: apiPrompt.length,
-                    prompt: apiPrompt
-                });
-
+                
                 const messages = [
                     ...buildConversationMessages(chatFlow),
                     { role: "user", content: apiPrompt }
