@@ -54,7 +54,7 @@ El usuario puede combinar varios formatos (también modificables desde el panel 
 - Posibilidad de **retomar** conversaciones anteriores.
 - Confirmación al salir si hay cambios sin guardar.
 
-### Arquitectura multi-modelo con enrutador dinámico (aportación técnica diferencial)
+### Arquitectura multi-modelo con enrutador dinámico
 SofIA da el paso que sus predecesoras no completaron: en lugar de depender de un único proveedor de IA, integra un **enrutador dinámico real** ([`src/services/apiFunctions.js`](src/services/apiFunctions.js)) basado en un **estudio comparativo de cinco técnicas de prompting** —*zero-shot*, *one-shot*, *few-shot*, *chain-of-thought* y *role-prompting*— evaluadas sobre **cuatro modelos de lenguaje**.
 
 Los resultados demostraron que ningún modelo ofrece un rendimiento óptimo para todas las técnicas, lo que motivó la adopción de una arquitectura multi-modelo que asigna cada petición al modelo más adecuado según la tarea concreta:
